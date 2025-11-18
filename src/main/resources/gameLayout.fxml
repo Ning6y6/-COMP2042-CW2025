@@ -14,6 +14,10 @@
             <GridPane fx:id="gamePanel" hgap="1" vgap="1" layoutY="30" layoutX="40"/>
         </center>
     </BorderPane>
+    <VBox layoutX="250" layoutY="20" spacing="4">
+        <Label text="Score" styleClass="nextBrickLabel" />
+        <Label fx:id="scoreLabel" text="0" styleClass="scoreClass" />
+    </VBox>
 
     <Group fx:id="groupNotification" layoutX="14" layoutY="203">
         <VBox alignment="CENTER">
