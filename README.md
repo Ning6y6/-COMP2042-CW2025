@@ -61,8 +61,8 @@ CW2042-CW2025/
 ```
 
 ## Technology used
-- Java: 23 
-- Javafx: 21.0.6
+- Java: 25.0.1
+- Javafx: 25.0.1
 - IDE: IntelliJ IDEA
 
 
@@ -90,10 +90,23 @@ student of University of Nottingham Malaysia.
 
 
 ## Version History
-| Version | Date             | Change            |
-|---------|------------------|-------------------|
-| v1.0    | 12 November 2025 | Initial release   |
-| v1.1    |                  |
+| Version | Date             | Change                                                        |
+|---|------------------|---------------------------------------------------------------|
+| v1.0 | 12 November 2025 | Initial release                                               |
+| v1.1 | 18 November 2025 | fixed Score system, tiles spawn location and matrix operations|
+|   |
+
+
+## Key of changes
+### 1. Score Display and Spawn location
+- **Location**: `GuiController.java` / `gameLayout.fxml`/ `SimpleBoard.java`
+- **Issue**: `bindScore()` method was empty, so the score never appeared in the UI and offset for spawn location is incorrect
+- **Fix**: Added a dedicated score label to the FXML layout and bound it to the `Score` property inside `GuiController.bindScore()` and change the offset as y = 0.
+
+### 2. Matrix Indexing Fix
+- **Location**: `MatrixOperations.java`
+- **Issue**: Brick arrays were indexed with swapped coordinates (`brick[j][i]`), causing incorrect collision detection and merges for asymmetrical shapes.
+- **Fix**: Updated `intersect()` and `merge()` loops to compute `targetX`/`targetY` using column/row order and reference `brick[row][col]`
 
 
 
