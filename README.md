@@ -91,10 +91,11 @@ student of University of Nottingham Malaysia.
 
 ## Version History
 | Version | Date             | Change                                                        |
-|---|------------------|---------------------------------------------------------------|
-| v1.0 | 12 November 2025 | Initial release                                               |
-| v1.1 | 18 November 2025 | fixed Score system, tiles spawn location and matrix operations|
-|   |
+|---------|------------------|---------------------------------------------------------------|
+| v1.0    | 12 November 2025 | Initial release                                               |
+| v1.1    | 18 November 2025 | fixed Score system, tiles spawn location and matrix operations|
+| v1.2    | 25 November 2025 | Added a new feature that shows next three bricks and refactored the needed files|
+
 
 
 ## Key of changes
@@ -107,6 +108,13 @@ student of University of Nottingham Malaysia.
 - **Location**: `MatrixOperations.java`
 - **Issue**: Brick arrays were indexed with swapped coordinates (`brick[j][i]`), causing incorrect collision detection and merges for asymmetrical shapes.
 - **Fix**: Updated `intersect()` and `merge()` loops to compute `targetX`/`targetY` using column/row order and reference `brick[row][col]`
+
+### 3. Show next three bricks
+- **Location**: `GuiController.java`/ `GameController.java`/ `SimpleBoard.java`/`GuiController.java`/`gameLayout.fxml`/ `window_style.css`/`ViewData.java`/`BrickGenerator.java`/ `RandomBrickGenerator.java`
+- **Addition**: Added a new feature that shows the next three Tetris bricks in the preview panel.
+  Refactored the piece generation logic to provide additional upcoming pieces.
+  Updated UI layout and rendering to support multiple previews.
+  This enhances player visibility and improves strategic gameplay.
 
 
 
