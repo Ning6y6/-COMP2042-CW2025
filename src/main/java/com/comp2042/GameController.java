@@ -1,5 +1,10 @@
 package com.comp2042;
 
+import com.comp2042.ui.GuiController;
+import com.comp2042.event.*;
+import com.comp2042.logic.Board;
+import com.comp2042.logic.SimpleBoard;
+
 public class GameController implements InputEventListener {
 
     private Board board = new SimpleBoard(10, 25);
