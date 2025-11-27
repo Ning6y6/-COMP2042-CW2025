@@ -70,7 +70,13 @@ public class GuiController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
+        URL fontUrl = getClass().getClassLoader().getResource("digital.ttf");
+        if (fontUrl != null) {
+            Font.loadFont(fontUrl.toExternalForm(), 38);
+        } else{
+            System.err.println("CRITICAL ERROR: The font 'digital.ttf' was not found in the resources folder. " +
+                    "Check its location in src/main/resources/.");
+        }
         gamePanel.setFocusTraversable(true);
         gamePanel.requestFocus();
         gamePanel.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -300,14 +306,18 @@ public class GuiController implements Initializable {
     }
 
     public void newGame(ActionEvent actionEvent) {
-        timeLine.stop();
+        if (timeLine != null){
+            timeLine.stop();
+        }
         gameOverPanel.setVisible(false);
         eventListener.createNewGame();
         if (lastViewData != null) {
             updateNextBrickPanels(lastViewData);
         }
         gamePanel.requestFocus();
-        timeLine.play();
+        if (timeLine != null) {
+            timeLine.play();
+        }
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
     }
