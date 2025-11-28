@@ -2,6 +2,7 @@ package com.comp2042.ui;
 
 import com.comp2042.GameConstants;
 import com.comp2042.event.ViewData;
+import com.comp2042.logic.bricks.BrickType;
 import javafx.fxml.FXML;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Paint;
@@ -41,7 +42,7 @@ public class NextPieceView {
                 for (int i = 0; i < brickData.length; i++) {
                     for (int j = 0; j < brickData[i].length; j++) {
                         Rectangle rectangle = new Rectangle(GameConstants.BRICK_SIZE - 2, GameConstants.BRICK_SIZE - 2);
-                        rectangle.setFill(getFillColor(brickData[i][j]));
+                        rectangle.setFill(BrickType.getColorById(brickData[i][j]));
                         rectangle.setArcHeight(7);
                         rectangle.setArcWidth(7);
                         nextBrickRectangles[panelIndex][i][j] = rectangle;
@@ -89,42 +90,9 @@ public class NextPieceView {
         }
     }
 
-    private Paint getFillColor(int i) {
-        Paint returnPaint;
-        switch (i) {
-            case 0:
-                returnPaint = Color.TRANSPARENT;
-                break;
-            case 1:
-                returnPaint = Color.AQUA;
-                break;
-            case 2:
-                returnPaint = Color.BLUEVIOLET;
-                break;
-            case 3:
-                returnPaint = Color.DARKGREEN;
-                break;
-            case 4:
-                returnPaint = Color.YELLOW;
-                break;
-            case 5:
-                returnPaint = Color.RED;
-                break;
-            case 6:
-                returnPaint = Color.BEIGE;
-                break;
-            case 7:
-                returnPaint = Color.BURLYWOOD;
-                break;
-            default:
-                returnPaint = Color.WHITE;
-                break;
-        }
-        return returnPaint;
-    }
 
     public void setRectangleData(int color, Rectangle rectangle) {
-        rectangle.setFill(getFillColor(color));
+        rectangle.setFill(BrickType.getColorById(color));
         rectangle.setArcHeight(9);
         rectangle.setArcWidth(9);
     }
