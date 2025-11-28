@@ -11,7 +11,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimpleBoard implements Board {
+public class GameBoard implements Board {
 
     private final int width;
     private final int height;
@@ -21,7 +21,7 @@ public class SimpleBoard implements Board {
     private Point currentOffset;
     private final Score score;
 
-    public SimpleBoard(int width, int height) {
+    public GameBoard(int width, int height) {
         this.width = width;
         this.height = height;
         currentGameMatrix = new int[height][width];

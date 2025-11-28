@@ -55,7 +55,7 @@ public class GameView implements Initializable {
 
     private Rectangle[][] displayMatrix;
 
-    private InputEventListener eventListener;
+    private GameInputHandler eventListener;
 
     private Rectangle[][] rectangles;
 
@@ -228,7 +228,7 @@ public class GameView implements Initializable {
         gamePanel.requestFocus();
     }
 
-    public void setEventListener(InputEventListener eventListener) {
+    public void setEventListener(GameInputHandler eventListener) {
         this.eventListener = eventListener;
     }
 

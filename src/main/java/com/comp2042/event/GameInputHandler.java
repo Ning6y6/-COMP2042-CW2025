@@ -1,6 +1,6 @@
 package com.comp2042.event;
 
-public interface InputEventListener {
+public interface GameInputHandler {
 
     DownData onDownEvent(MoveEvent event);
 

@@ -3,11 +3,11 @@ package com.comp2042;
 import com.comp2042.ui.GameView;
 import com.comp2042.event.*;
 import com.comp2042.logic.Board;
-import com.comp2042.logic.SimpleBoard;
+import com.comp2042.logic.GameBoard;
 
-public class GameController implements InputEventListener {
+public class GameController implements GameInputHandler {
 
-    private Board board = new SimpleBoard(10, 25);
+    private Board board = new GameBoard(10, 25);
 
     private final GameView gameView;
 
