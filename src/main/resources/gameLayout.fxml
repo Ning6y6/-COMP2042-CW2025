@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 <?import java.net.URL?>
-<Pane fx:controller="com.comp2042.ui.GuiController"
+<Pane fx:controller="com.comp2042.ui.GameView"
       xmlns:fx="http://javafx.com/fxml">
     <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
     <BorderPane styleClass="gameBoard" fx:id="gameBoard">

@@ -1,6 +1,6 @@
 package com.comp2042;
 
-import com.comp2042.ui.GuiController;
+import com.comp2042.ui.GameView;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,7 +19,7 @@ public class Main extends Application {
         ResourceBundle resources = null;
         FXMLLoader fxmlLoader = new FXMLLoader(location, resources);
         Parent root = fxmlLoader.load();
-        GuiController c = fxmlLoader.getController();
+        GameView c = fxmlLoader.getController();
 
         primaryStage.setTitle("TetrisJFX");
 
