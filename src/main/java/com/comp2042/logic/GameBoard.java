@@ -1,5 +1,6 @@
 package com.comp2042.logic;
 
+import com.comp2042.GameConstants;
 import com.comp2042.event.ClearRow;
 import com.comp2042.event.NextShapeInfo;
 import com.comp2042.event.ViewData;
@@ -12,8 +13,6 @@ import java.util.List;
 
 public class GameBoard implements Board {
 
-    private final int width;
-    private final int height;
     private final BrickGenerator brickGenerator;
     private final BrickRotator brickRotator;
     private int[][] currentGameMatrix;
@@ -23,10 +22,9 @@ public class GameBoard implements Board {
 
     private final Score score;
 
-    public GameBoard(int width, int height) {
-        this.width = width;
-        this.height = height;
-        currentGameMatrix = new int[height][width];
+    public GameBoard() {
+
+        currentGameMatrix = new int[GameConstants.BOARD_HEIGHT][GameConstants.BOARD_WIDTH];
         brickGenerator = new RandomBrickGenerator();
         brickRotator = new BrickRotator();
         score = new Score();
@@ -93,8 +91,8 @@ public class GameBoard implements Board {
     public boolean createNewBrick() {
         Brick currentBrick = brickGenerator.getBrick();
         brickRotator.setBrick(currentBrick);
-        currentX = 4;
-        currentY = 0;
+        currentX = GameConstants.SPAWN_X;
+        currentY = GameConstants.SPAWN_Y;
         return MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), currentX, currentY);
     }
 
@@ -136,7 +134,7 @@ public class GameBoard implements Board {
 
     @Override
     public void newGame() {
-        currentGameMatrix = new int[height][width];
+        currentGameMatrix = new int[GameConstants.BOARD_HEIGHT][GameConstants.BOARD_WIDTH];
         score.reset();
         createNewBrick();
     }

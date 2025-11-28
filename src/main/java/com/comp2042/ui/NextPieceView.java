@@ -1,5 +1,6 @@
 package com.comp2042.ui;
 
+import com.comp2042.GameConstants;
 import com.comp2042.event.ViewData;
 import javafx.fxml.FXML;
 import javafx.scene.layout.GridPane;
@@ -9,7 +10,6 @@ import javafx.scene.shape.Rectangle;
 
 
 public class NextPieceView {
-    private static final int BRICK_SIZE = 20;
 
     @FXML
     private GridPane nextBrickPanel1;
@@ -30,17 +30,17 @@ public class NextPieceView {
     }
 
     public void initNextBrickPanels(ViewData brick) {
-        nextBrickRectangles = new Rectangle[3][][];
+        nextBrickRectangles = new Rectangle[GameConstants.PREVIEW_COUNT][][];
         GridPane[] panels = {nextBrickPanel1, nextBrickPanel2, nextBrickPanel3};
         java.util.List<int[][]> nextThreeBricks = brick.getNextThreeBricksData();
 
-        for (int panelIndex = 0; panelIndex < 3 && panelIndex < nextThreeBricks.size(); panelIndex++) {
+        for (int panelIndex = 0; panelIndex < GameConstants.PREVIEW_COUNT && panelIndex < nextThreeBricks.size(); panelIndex++) {
             int[][] brickData = nextThreeBricks.get(panelIndex);
             if (brickData != null && brickData.length > 0) {
                 nextBrickRectangles[panelIndex] = new Rectangle[brickData.length][brickData[0].length];
                 for (int i = 0; i < brickData.length; i++) {
                     for (int j = 0; j < brickData[i].length; j++) {
-                        Rectangle rectangle = new Rectangle(BRICK_SIZE - 2, BRICK_SIZE - 2);
+                        Rectangle rectangle = new Rectangle(GameConstants.BRICK_SIZE - 2, GameConstants.BRICK_SIZE - 2);
                         rectangle.setFill(getFillColor(brickData[i][j]));
                         rectangle.setArcHeight(7);
                         rectangle.setArcWidth(7);
@@ -57,10 +57,10 @@ public class NextPieceView {
         java.util.List<int[][]> nextThreeBricks = brick.getNextThreeBricksData();
 
         if (nextBrickRectangles == null) {
-            nextBrickRectangles = new Rectangle[3][][];
+            nextBrickRectangles = new Rectangle[GameConstants.PREVIEW_COUNT][][];
         }
 
-        for (int panelIndex = 0; panelIndex < 3 && panelIndex < nextThreeBricks.size(); panelIndex++) {
+        for (int panelIndex = 0; panelIndex < GameConstants.PREVIEW_COUNT && panelIndex < nextThreeBricks.size(); panelIndex++) {
             int[][] brickData = nextThreeBricks.get(panelIndex);
             if (brickData != null && brickData.length > 0) {
 
@@ -76,7 +76,7 @@ public class NextPieceView {
                 for (int i = 0; i < brickData.length; i++) {
                     for (int j = 0; j < brickData[i].length; j++) {
                         if (nextBrickRectangles[panelIndex][i][j] == null) {
-                            Rectangle rectangle = new Rectangle(BRICK_SIZE - 2, BRICK_SIZE - 2);
+                            Rectangle rectangle = new Rectangle(GameConstants.BRICK_SIZE - 2, GameConstants.BRICK_SIZE - 2);
                             rectangle.setArcHeight(7);
                             rectangle.setArcWidth(7);
                             nextBrickRectangles[panelIndex][i][j] = rectangle;

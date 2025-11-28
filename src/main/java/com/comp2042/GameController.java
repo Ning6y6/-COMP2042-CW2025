@@ -6,13 +6,13 @@ import com.comp2042.logic.Board;
 import com.comp2042.logic.GameBoard;
 
 public class GameController implements GameInputHandler {
-
-    private Board board = new GameBoard(10, 25);
+    private final Board board ;
 
     private final GameView gameView;
 
     public GameController(GameView c) {
         gameView = c;
+        board = new GameBoard();
         board.createNewBrick();
         gameView.setEventListener(this);
         gameView.initGameView(board.getBoardMatrix(), board.getViewData());

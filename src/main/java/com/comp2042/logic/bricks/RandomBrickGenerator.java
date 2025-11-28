@@ -1,5 +1,7 @@
 package com.comp2042.logic.bricks;
 
+import com.comp2042.GameConstants;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -28,7 +30,7 @@ public class RandomBrickGenerator implements BrickGenerator {
 
     @Override
     public Brick getBrick() {
-        while (nextBricks.size() < 3) {
+        while (nextBricks.size() < GameConstants.PREVIEW_COUNT) {
             nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
         }
         return nextBricks.poll();
@@ -41,14 +43,13 @@ public class RandomBrickGenerator implements BrickGenerator {
 
     @Override
     public List<Brick> getNextThreeBricks() {
-        //make sure atleast 3 bricks in the queue
-        while (nextBricks.size() < 3) {
+        while (nextBricks.size() < GameConstants.PREVIEW_COUNT) {
             nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
         }
         List<Brick> result = new ArrayList<>();
         int index = 0;
         for (Brick brick : nextBricks) {
-            if (index >= 3) break;
+            if (index >= GameConstants.PREVIEW_COUNT) break;
             result.add(brick);
             index++;
         }
