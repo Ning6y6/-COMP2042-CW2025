@@ -24,10 +24,10 @@ public class GameBoard implements Board {
 
     public GameBoard() {
 
-        currentGameMatrix = new int[GameConstants.BOARD_HEIGHT][GameConstants.BOARD_WIDTH];
-        brickGenerator = new RandomBrickGenerator();
-        brickRotator = new BrickRotator();
-        score = new Score();
+        this.currentGameMatrix = new int[GameConstants.BOARD_HEIGHT][GameConstants.BOARD_WIDTH];
+        this.brickGenerator = new RandomBrickGenerator();
+        this.brickRotator = new BrickRotator();
+        this.score = new Score();
 
         this.currentX = 0;
         this.currentY = 0;
@@ -49,27 +49,22 @@ public class GameBoard implements Board {
 
     @Override
     public boolean moveBrickLeft() {
-        int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
-
-        int nextX = currentX - 1;
-        boolean conflict = MatrixOperations.intersect(currentMatrix, brickRotator.getCurrentShape(), nextX, currentY);
-        if (conflict) {
-            return false;
-        } else {
-            currentX = nextX;
-            return true;
-        }
+        return tryMove(currentX - 1, currentY);
     }
 
     @Override
     public boolean moveBrickRight() {
+        return tryMove(currentX + 1, currentY);
+    }
+
+    private boolean tryMove(int nextX, int nextY) {
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
-        int nextX = currentX + 1;
-        boolean conflict = MatrixOperations.intersect(currentMatrix, brickRotator.getCurrentShape(), nextX, currentY);
+        boolean conflict = MatrixOperations.intersect(currentMatrix, brickRotator.getCurrentShape(), nextX, nextY);
         if (conflict) {
             return false;
         } else {
             currentX = nextX;
+            currentY = nextY;
             return true;
         }
     }
@@ -106,10 +101,10 @@ public class GameBoard implements Board {
     public ViewData getViewData() {
         List<int[][]> nextThreeBricks = new ArrayList<>();
         for (Brick brick : brickGenerator.getNextThreeBricks()) {
-            nextThreeBricks.add(brick.getShapeMatrix().get(0));
+            nextThreeBricks.add(brick.getShapeMatrix().getFirst());
         }
         return new ViewData(brickRotator.getCurrentShape(), currentX, currentY,
-                brickGenerator.getNextBrick().getShapeMatrix().get(0), nextThreeBricks);
+                brickGenerator.getNextBrick().getShapeMatrix().getFirst(), nextThreeBricks);
     }
 
     @Override
