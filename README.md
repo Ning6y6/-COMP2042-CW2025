@@ -16,7 +16,7 @@ CW2042-CW2025/
 ├── pom.xml                          # Maven configuration file
 ├── mvnw / mvnw.cmd                 # Maven wrapper scripts
 ├── .gitignore                      # Git ignore rules
-├── README.md                       #Project documentation
+├── README.md                       # Project documentation
 ├── src/
 │   └── main/
 │       ├── java/
@@ -24,34 +24,39 @@ CW2042-CW2025/
 │       │       └── comp2042/
 │       │           ├── Main.java                    # Application entry point
 │       │           ├── GameController.java          # Game logic controller
-│       │           ├── GuiController.java           # UI controller
-│       │           ├── Board.java                   # Board interface
-│       │           ├── SimpleBoard.java             # Board implementation
-│       │           ├── Score.java                   # Score management
-│       │           ├── MatrixOperations.java        # Matrix utility operations
-│       │           ├── BrickRotator.java            # Brick rotation logic
-│       │           ├── ClearRow.java                # Row clearing logic
-│       │           ├── ViewData.java                # View data model
-│       │           ├── MoveEvent.java               # Move event model
-│       │           ├── DownData.java                # Down movement data
-│       │           ├── NextShapeInfo.java           # Next shape information
-│       │           ├── EventSource.java             # Event source enum
-│       │           ├── EventType.java               # Event type enum
-│       │           ├── InputEventListener.java      # Input event listener interface
-│       │           ├── GameOverPanel.java           # Game over UI panel
-│       │           ├── NotificationPanel.java       # Notification UI panel
-│       │           └── logic/
-│       │               └── bricks/
-│       │                   ├── Brick.java                    # Brick interface
-│       │                   ├── BrickGenerator.java          # Brick generator interface
-│       │                   ├── RandomBrickGenerator.java    # Random brick generator
-│       │                   ├── IBrick.java                  # I-shaped brick
-│       │                   ├── JBrick.java                  # J-shaped brick
-│       │                   ├── LBrick.java                  # L-shaped brick
-│       │                   ├── OBrick.java                 # O-shaped brick
-│       │                   ├── SBrick.java                 # S-shaped brick
-│       │                   ├── TBrick.java                 # T-shaped brick
-│       │                   └── ZBrick.java                 # Z-shaped brick
+│       │           ├── GameConstants.java          # Game constants and configuration
+│       │           ├── event/
+│       │           │   ├── ClearRow.java            # Row clearing logic
+│       │           │   ├── DownData.java            # Down movement data
+│       │           │   ├── EventSource.java         # Event source enum
+│       │           │   ├── EventType.java           # Event type enum
+│       │           │   ├── GameInputHandler.java    # Input event handler
+│       │           │   ├── MoveEvent.java           # Move event model
+│       │           │   ├── NextShapeInfo.java       # Next shape information
+│       │           │   └── ViewData.java            # View data model
+│       │           ├── logic/
+│       │           │   ├── Board.java               # Board interface
+│       │           │   ├── BrickRotator.java        # Brick rotation logic
+│       │           │   ├── GameBoard.java           # Board implementation
+│       │           │   ├── MatrixOperations.java    # Matrix utility operations
+│       │           │   ├── Score.java               # Score management
+│       │           │   └── bricks/
+│       │           │       ├── Brick.java                    # Brick interface
+│       │           │       ├── BrickGenerator.java          # Brick generator interface
+│       │           │       ├── BrickType.java               # Brick type enum
+│       │           │       ├── RandomBrickGenerator.java    # Random brick generator
+│       │           │       ├── IBrick.java                  # I-shaped brick
+│       │           │       ├── JBrick.java                  # J-shaped brick
+│       │           │       ├── LBrick.java                  # L-shaped brick
+│       │           │       ├── OBrick.java                  # O-shaped brick
+│       │           │       ├── SBrick.java                  # S-shaped brick
+│       │           │       ├── TBrick.java                  # T-shaped brick
+│       │           │       └── ZBrick.java                  # Z-shaped brick
+│       │           └── ui/
+│       │               ├── GameOverPanel.java        # Game over UI panel
+│       │               ├── GameView.java             # Main game view UI
+│       │               ├── NextPieceView.java        # Next piece preview UI
+│       │               └── NotificationPanel.java    # Notification UI panel
 │       └── resources/
 │           ├── gameLayout.fxml      # FXML UI layout
 │           ├── window_style.css     # CSS styling
@@ -90,12 +95,12 @@ student of University of Nottingham Malaysia.
 
 
 ## Version History
-| Version | Date             | Change                                                        |
-|---------|------------------|---------------------------------------------------------------|
-| v1.0    | 12 November 2025 | Initial release                                               |
-| v1.1    | 18 November 2025 | fixed Score system, tiles spawn location and matrix operations|
-| v1.2    | 25 November 2025 | Added a new feature that shows next three bricks and refactored the needed files|
-
+| Version | Date             | Change                                                                           |
+|---------|------------------|----------------------------------------------------------------------------------|
+| v1.0    | 12 November 2025 | Initial release                                                                  |
+| v1.1    | 18 November 2025 | fixed Score system, tiles spawn location and matrix operations                   |
+| v1.2    | 25 November 2025 | Added a new feature that shows next three bricks and refactored the needed files |
+| v1.3    | 29 November 2025 | Major refactoring for maintainability, Encapsulation, and SOLID principles.      |
 
 
 ## Key of changes
@@ -116,7 +121,31 @@ student of University of Nottingham Malaysia.
   Updated UI layout and rendering to support multiple previews.
   This enhances player visibility and improves strategic gameplay.
 
+### 4. Encapsulation and Data Integrity
+- **Location**: `GameBoard.java`
+- **Issue**: Exposed mutable state (`java.awt.Point currentOffset`) and returned a direct reference to the internal game matrix (`currentGameMatrix`).
+- **Fix**: Replaced `currentOffset` with private primitive integers (`currentX`, `currentY`) to prevent external state modification. `getBoardMatrix()` now returns a **deep copy** of the matrix.
 
+### 5. Single Responsibility Principle (SRP)
+- **Location**: `GameView.java` / `NextPieceView.java`
+- **Issue**: previous`GuiController.java` handled both the main board rendering and complex preview panel logic.
+- **Fix**: Extracted all next piece rendering logic and fields into the dedicated `NextPieceView` class. and renamed to `GameView.java`.
+
+### 6. Magic Numbers and Type Code Elimination
+- **Location**: `GameController.java` / `GameBoard.java` / `GameView.java` / `NextPieceView.java` / `RandomBrickGenerator.java`
+- **Issue**: Hardcoded values (e.g., board size 10/25, brick size 20, color logic switch statements) were scattered throughout the codebase (Magic Number and Duplicated Code smells).
+- **Fix**: Introduced **`GameConstants.java`** to centralize all numeric literals and **`BrickType.java`** (enum) to handle color mapping, eliminating duplicative `switch` statements from UI classes (Replace Type Code with Polymorphism/Enum).
+
+
+
+### Design Pattern Overview
+## The project currently implements two key design patterns effectively:
+
+- Factory Method Pattern (Creational): The BrickGenerator interface is implemented by `RandomBrickGenerator.java`. This pattern delegates the logic of creating new concrete Brick objects (like IBrick, JBrick, etc.) to subclasses without the client (`GameBoard`) needing to know the instantiation details.
+
+- Observer Pattern (JavaFX) (Behavioral): The `Score.java` class uses IntegerProperty and `GameView.bindScore()` uses `textProperty().bind()`. This establishes a one-to-many relationship where the scoreLabel automatically updates whenever the Score object's internal value changes, without direct polling.
+
+- Strategy Pattern (Simplified): The `BrickType` enum acts as a simplified Strategy, where the client requests a color using an ID, and the enum provides the specific color (strategy) based on the input type.
 
 ## License
 
