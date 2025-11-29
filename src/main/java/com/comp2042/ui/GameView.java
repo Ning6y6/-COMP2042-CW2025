@@ -19,7 +19,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
@@ -71,50 +70,66 @@ public class GameView implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        URL fontUrl = getClass().getClassLoader().getResource("digital.ttf");
-        if (fontUrl != null) {
-            Font.loadFont(fontUrl.toExternalForm(), 38);
-        } else{
-            System.err.println("CRITICAL ERROR: The font 'digital.ttf' was not found in the resources folder. " +
-                    "Check its location in src/main/resources/.");
-        }
+
+        loadResource();
+        setupGamePanel();
+        setupInputHandling();
+        setupUIComponent();
+    }
+
+    private void setupGamePanel() {
         gamePanel.setFocusTraversable(true);
         gamePanel.requestFocus();
-        gamePanel.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                if (isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE) {
-                    if (keyEvent.getCode() == KeyCode.LEFT || keyEvent.getCode() == KeyCode.A) {
-                        refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER)));
-                        keyEvent.consume();
-                    }
-                    if (keyEvent.getCode() == KeyCode.RIGHT || keyEvent.getCode() == KeyCode.D) {
-                        refreshBrick(eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER)));
-                        keyEvent.consume();
-                    }
-                    if (keyEvent.getCode() == KeyCode.UP || keyEvent.getCode() == KeyCode.W) {
-                        refreshBrick(eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER)));
-                        keyEvent.consume();
-                    }
-                    if (keyEvent.getCode() == KeyCode.DOWN || keyEvent.getCode() == KeyCode.S) {
-                        moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
-                        keyEvent.consume();
-                    }
-                }
-                if (keyEvent.getCode() == KeyCode.N) {
-                    newGame(null);
-                }
-            }
-        });
+    }
+
+    private void setupUIComponent() {
         gameOverPanel.setVisible(false);
+
+        nextPieceView = new NextPieceView();
+        nextPieceView.initialize(nextBrickPanel1,nextBrickPanel2,nextBrickPanel3);
 
         final Reflection reflection = new Reflection();
         reflection.setFraction(0.8);
         reflection.setTopOpacity(0.9);
         reflection.setTopOffset(-12);
 
-        nextPieceView = new NextPieceView();
-        nextPieceView.initialize(nextBrickPanel1,nextBrickPanel2,nextBrickPanel3);
+
+    }
+
+    private void setupInputHandling() {
+        gamePanel.setOnKeyPressed(this::handleKeyInput);
+    }
+
+    private void handleKeyInput(KeyEvent keyEvent) {
+        if (isGameActive()) {
+            KeyCode code = keyEvent.getCode();
+            if (code == KeyCode.LEFT || code == KeyCode.A) {
+                refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER)));
+            } else if (code == KeyCode.RIGHT || code == KeyCode.D) {
+                refreshBrick(eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER)));
+            } else if (code == KeyCode.UP || code == KeyCode.W) {
+                refreshBrick(eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER)));
+            } else if (code == KeyCode.DOWN || code == KeyCode.S) {
+                moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
+            }
+            keyEvent.consume();
+        }
+        if (keyEvent.getCode() == KeyCode.N) {
+            newGame(null);
+        }
+    }
+
+    private boolean isGameActive() {
+        return isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE;
+    }
+
+    private void loadResource() {
+        URL fontUrl = getClass().getClassLoader().getResource("digital.ttf");
+        if (fontUrl != null) {
+            Font.loadFont(fontUrl.toExternalForm(), 38);
+        } else{
+            System.err.println("CRITICAL ERROR: The font 'digital.ttf' was not found.");
+        }
     }
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
@@ -138,9 +153,17 @@ public class GameView implements Initializable {
                 brickPanel.add(rectangle, j, i);
             }
         }
+        updateBrickLayout(brick);
+        nextPieceView.initNextBrickPanels(brick);
+        setupTimeline();
+    }
+
+    private void updateBrickLayout(ViewData brick) {
         brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getxPosition() * brickPanel.getVgap() + brick.getxPosition() * GameConstants.BRICK_SIZE);
         brickPanel.setLayoutY(-42 + gamePanel.getLayoutY() + brick.getyPosition() * brickPanel.getHgap() + brick.getyPosition() * GameConstants.BRICK_SIZE);
-        nextPieceView.initNextBrickPanels(brick);
+    }
+
+    private void setupTimeline() {
         timeLine = new Timeline(new KeyFrame(
                 Duration.millis(GameConstants.GAME_SPEED_MILLIS),
                 ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
@@ -149,11 +172,10 @@ public class GameView implements Initializable {
         timeLine.play();
     }
 
-     public void refreshBrick(ViewData brick) {
+    public void refreshBrick(ViewData brick) {
         if (isPause.getValue() == Boolean.FALSE) {
             lastViewData = brick;
-            brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getxPosition() * brickPanel.getVgap() + brick.getxPosition() * GameConstants.BRICK_SIZE);
-            brickPanel.setLayoutY(-42 + gamePanel.getLayoutY() + brick.getyPosition() * brickPanel.getHgap() + brick.getyPosition() * GameConstants.BRICK_SIZE);
+            updateBrickLayout(brick);
             for (int i = 0; i < brick.getBrickData().length; i++) {
                 for (int j = 0; j < brick.getBrickData()[i].length; j++) {
                     setRectangleData(brick.getBrickData()[i][j], rectangles[i][j]);
@@ -193,6 +215,7 @@ public class GameView implements Initializable {
     }
 
     public void setEventListener(GameInputHandler eventListener) {
+
         this.eventListener = eventListener;
     }
 
