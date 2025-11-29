@@ -35,15 +35,7 @@ public class GameBoard implements Board {
 
     @Override
     public boolean moveBrickDown() {
-        int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
-        int nextY = currentY + 1;
-        boolean conflict = MatrixOperations.intersect(currentMatrix, brickRotator.getCurrentShape(), currentX, nextY);
-        if (conflict) {
-            return false;
-        } else {
-            currentY = nextY;
-            return true;
-        }
+        return tryMove(this.currentX, this.currentY + 1);
     }
 
 

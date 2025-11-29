@@ -9,7 +9,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -64,7 +63,6 @@ public class GameView implements Initializable {
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
 
-    private ViewData lastViewData;
 
     private NextPieceView nextPieceView;
 
@@ -120,7 +118,7 @@ public class GameView implements Initializable {
     }
 
     private boolean isGameActive() {
-        return isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE;
+        return !this.isPause.getValue() && !this.isGameOver.getValue();
     }
 
     private void loadResource() {
@@ -133,29 +131,38 @@ public class GameView implements Initializable {
     }
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
-        lastViewData = brick;
-        displayMatrix = new Rectangle[boardMatrix.length][boardMatrix[0].length];
-        for (int i = 2; i < boardMatrix.length; i++) {
-            for (int j = 0; j < boardMatrix[i].length; j++) {
-                Rectangle rectangle = new Rectangle(GameConstants.BRICK_SIZE ,GameConstants.BRICK_SIZE);
-                rectangle.setFill(Color.TRANSPARENT);
-                displayMatrix[i][j] = rectangle;
-                gamePanel.add(rectangle, j, i - 2);
-            }
-        }
 
-        rectangles = new Rectangle[brick.getBrickData().length][brick.getBrickData()[0].length];
+        setupBackgroundGrid(boardMatrix);
+
+        setupFallingPieceGrid(brick);
+
+        this.nextPieceView.initNextBrickPanels(brick);
+        setupTimeline();
+    }
+
+    private void setupFallingPieceGrid(ViewData brick) {
+        this.rectangles = new Rectangle[brick.getBrickData().length][brick.getBrickData()[0].length];
         for (int i = 0; i < brick.getBrickData().length; i++) {
             for (int j = 0; j < brick.getBrickData()[i].length; j++) {
                 Rectangle rectangle = new Rectangle(GameConstants.BRICK_SIZE, GameConstants.BRICK_SIZE);
                 rectangle.setFill(BrickType.getColorById(brick.getBrickData()[i][j]));
-                rectangles[i][j] = rectangle;
-                brickPanel.add(rectangle, j, i);
+                this.rectangles[i][j] = rectangle;
+                this.brickPanel.add(rectangle, j, i);
             }
         }
         updateBrickLayout(brick);
-        nextPieceView.initNextBrickPanels(brick);
-        setupTimeline();
+    }
+
+    private void setupBackgroundGrid(int[][] boardMatrix) {
+        this.displayMatrix = new Rectangle[boardMatrix.length][boardMatrix[0].length];
+        for (int i = 2; i < boardMatrix.length; i++) {
+            for (int j = 0; j < boardMatrix[i].length; j++) {
+                Rectangle rectangle = new Rectangle(GameConstants.BRICK_SIZE ,GameConstants.BRICK_SIZE);
+                rectangle.setFill(Color.TRANSPARENT);
+                this.displayMatrix[i][j] = rectangle;
+                this.gamePanel.add(rectangle, j, i - 2);
+            }
+        }
     }
 
     private void updateBrickLayout(ViewData brick) {
@@ -173,8 +180,7 @@ public class GameView implements Initializable {
     }
 
     public void refreshBrick(ViewData brick) {
-        if (isPause.getValue() == Boolean.FALSE) {
-            lastViewData = brick;
+        if (!this.isPause.getValue()) {
             updateBrickLayout(brick);
             for (int i = 0; i < brick.getBrickData().length; i++) {
                 for (int j = 0; j < brick.getBrickData()[i].length; j++) {
@@ -202,7 +208,7 @@ public class GameView implements Initializable {
     }
 
     private void moveDown(MoveEvent event) {
-        if (isPause.getValue() == Boolean.FALSE) {
+        if (!this.isPause.getValue()) {
             DownData downData = eventListener.onDownEvent(event);
             if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
                 NotificationPanel notificationPanel = new NotificationPanel("+" + downData.getClearRow().getScoreBonus());

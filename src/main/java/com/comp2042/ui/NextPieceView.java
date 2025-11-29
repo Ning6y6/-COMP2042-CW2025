@@ -89,7 +89,7 @@ public class NextPieceView {
     }
 
 
-    public void setRectangleData(int color, Rectangle rectangle) {
+    private void setRectangleData(int color, Rectangle rectangle) {
         rectangle.setFill(BrickType.getColorById(color));
         rectangle.setArcHeight(9);
         rectangle.setArcWidth(9);
