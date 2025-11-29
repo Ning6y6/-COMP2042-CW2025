@@ -5,8 +5,6 @@ import com.comp2042.event.ViewData;
 import com.comp2042.logic.bricks.BrickType;
 import javafx.fxml.FXML;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Paint;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 
