@@ -32,6 +32,7 @@ public class KeybindsView {
         configurableCommands.put("Rotate", RotateCommand.class);
         configurableCommands.put("Soft Drop", SoftDropCommand.class);
         configurableCommands.put("Pause", PauseCommand.class);
+        configurableCommands.put("Restart Game", RestartGameCommand.class);
     }
 
     public void show() {
@@ -55,7 +56,7 @@ public class KeybindsView {
         closeBtn.setOnAction(e -> stage.close());
         layout.getChildren().add(closeBtn);
 
-        Scene scene = new Scene(layout, 350, 450);
+        Scene scene = new Scene(layout, 350, 500);
         stage.setScene(scene);
         stage.show();
         layout.setFocusTraversable(true);
@@ -138,7 +139,6 @@ public class KeybindsView {
     }
 
     private boolean isValidBindingKey(KeyCode keyCode) {
-        // Reject undefined keys
         if (keyCode == KeyCode.UNDEFINED) {
             return false;
         }
