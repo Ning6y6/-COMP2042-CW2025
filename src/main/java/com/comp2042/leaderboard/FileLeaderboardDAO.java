@@ -3,6 +3,7 @@ package com.comp2042.leaderboard;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -11,6 +12,12 @@ import java.util.stream.Collectors;
 public class FileLeaderboardDAO implements LeaderboardDAO {
     private static final String FILE_NAME = "leaderboard.txt";
     private static final Logger LOGGER = Logger.getLogger(FileLeaderboardDAO.class.getName());
+
+    private final LeaderboardEntryParser parser;
+
+    public FileLeaderboardDAO() {
+        this.parser = new LeaderboardEntryParser();
+    }
 
     @Override
     public void saveScore(LeaderboardEntry entry) {
@@ -30,7 +37,8 @@ public class FileLeaderboardDAO implements LeaderboardDAO {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             scores = reader.lines()
-                    .map(LeaderboardEntry::fromString)
+                    .map(parser::parse)
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toList());
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Failed to load scores from " + FILE_NAME, e);

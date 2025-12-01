@@ -10,9 +10,13 @@ public class LeaderboardEntry implements Serializable, Comparable<LeaderboardEnt
     private final LocalDate date;
 
     public LeaderboardEntry(String name, int score) {
+        this(name, score, LocalDate.now());
+    }
+
+    public LeaderboardEntry(String name, int score, LocalDate date) {
         this.name = name;
         this.score = score;
-        this.date = LocalDate.now();
+        this.date = date;
     }
 
     public String getName() { return name; }
@@ -30,10 +34,4 @@ public class LeaderboardEntry implements Serializable, Comparable<LeaderboardEnt
         return name + ":" + score + ":" + date;
     }
 
-    // Simple parser for file storage
-    public static LeaderboardEntry fromString(String line) {
-        String[] parts = line.split(":");
-        if (parts.length < 3) return null;
-        return new LeaderboardEntry(parts[0], Integer.parseInt(parts[1]));
-    }
 }

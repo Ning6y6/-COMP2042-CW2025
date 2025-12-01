@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 public class MatrixOperations {
 
     private static final int SCORE_BASE_MULTIPLIER = 50;
-    
     private MatrixOperations(){
         throw new AssertionError("MatrixOperations is a utility class and cannot be instantiated");
     }
