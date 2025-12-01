@@ -36,26 +36,52 @@ public class RandomBrickGenerator implements BrickGenerator {
 
     @Override
     public Brick getBrick() {
+        ensureQueueHasBricks();
+        Brick brick = nextBricks.poll();
+        if (brick == null) {
+            throw new IllegalStateException("Failed to generate brick");
+        }
         while (nextBricks.size() < GameConstants.PREVIEW_COUNT) {
             fillQueue();
         }
-        return nextBricks.poll();
+        return brick;
     }
 
     @Override
     public Brick getNextBrick() {
-        return nextBricks.peek();
+        ensureQueueHasBricks();
+        Brick nextBrick = nextBricks.peek();
+        if (nextBrick == null) {
+            throw new IllegalStateException("Failed to generate next brick");
+        }
+        return nextBrick;
+    }
+
+    private void ensureQueueHasBricks() {
+        if (nextBricks.isEmpty()) {
+            fillQueue();
+        }
     }
 
     @Override
     public List<Brick> getNextThreeBricks() {
-        fillQueue();
+        ensureQueueHasBricks();
         List<Brick> result = new ArrayList<>();
         int index = 0;
         for (Brick brick : nextBricks) {
             if (index >= GameConstants.PREVIEW_COUNT) break;
+            if (brick == null) {
+                throw new IllegalStateException("Null brick found in queue at index " + index);
+            }
             result.add(brick);
             index++;
+        }
+        while (result.size() < GameConstants.PREVIEW_COUNT) {
+            fillQueue();
+            Brick additionalBrick = nextBricks.peek();
+            if (additionalBrick != null && !result.contains(additionalBrick)) {
+                result.add(additionalBrick);
+            }
         }
         return result;
     }

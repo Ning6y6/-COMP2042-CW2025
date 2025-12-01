@@ -1,5 +1,6 @@
 <?import com.comp2042.ui.GameOverPanel?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
@@ -15,6 +16,7 @@
     <VBox layoutX="250" layoutY="20" spacing="12" prefWidth="160">
         <Label text="Score" styleClass="nextBrickLabel" />
         <Label fx:id="scoreLabel" text="0" styleClass="scoreClass" />
+        <Button fx:id="settingsButton" text="Pause" onAction="#openSettings" styleClass="settingsButton" />
 
         <BorderPane styleClass="nextBricksBox">
             <top>

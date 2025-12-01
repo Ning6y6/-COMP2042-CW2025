@@ -10,14 +10,20 @@ import java.util.stream.Collectors;
 
 public class MatrixOperations {
 
-
-    //We don't want to instantiate this utility class
+    private static final int SCORE_BASE_MULTIPLIER = 50;
+    
     private MatrixOperations(){
-
+        throw new AssertionError("MatrixOperations is a utility class and cannot be instantiated");
     }
 
     public static boolean intersect(final int[][] matrix, final int[][] brick, int x, int y) {
+        validateMatrix(matrix, "matrix");
+        validateMatrix(brick, "brick");
+        
         for (int row = 0; row < brick.length; row++) {
+            if (brick[row] == null) {
+                continue;
+            }
             for (int col = 0; col < brick[row].length; col++) {
                 int targetX = x + col;
                 int targetY = y + row;
@@ -33,23 +39,44 @@ public class MatrixOperations {
         if (targetY < 0 || targetY >= matrix.length) {
             return true;
         }
-        return targetX < 0 || targetX >= matrix[targetY].length;
+        if (targetY >= 0 && targetY < matrix.length && matrix[targetY] != null) {
+            return targetX < 0 || targetX >= matrix[targetY].length;
+        }
+        return true;
     }
 
+
     public static int[][] copy(int[][] original) {
+        if (original == null) {
+            throw new IllegalArgumentException("Cannot copy null matrix");
+        }
+        if (original.length == 0) {
+            return new int[0][];
+        }
+        
         int[][] myInt = new int[original.length][];
         for (int i = 0; i < original.length; i++) {
-            int[] aMatrix = original[i];
-            int aLength = aMatrix.length;
-            myInt[i] = new int[aLength];
-            System.arraycopy(aMatrix, 0, myInt[i], 0, aLength);
+            if (original[i] == null) {
+                myInt[i] = null;
+            } else {
+                int aLength = original[i].length;
+                myInt[i] = new int[aLength];
+                System.arraycopy(original[i], 0, myInt[i], 0, aLength);
+            }
         }
         return myInt;
     }
 
+
     public static int[][] merge(int[][] filledFields, int[][] brick, int x, int y) {
+        validateMatrix(filledFields, "filledFields");
+        validateMatrix(brick, "brick");
+        
         int[][] copy = copy(filledFields);
         for (int row = 0; row < brick.length; row++) {
+            if (brick[row] == null) {
+                continue; // Skip null rows
+            }
             for (int col = 0; col < brick[row].length; col++) {
                 int targetX = x + col;
                 int targetY = y + row;
@@ -64,39 +91,105 @@ public class MatrixOperations {
     }
 
     public static ClearRow checkRemoving(final int[][] matrix) {
-        int[][] tmp = new int[matrix.length][matrix[0].length];
+        validateMatrix(matrix, "matrix");
+        if (matrix.length == 0) {
+            return new ClearRow(0, new int[0][], 0);
+        }
+        
+        // Validate that matrix has at least one non-empty row
+        int maxRowLength = findMaxRowLength(matrix);
+        if (maxRowLength == 0) {
+            return new ClearRow(0, copy(matrix), 0);
+        }
+        
         Deque<int[]> newRows = new ArrayDeque<>();
         List<Integer> clearedRows = new ArrayList<>();
 
         for (int i = 0; i < matrix.length; i++) {
-            int[] tmpRow = new int[matrix[i].length];
-            boolean rowToClear = true;
-            for (int j = 0; j < matrix[0].length; j++) {
-                if (matrix[i][j] == 0) {
-                    rowToClear = false;
-                }
-                tmpRow[j] = matrix[i][j];
+            if (matrix[i] == null) {
+                continue;
             }
+            int[] tmpRow = new int[matrix[i].length];
+            boolean rowToClear = isRowComplete(matrix[i]);
+            
+            System.arraycopy(matrix[i], 0, tmpRow, 0, matrix[i].length);
+            
             if (rowToClear) {
                 clearedRows.add(i);
             } else {
                 newRows.add(tmpRow);
             }
         }
-        for (int i = matrix.length - 1; i >= 0; i--) {
-            int[] row = newRows.pollLast();
-            if (row != null) {
-                tmp[i] = row;
-            } else {
-                break;
-            }
-        }
-        int scoreBonus = 50 * clearedRows.size() * clearedRows.size();
+
+        int[][] tmp = buildNewMatrix(matrix.length, maxRowLength, newRows);
+        int scoreBonus = calculateScoreBonus(clearedRows.size());
+        
         return new ClearRow(clearedRows.size(), tmp, scoreBonus);
     }
 
-    public static List<int[][]> deepCopyList(List<int[][]> list){
-        return list.stream().map(MatrixOperations::copy).collect(Collectors.toList());
+    private static int findMaxRowLength(int[][] matrix) {
+        int maxLength = 0;
+        for (int[] row : matrix) {
+            if (row != null && row.length > maxLength) {
+                maxLength = row.length;
+            }
+        }
+        return maxLength;
     }
 
+
+    private static boolean isRowComplete(int[] row) {
+        if (row == null || row.length == 0) {
+            return false;
+        }
+        for (int cell : row) {
+            if (cell == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    private static int[][] buildNewMatrix(int originalHeight, int rowLength, Deque<int[]> newRows) {
+        int[][] tmp = new int[originalHeight][rowLength];
+        for (int i = originalHeight - 1; i >= 0; i--) {
+            int[] row = newRows.pollLast();
+            if (row != null) {
+                // Ensure row has correct length
+                if (row.length != rowLength) {
+                    int[] adjustedRow = new int[rowLength];
+                    System.arraycopy(row, 0, adjustedRow, 0, Math.min(row.length, rowLength));
+                    tmp[i] = adjustedRow;
+                } else {
+                    tmp[i] = row;
+                }
+            } else {
+                // Fill remaining rows with zeros
+                tmp[i] = new int[rowLength];
+            }
+        }
+        return tmp;
+    }
+
+    private static int calculateScoreBonus(int clearedRows) {
+        return SCORE_BASE_MULTIPLIER * clearedRows * clearedRows;
+    }
+
+
+    private static void validateMatrix(int[][] matrix, String paramName) {
+        if (matrix == null) {
+            throw new IllegalArgumentException(paramName + " cannot be null");
+        }
+    }
+
+
+    public static List<int[][]> deepCopyList(List<int[][]> list){
+        if (list == null) {
+            throw new IllegalArgumentException("List cannot be null");
+        }
+        return list.stream()
+                .map(MatrixOperations::copy)
+                .collect(Collectors.toList());
+    }
 }

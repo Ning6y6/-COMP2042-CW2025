@@ -1,7 +1,9 @@
 package com.comp2042.ui;
 
 import com.comp2042.GameConstants;
+import com.comp2042.GameController;
 import com.comp2042.event.*;
+import com.comp2042.input.InputManager;
 import com.comp2042.logic.bricks.BrickType;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -12,9 +14,9 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.Button;
 import javafx.scene.Group;
 import javafx.scene.effect.Reflection;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -29,6 +31,9 @@ public class GameView implements Initializable {
 
     @FXML
     private Label scoreLabel;
+
+    @FXML
+    private Button settingsButton;
 
     @FXML
     private GridPane gamePanel;
@@ -63,6 +68,7 @@ public class GameView implements Initializable {
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
 
+    private InputManager inputManager;
 
     private NextPieceView nextPieceView;
 
@@ -73,6 +79,9 @@ public class GameView implements Initializable {
         setupGamePanel();
         setupInputHandling();
         setupUIComponent();
+    }
+    public void setInputManager(InputManager inputManager) {
+        this.inputManager = inputManager;
     }
 
     private void setupGamePanel() {
@@ -99,26 +108,10 @@ public class GameView implements Initializable {
     }
 
     private void handleKeyInput(KeyEvent keyEvent) {
-        if (isGameActive()) {
-            KeyCode code = keyEvent.getCode();
-            if (code == KeyCode.LEFT || code == KeyCode.A) {
-                refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER)));
-            } else if (code == KeyCode.RIGHT || code == KeyCode.D) {
-                refreshBrick(eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER)));
-            } else if (code == KeyCode.UP || code == KeyCode.W) {
-                refreshBrick(eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER)));
-            } else if (code == KeyCode.DOWN || code == KeyCode.S) {
-                moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
-            }
+        if (inputManager !=null) {
+            inputManager.handleInput(keyEvent.getCode(), (GameController)eventListener);
             keyEvent.consume();
         }
-        if (keyEvent.getCode() == KeyCode.N) {
-            newGame(null);
-        }
-    }
-
-    private boolean isGameActive() {
-        return !this.isPause.getValue() && !this.isGameOver.getValue();
     }
 
     private void loadResource() {
@@ -141,11 +134,16 @@ public class GameView implements Initializable {
     }
 
     private void setupFallingPieceGrid(ViewData brick) {
-        this.rectangles = new Rectangle[brick.getBrickData().length][brick.getBrickData()[0].length];
-        for (int i = 0; i < brick.getBrickData().length; i++) {
-            for (int j = 0; j < brick.getBrickData()[i].length; j++) {
+        int[][] brickData = validateAndGetBrickData(brick);
+        this.rectangles = new Rectangle[brickData.length][brickData[0].length];
+        
+        for (int i = 0; i < brickData.length; i++) {
+            if (brickData[i] == null) {
+                continue; // Skip null rows
+            }
+            for (int j = 0; j < brickData[i].length; j++) {
                 Rectangle rectangle = new Rectangle(GameConstants.BRICK_SIZE, GameConstants.BRICK_SIZE);
-                rectangle.setFill(BrickType.getColorById(brick.getBrickData()[i][j]));
+                rectangle.setFill(BrickType.getColorById(brickData[i][j]));
                 this.rectangles[i][j] = rectangle;
                 this.brickPanel.add(rectangle, j, i);
             }
@@ -153,16 +151,64 @@ public class GameView implements Initializable {
         updateBrickLayout(brick);
     }
 
+
+    private int[][] validateAndGetBrickData(ViewData brick) {
+        if (brick == null) {
+            throw new IllegalArgumentException("Brick ViewData cannot be null");
+        }
+        int[][] brickData = brick.getBrickData();
+        if (brickData == null || brickData.length == 0) {
+            throw new IllegalArgumentException("Brick data cannot be null or empty");
+        }
+        if (brickData[0] == null || brickData[0].length == 0) {
+            throw new IllegalArgumentException("Brick data first row cannot be null or empty");
+        }
+        return brickData;
+    }
+
     private void setupBackgroundGrid(int[][] boardMatrix) {
-        this.displayMatrix = new Rectangle[boardMatrix.length][boardMatrix[0].length];
+        validateBoardMatrix(boardMatrix);
+        int maxRowLength = findMaxRowLength(boardMatrix);
+        this.displayMatrix = new Rectangle[boardMatrix.length][maxRowLength];
+        
         for (int i = 2; i < boardMatrix.length; i++) {
+            if (boardMatrix[i] == null) {
+                continue; // Skip null rows
+            }
             for (int j = 0; j < boardMatrix[i].length; j++) {
-                Rectangle rectangle = new Rectangle(GameConstants.BRICK_SIZE ,GameConstants.BRICK_SIZE);
+                Rectangle rectangle = new Rectangle(GameConstants.BRICK_SIZE, GameConstants.BRICK_SIZE);
                 rectangle.setFill(Color.TRANSPARENT);
                 this.displayMatrix[i][j] = rectangle;
                 this.gamePanel.add(rectangle, j, i - 2);
             }
         }
+    }
+
+
+    private void validateBoardMatrix(int[][] boardMatrix) {
+        if (boardMatrix == null) {
+            throw new IllegalArgumentException("Board matrix cannot be null");
+        }
+        if (boardMatrix.length == 0) {
+            throw new IllegalArgumentException("Board matrix cannot be empty");
+        }
+        if (boardMatrix.length < 3) {
+            throw new IllegalArgumentException("Board matrix must have at least 3 rows");
+        }
+    }
+
+
+    private int findMaxRowLength(int[][] boardMatrix) {
+        int maxLength = 0;
+        for (int[] row : boardMatrix) {
+            if (row != null && row.length > maxLength) {
+                maxLength = row.length;
+            }
+        }
+        if (maxLength == 0) {
+            throw new IllegalArgumentException("Board matrix must have at least one non-empty row");
+        }
+        return maxLength;
     }
 
     private void updateBrickLayout(ViewData brick) {
@@ -255,5 +301,15 @@ public class GameView implements Initializable {
 
     public void pauseGame(ActionEvent actionEvent) {
         gamePanel.requestFocus();
+    }
+
+
+    @FXML
+    public void openSettings(ActionEvent event) {
+        if (eventListener instanceof GameController) {
+            GameController controller = (GameController) eventListener;
+            controller.pauseGame();
+        }
+        event.consume();
     }
 }

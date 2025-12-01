@@ -91,12 +91,41 @@ public class GameBoard implements Board {
 
     @Override
     public ViewData getViewData() {
+        List<int[][]> nextThreeBricks = extractNextThreeBrickShapes();
+        int[][] nextBrickShape = extractNextBrickShape();
+        
+        return new ViewData(
+            brickRotator.getCurrentShape(), 
+            currentX, 
+            currentY,
+            nextBrickShape, 
+            nextThreeBricks
+        );
+    }
+
+    private List<int[][]> extractNextThreeBrickShapes() {
         List<int[][]> nextThreeBricks = new ArrayList<>();
         for (Brick brick : brickGenerator.getNextThreeBricks()) {
+            validateBrickShapeMatrix(brick);
             nextThreeBricks.add(brick.getShapeMatrix().getFirst());
         }
-        return new ViewData(brickRotator.getCurrentShape(), currentX, currentY,
-                brickGenerator.getNextBrick().getShapeMatrix().getFirst(), nextThreeBricks);
+        return nextThreeBricks;
+    }
+
+
+    private int[][] extractNextBrickShape() {
+        Brick nextBrick = brickGenerator.getNextBrick();
+        validateBrickShapeMatrix(nextBrick);
+        return nextBrick.getShapeMatrix().getFirst();
+    }
+
+    private void validateBrickShapeMatrix(Brick brick) {
+        if (brick == null) {
+            throw new IllegalStateException("Brick cannot be null");
+        }
+        if (brick.getShapeMatrix() == null || brick.getShapeMatrix().isEmpty()) {
+            throw new IllegalStateException("Brick shape matrix cannot be null or empty");
+        }
     }
 
     @Override
