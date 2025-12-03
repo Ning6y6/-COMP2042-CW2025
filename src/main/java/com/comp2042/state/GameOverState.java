@@ -10,4 +10,8 @@ public class GameOverState implements GameState {
     @Override
     public void update(GameController context) {
     }
+
+    @Override
+    public void handleTogglePause(GameController context) {
+    }
 }

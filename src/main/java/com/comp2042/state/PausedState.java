@@ -11,4 +11,8 @@ public class PausedState implements GameState {
     @Override
     public void update(GameController context) {
     }
+
+    public void handleTogglePause(GameController context) {
+        context.resumeGame();
+    }
 }

@@ -17,12 +17,6 @@ public class GameController implements GameInputHandler {
     private final LeaderboardService leaderboardService;
 
     private GameState currentState;
-
-    /**
-     * Stores information about the last row clear operation during a game loop step.
-     * Used to notify the UI (GameView) so it can display the +score popup.
-     * Applies SRP: GameController tracks game events, UI handles rendering.
-     */
     private ClearRow lastClearRow;
 
     public GameController(GameView c) {
@@ -50,12 +44,17 @@ public class GameController implements GameInputHandler {
         this.currentState = state;
     }
 
+    public void handlePauseToggle() {
+        currentState.handleTogglePause(this);
+    }
     public void pauseGame() {
         setState(new PausedState());
-        new SettingsView(this).show(); // Open menu on pause
+        gameView.showPauseMenu();
     }
     public void resumeGame() {
+
         setState(new PlayingState());
+        gameView.closePauseMenu();
     }
     public void restartGame() {
         createNewGame();

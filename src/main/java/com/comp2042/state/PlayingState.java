@@ -13,4 +13,9 @@ public class PlayingState implements GameState {
     public void update(GameController context) {
         context.performGameLoopStep();
     }
+
+    @Override
+    public void handleTogglePause(GameController context) {
+        context.pauseGame();
+    }
 }

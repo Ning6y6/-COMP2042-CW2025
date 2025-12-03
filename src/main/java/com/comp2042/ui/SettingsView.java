@@ -1,10 +1,13 @@
 package com.comp2042.ui;
 
 import com.comp2042.GameController;
+import com.comp2042.input.commands.PauseCommand;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -13,13 +16,14 @@ public class SettingsView {
 
     private final GameController controller;
     private boolean gameResumed = false;
+    private Stage stage;
 
     public SettingsView(GameController controller) {
         this.controller = controller;
     }
 
     public void show() {
-        Stage stage = new Stage();
+        stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setTitle("Settings");
 
@@ -38,17 +42,14 @@ public class SettingsView {
         resumeBtn.setOnAction(e -> {
             controller.resumeGame();
             gameResumed = true;
-            stage.close();
         });
 
         Button restartBtn = createStyledButton("Restart");
         restartBtn.setOnAction(e -> {
             controller.restartGame();
             gameResumed = true;
-            stage.close();
         });
 
-        // Placeholder for keybinds UI
         Button keybindsBtn = createStyledButton("Key Bindings");
         keybindsBtn.setOnAction(e -> {
             new KeybindsView(controller.getInputManager()).show();
@@ -62,14 +63,24 @@ public class SettingsView {
         layout.getChildren().addAll(createHeader("Paused"), resumeBtn, restartBtn, keybindsBtn, leaderboardBtn);
 
         Scene scene = new Scene(layout, 300, 450);
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            KeyCode pauseKey = controller.getInputManager().getKeyForCommand(PauseCommand.class);
+            if (event.getCode() == pauseKey) {
+                controller.handlePauseToggle();
+                event.consume();
+            }
+        });
         stage.setScene(scene);
-        stage.showAndWait();
+        stage.show();
 
-        if (!gameResumed) {
-            controller.resumeGame();
-        }
     }
 
+    public void close() {
+        if (stage != null) {
+            gameResumed = true;
+            stage.close();
+        }
+    }
     private Button createStyledButton(String text) {
         Button btn = new Button(text);
         btn.setStyle("-fx-font-size: 16px; -fx-min-width: 150px;");

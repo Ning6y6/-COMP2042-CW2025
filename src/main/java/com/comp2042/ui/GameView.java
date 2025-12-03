@@ -72,6 +72,8 @@ public class GameView implements Initializable {
 
     private NextPieceView nextPieceView;
 
+    private SettingsView activeSettingsView;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
@@ -299,6 +301,23 @@ public class GameView implements Initializable {
         isGameOver.setValue(Boolean.FALSE);
     }
 
+    public void showPauseMenu() {
+        isPause.setValue(Boolean.TRUE);
+        if (activeSettingsView == null && eventListener instanceof GameController) {
+            activeSettingsView = new SettingsView((GameController) eventListener);
+            activeSettingsView.show();
+        }
+    }
+
+    public void closePauseMenu() {
+        isPause.setValue(Boolean.FALSE);
+        if (activeSettingsView != null) {
+            activeSettingsView.close();
+            activeSettingsView = null;
+        }
+        gamePanel.requestFocus();
+    }
+
     public void pauseGame(ActionEvent actionEvent) {
         gamePanel.requestFocus();
     }
@@ -308,7 +327,7 @@ public class GameView implements Initializable {
     public void openSettings(ActionEvent event) {
         if (eventListener instanceof GameController) {
             GameController controller = (GameController) eventListener;
-            controller.pauseGame();
+            controller.handlePauseToggle();
         }
         event.consume();
     }

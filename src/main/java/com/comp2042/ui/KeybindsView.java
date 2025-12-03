@@ -31,7 +31,7 @@ public class KeybindsView {
         configurableCommands.put("Move Right", MoveRightCommand.class);
         configurableCommands.put("Rotate", RotateCommand.class);
         configurableCommands.put("Soft Drop", SoftDropCommand.class);
-        configurableCommands.put("Pause", PauseCommand.class);
+        configurableCommands.put("Pause/Resume", PauseCommand.class);
         configurableCommands.put("Restart Game", RestartGameCommand.class);
     }
 

@@ -6,10 +6,10 @@ import com.comp2042.input.GameCommand;
 public class PauseCommand implements GameCommand {
     @Override
     public void execute(GameController controller) {
-        controller.pauseGame();
+        controller.handlePauseToggle();
     }
     @Override
     public String getName() {
-        return "Pause Game";
+        return "Pause / Resume ";
     }
 }
