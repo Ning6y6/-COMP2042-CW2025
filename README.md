@@ -3,12 +3,20 @@
 ## Project Overview
 The primary objective of this game is to arrange falling blocks (known as
 Tetrominoes) to form complete horizontal lines. When a line is completed, it disappears, and
-the player earns points. You control the falling blocks using the arrow keys: left and right to
-move sideways, down to accelerate the fall, and up to rotate the piece. The challenge is to
+the player earns points. You control the falling blocks using the WASD keys: A and D to
+move sideways, S to accelerate the fall, and W to rotate the piece. The challenge is to
 prevent the blocks from stacking up to the top of the screen.
+
+**Controls:**
+- **A** / **D**: Move left / right
+- **W**: Rotate piece
+- **S**: Soft drop (accelerate fall)
+- **P**: Pause game
+- **Settings Button**: Access game settings menu
 
 Checkout [Tetris](https://en.wikipedia.org/wiki/Tetris/) if you want to learn more about the history and impact.
 
+github link :https://github.com/Ning6y6/-COMP2042-CW2025
 ## Project Structure
 
 ```
@@ -17,6 +25,8 @@ CW2042-CW2025/
 ├── mvnw / mvnw.cmd                 # Maven wrapper scripts
 ├── .gitignore                      # Git ignore rules
 ├── README.md                       # Project documentation
+├── ERROR_FIXES_SUMMARY.md          # Error fixes and refactoring documentation
+├── leaderboard.txt                 # Leaderboard data file
 ├── src/
 │   └── main/
 │       ├── java/
@@ -24,39 +34,64 @@ CW2042-CW2025/
 │       │       └── comp2042/
 │       │           ├── Main.java                    # Application entry point
 │       │           ├── GameController.java          # Game logic controller
-│       │           ├── GameConstants.java          # Game constants and configuration
+│       │           ├── GameConstants.java           # Game constants and configuration
 │       │           ├── event/
 │       │           │   ├── ClearRow.java            # Row clearing logic
 │       │           │   ├── DownData.java            # Down movement data
 │       │           │   ├── EventSource.java         # Event source enum
 │       │           │   ├── EventType.java           # Event type enum
-│       │           │   ├── GameInputHandler.java    # Input event handler
+│       │           │   ├── GameInputHandler.java    # Input event handler interface
 │       │           │   ├── MoveEvent.java           # Move event model
 │       │           │   ├── NextShapeInfo.java       # Next shape information
 │       │           │   └── ViewData.java            # View data model
+│       │           ├── input/
+│       │           │   ├── GameCommand.java         # Command interface (Command Pattern)
+│       │           │   ├── InputManager.java         # Input key binding manager
+│       │           │   ├── DuplicateKeyBindingException.java  # Custom exception for duplicate bindings
+│       │           │   └── commands/
+│       │           │       ├── MoveLeftCommand.java    # Move left command
+│       │           │       ├── MoveRightCommand.java   # Move right command
+│       │           │       ├── RotateCommand.java      # Rotate command
+│       │           │       ├── SoftDropCommand.java    # Soft drop command
+│       │           │       ├── RestartGameCommand.java # Restart command
+│       │           │       └── PauseCommand.java       # Pause command
+│       │           ├── leaderboard/
+│       │           │   ├── LeaderboardDAO.java         # Data access object interface
+│       │           │   ├── FileLeaderboardDAO.java     # File-based DAO implementation
+│       │           │   ├── LeaderboardEntry.java       # Leaderboard entry model
+|       |           |   ├── LeaderboardEntryParser.java # Parser for txt file data
+│       │           │   └── LeaderboardService.java     # Leaderboard business logic
 │       │           ├── logic/
-│       │           │   ├── Board.java               # Board interface
-│       │           │   ├── BrickRotator.java        # Brick rotation logic
-│       │           │   ├── GameBoard.java           # Board implementation
+│       │           │   ├── Board.java                # Board interface
+│       │           │   ├── BrickRotator.java         # Brick rotation logic
+│       │           │   ├── GameBoard.java            # Board implementation
 │       │           │   ├── MatrixOperations.java    # Matrix utility operations
-│       │           │   ├── Score.java               # Score management
+│       │           │   ├── Score.java                # Score management
 │       │           │   └── bricks/
-│       │           │       ├── Brick.java                    # Brick interface
-│       │           │       ├── BrickGenerator.java          # Brick generator interface
-│       │           │       ├── BrickType.java               # Brick type enum
-│       │           │       ├── RandomBrickGenerator.java    # Random brick generator
-│       │           │       ├── IBrick.java                  # I-shaped brick
-│       │           │       ├── JBrick.java                  # J-shaped brick
-│       │           │       ├── LBrick.java                  # L-shaped brick
-│       │           │       ├── OBrick.java                  # O-shaped brick
-│       │           │       ├── SBrick.java                  # S-shaped brick
-│       │           │       ├── TBrick.java                  # T-shaped brick
-│       │           │       └── ZBrick.java                  # Z-shaped brick
+│       │           │       ├── Brick.java             # Brick interface
+│       │           │       ├── BrickGenerator.java   # Brick generator interface (Factory Method)
+│       │           │       ├── BrickType.java        # Brick type enum (Strategy Pattern)
+│       │           │       ├── RandomBrickGenerator.java  # Random brick generator
+│       │           │       ├── IBrick.java           # I-shaped brick
+│       │           │       ├── JBrick.java           # J-shaped brick
+│       │           │       ├── LBrick.java           # L-shaped brick
+│       │           │       ├── OBrick.java           # O-shaped brick
+│       │           │       ├── SBrick.java           # S-shaped brick
+│       │           │       ├── TBrick.java           # T-shaped brick
+│       │           │       └── ZBrick.java           # Z-shaped brick
+│       │           ├── state/
+│       │           │   ├── GameState.java            # Game state interface (State Pattern)
+│       │           │   ├── PlayingState.java         # Playing state implementation
+│       │           │   ├── PausedState.java          # Paused state implementation
+│       │           │   └── GameOverState.java        # Game over state implementation
 │       │           └── ui/
 │       │               ├── GameOverPanel.java        # Game over UI panel
-│       │               ├── GameView.java             # Main game view UI
+│       │               ├── GameView.java              # Main game view UI
 │       │               ├── NextPieceView.java        # Next piece preview UI
-│       │               └── NotificationPanel.java    # Notification UI panel
+│       │               ├── NotificationPanel.java    # Notification UI panel
+│       │               ├── SettingsView.java         # Settings menu UI (Facade Pattern)
+│       │               ├── KeybindsView.java          # Key binding configuration UI
+│       │               └── LeaderboardView.java       # Leaderboard display UI
 │       └── resources/
 │           ├── gameLayout.fxml      # FXML UI layout
 │           ├── window_style.css     # CSS styling
@@ -98,9 +133,10 @@ student of University of Nottingham Malaysia.
 | Version | Date             | Change                                                                           |
 |---------|------------------|----------------------------------------------------------------------------------|
 | v1.0    | 12 November 2025 | Initial release                                                                  |
-| v1.1    | 18 November 2025 | fixed Score system, tiles spawn location and matrix operations                   |
+| v1.1    | 18 November 2025 | Fixed Score system, tiles spawn location and matrix operations                   |
 | v1.2    | 25 November 2025 | Added a new feature that shows next three bricks and refactored the needed files |
 | v1.3    | 29 November 2025 | Major refactoring for maintainability, Encapsulation, and SOLID principles.      |
+| v1.4    | 3 December 2025  | Added Settings button, key binding validation, auto-resume, WASD-only controls, and comprehensive error fixes |
 
 
 ## Key of changes
@@ -136,16 +172,34 @@ student of University of Nottingham Malaysia.
 - **Issue**: Hardcoded values (e.g., board size 10/25, brick size 20, color logic switch statements) were scattered throughout the codebase (Magic Number and Duplicated Code smells).
 - **Fix**: Introduced **`GameConstants.java`** to centralize all numeric literals and **`BrickType.java`** (enum) to handle color mapping, eliminating duplicative `switch` statements from UI classes (Replace Type Code with Polymorphism/Enum).
 
+### 7. Introduction of Settings Menu (Resume, Restart, Keybinds, Leaderboard)
+
+- **Location**: `SettingsView.java` / `GameView.java`/ `LeaderboardView`/ `KeybindsView` / `GameController.java` and etc
+
+- **Addition** 
+  1. SettingsView: Created a setting menu to centralize the access to resume, restart, leaderboard and keybind. 
+  2. Game Controls: Added "Resume" and "Restart" buttons within the settings menu for better game flow control.
+  3. Key binding system: System to allowing user to dynamically remap controls and Input manager to support the flexible ke to command mapping. Collision detection added to prevent two action in one key via `DuplicateKeyBindingException`.
+  4. Leaderboard: Consist of a `LeaderboardEntry`(model) defines the data structure for player score, ensuring immutability and correct date handling .`LeaderboardEntryParser`(parser) extracted parsing logic into a dedicated class to adhere to SRP, ensuring robust string-to-object conversion and fail-fast validation. `FileLeaderboardDao`(persistence) implemented file-based data access. Uses Dependency Injection to utilize the parser, keeping I/O logic separate from business logic. `LeaderboardService`(service) manages business logic such as fetching, sorting (descending order), and limiting score entries. `LeaderboardView` (ui) displays formatted high scores in a dedicated view, integrated into the main Settings menu.
+
 
 
 ### Design Pattern Overview
-## The project currently implements two key design patterns effectively:
+## The project implements multiple design patterns effectively:
 
-- Factory Method Pattern (Creational): The BrickGenerator interface is implemented by `RandomBrickGenerator.java`. This pattern delegates the logic of creating new concrete Brick objects (like IBrick, JBrick, etc.) to subclasses without the client (`GameBoard`) needing to know the instantiation details.
+- **Factory Method Pattern** (Creational): The `BrickGenerator` interface is implemented by `RandomBrickGenerator.java`. This pattern delegates the logic of creating new concrete Brick objects (like IBrick, JBrick, etc.) to subclasses without the client (`GameBoard`) needing to know the instantiation details.
 
-- Observer Pattern (JavaFX) (Behavioral): The `Score.java` class uses IntegerProperty and `GameView.bindScore()` uses `textProperty().bind()`. This establishes a one-to-many relationship where the scoreLabel automatically updates whenever the Score object's internal value changes, without direct polling.
+- **Observer Pattern** (Behavioral): The `Score.java` class uses IntegerProperty and `GameView.bindScore()` uses `textProperty().bind()`. This establishes a one-to-many relationship where the scoreLabel automatically updates whenever the Score object's internal value changes, without direct polling. Also used for window close events in `SettingsView`.
 
-- Strategy Pattern (Simplified): The `BrickType` enum acts as a simplified Strategy, where the client requests a color using an ID, and the enum provides the specific color (strategy) based on the input type.
+- **Strategy Pattern** (Behavioral): The `BrickType` enum acts as a simplified Strategy, where the client requests a color using an ID, and the enum provides the specific color (strategy) based on the input type. Key bindings also use Strategy pattern for different input commands.
+
+- **Command Pattern** (Behavioral): The `GameCommand` interface and command classes (`MoveLeftCommand`, `MoveRightCommand`, etc.) encapsulate requests as objects, allowing for key binding remapping and undo/redo capabilities.
+
+- **State Pattern** (Behavioral): The `GameState` interface with implementations (`PlayingState`, `PausedState`, `GameOverState`) manages game state transitions and behavior changes based on current state.
+
+- **Facade Pattern** (Structural): The `SettingsView` provides a simplified interface to complex subsystems (key bindings, leaderboard, game restart/resume), hiding the complexity of these subsystems.
+
+- **Fail-Fast Pattern**: All validation methods detect errors early with meaningful exception messages, improving debugging and robustness.
 
 ## License
 
