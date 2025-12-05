@@ -1,6 +1,6 @@
 package com.comp2042.logic;
 
-import com.comp2042.GameConstants;
+import  com.comp2042.GameConstants;
 import com.comp2042.event.ClearRow;
 import com.comp2042.event.NextShapeInfo;
 import com.comp2042.event.ViewData;
@@ -10,11 +10,13 @@ import com.comp2042.logic.bricks.RandomBrickGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class GameBoard implements Board {
 
     private final BrickGenerator brickGenerator;
     private final BrickRotator brickRotator;
+    private final HoldManager holdManager;
     private int[][] currentGameMatrix;
 
     private int currentX;
@@ -27,6 +29,7 @@ public class GameBoard implements Board {
         this.currentGameMatrix = new int[GameConstants.BOARD_HEIGHT][GameConstants.BOARD_WIDTH];
         this.brickGenerator = new RandomBrickGenerator();
         this.brickRotator = new BrickRotator();
+        this.holdManager = new HoldManager();
         this.score = new Score();
 
         this.currentX = 0;
@@ -60,6 +63,36 @@ public class GameBoard implements Board {
             return true;
         }
     }
+    @Override
+    public void hardDrop() {
+        while (moveBrickDown()) {
+            score.add(1);
+        }
+    }
+
+    @Override
+    public void holdBrick() {
+        Brick currentBrick = brickRotator.getBrick();
+
+        if (!holdManager.isCanSwap()) return;
+
+        Optional<Brick> swapResult = holdManager.swap(currentBrick);
+
+        if (swapResult.isEmpty()) {
+            createNewBrick();
+        } else {
+            Brick brickFromHold = swapResult.get();
+
+            brickRotator.setBrick(brickFromHold);
+
+            currentX = GameConstants.SPAWN_X;
+            currentY = GameConstants.SPAWN_Y;
+
+
+        }
+    }
+
+
 
     @Override
     public boolean rotateLeftBrick() {
@@ -76,10 +109,15 @@ public class GameBoard implements Board {
 
     @Override
     public boolean createNewBrick() {
-        Brick currentBrick = brickGenerator.getBrick();
-        brickRotator.setBrick(currentBrick);
+        Brick nextBrick = brickGenerator.getBrick();
+        return spawnBrick(nextBrick);
+    }
+
+    private boolean spawnBrick(Brick brick) {
+        brickRotator.setBrick(brick);
         currentX = GameConstants.SPAWN_X;
         currentY = GameConstants.SPAWN_Y;
+        holdManager.resetSwapFlag();
         return MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), currentX, currentY);
     }
 
@@ -93,13 +131,20 @@ public class GameBoard implements Board {
     public ViewData getViewData() {
         List<int[][]> nextThreeBricks = extractNextThreeBrickShapes();
         int[][] nextBrickShape = extractNextBrickShape();
+
+        int[][] heldShape = null;
+        if (holdManager.getHeldBrick() != null) {
+            heldShape = holdManager.getHeldBrick().getShapeMatrix().get(0);
+        }
         
         return new ViewData(
-            brickRotator.getCurrentShape(), 
-            currentX, 
-            currentY,
-            nextBrickShape, 
-            nextThreeBricks
+                brickRotator.getCurrentShape(),
+                currentX,
+                currentY,
+                nextBrickShape,
+                nextThreeBricks,
+                heldShape,
+                holdManager.isCanSwap()
         );
     }
 
@@ -152,6 +197,7 @@ public class GameBoard implements Board {
     public void newGame() {
         currentGameMatrix = new int[GameConstants.BOARD_HEIGHT][GameConstants.BOARD_WIDTH];
         score.reset();
+        holdManager.reset();
         createNewBrick();
     }
 }

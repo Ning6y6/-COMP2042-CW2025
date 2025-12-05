@@ -33,6 +33,8 @@ public class KeybindsView {
         configurableCommands.put("Soft Drop", SoftDropCommand.class);
         configurableCommands.put("Pause/Resume", PauseCommand.class);
         configurableCommands.put("Restart Game", RestartGameCommand.class);
+        configurableCommands.put("Hold", HoldCommand.class);
+        configurableCommands.put("Hard Drop", HardDropCommand.class);
     }
 
     public void show() {

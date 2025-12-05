@@ -23,6 +23,8 @@ public class InputManager {
         keyBindingMap.put(KeyCode.S, new SoftDropCommand());
         keyBindingMap.put(KeyCode.P, new PauseCommand());
         keyBindingMap.put(KeyCode.N, new RestartGameCommand());
+        keyBindingMap.put(KeyCode.B, new HoldCommand());
+        keyBindingMap.put(KeyCode.SPACE, new HardDropCommand());
     }
 
     public void rebindKey(KeyCode newKey, GameCommand command) throws DuplicateKeyBindingException {
