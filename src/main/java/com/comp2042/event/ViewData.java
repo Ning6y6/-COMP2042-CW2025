@@ -12,12 +12,17 @@ public final class ViewData {
     private final int[][] nextBrickData;
     private final List<int[][]> nextThreeBricksData;
 
-    public ViewData(int[][] brickData, int xPosition, int yPosition, int[][] nextBrickData, List<int[][]>nextThreeBricksData) {
+    private final int[][] heldBrickData;
+    private final boolean holdAllowed;
+
+    public ViewData(int[][] brickData, int xPosition, int yPosition, int[][] nextBrickData, List<int[][]>nextThreeBricksData, int[][] heldBrickData, boolean holdAllowed) {
         this.brickData = brickData;
         this.xPosition = xPosition;
         this.yPosition = yPosition;
         this.nextBrickData = nextBrickData;
         this.nextThreeBricksData = nextThreeBricksData;
+        this.heldBrickData = heldBrickData;
+        this.holdAllowed = holdAllowed;
     }
 
     public int[][] getBrickData() {
@@ -39,4 +44,11 @@ public final class ViewData {
     public List<int[][]> getNextThreeBricksData(){
         return  MatrixOperations.deepCopyList(nextThreeBricksData);
     }
+    public int[][] getHeldBrickData() {
+        return heldBrickData != null ? MatrixOperations.copy(heldBrickData) : null;
+    }
+    public boolean isHoldAllowed() {
+        return holdAllowed;
+    }
 }
+

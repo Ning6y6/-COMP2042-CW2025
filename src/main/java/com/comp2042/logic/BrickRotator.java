@@ -44,6 +44,10 @@ public class BrickRotator {
         currentShape = 0;
     }
 
+    public Brick getBrick() {
+        return brick;
+    }
+
     private void validateBrickInitialized() {
         if (brick == null) {
             throw new IllegalStateException("Brick must be initialized before rotation operations");

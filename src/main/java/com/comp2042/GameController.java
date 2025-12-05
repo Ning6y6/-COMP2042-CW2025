@@ -1,7 +1,6 @@
 package com.comp2042;
 
 import com.comp2042.ui.GameView;
-import com.comp2042.ui.SettingsView;
 import com.comp2042.event.*;
 import com.comp2042.input.InputManager;
 import com.comp2042.logic.Board;
@@ -9,6 +8,9 @@ import com.comp2042.logic.GameBoard;
 import com.comp2042.state.*;
 import com.comp2042.leaderboard.FileLeaderboardDAO;
 import com.comp2042.leaderboard.LeaderboardService;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 
 public class GameController implements GameInputHandler {
     private final Board board ;
@@ -16,6 +18,7 @@ public class GameController implements GameInputHandler {
     private final InputManager inputManager;
     private final LeaderboardService leaderboardService;
 
+    private Timeline gameLoop;
     private GameState currentState;
     private ClearRow lastClearRow;
 
@@ -25,13 +28,23 @@ public class GameController implements GameInputHandler {
         this.inputManager = new InputManager();
         this.leaderboardService = new LeaderboardService(new FileLeaderboardDAO());
         this.currentState = new PlayingState();
-        this.board.createNewBrick();
-
-        this.gameView.setEventListener(this);
-        this.gameView.setInputManager(this.inputManager);
-        this.gameView.initGameView(board.getBoardMatrix(), board.getViewData());
-        this.gameView.bindScore(board.getScore().scoreProperty());
+        initializeGame();
     }
+
+    private void initializeGame() {
+        board.createNewBrick();
+
+        gameView.setEventListener(this);
+        gameView.setInputManager(inputManager);
+        gameView.initGameView(board.getBoardMatrix(), board.getViewData());
+        gameView.bindScore(board.getScore().scoreProperty());
+
+        gameView.updateHoldPiece(board.getViewData());
+        gameView.updateNextPieces(board.getViewData());
+
+        startGameLoop();
+    }
+
     public LeaderboardService getLeaderboardService() {
         return leaderboardService;
     }
@@ -50,11 +63,13 @@ public class GameController implements GameInputHandler {
     public void pauseGame() {
         setState(new PausedState());
         gameView.showPauseMenu();
+        stopGameLoop();
     }
     public void resumeGame() {
 
         setState(new PlayingState());
         gameView.closePauseMenu();
+        startGameLoop();
     }
     public void restartGame() {
         createNewGame();
@@ -64,61 +79,114 @@ public class GameController implements GameInputHandler {
     public void moveLeft() {
         currentState.handleInput(this, () -> {
             board.moveBrickLeft();
-            gameView.refreshBrick(board.getViewData());
+            updateViewAfterMove();
         });
     }
     public void moveRight() {
         currentState.handleInput(this, () -> {
             board.moveBrickRight();
-            gameView.refreshBrick(board.getViewData());
+            updateViewAfterMove();
         });
     }
     public void rotate() {
         currentState.handleInput(this, () -> {
             board.rotateLeftBrick();
-            gameView.refreshBrick(board.getViewData());
+            updateViewAfterMove();
         });
     }
     public void softDrop() {
         currentState.handleInput(this, () -> {
             board.moveBrickDown();
             board.getScore().add(1);
-            gameView.refreshBrick(board.getViewData());
+            updateViewAfterMove();
         });
+    }
+
+    public void hardDrop() {
+        currentState.handleInput(this, () -> {
+            board.hardDrop();
+            processBrickLanding();
+            updateViewAfterMove();
+        });
+    }
+
+    public void hold() {
+        currentState.handleInput(this, () -> {
+            board.holdBrick();
+            updateViewAfterHold();
+        });
+    }
+
+    private void updateViewAfterMove() {
+        gameView.updateFallingBrick(board.getViewData());
+        gameView.updateHoldPiece(board.getViewData());
+        gameView.updateNextPieces(board.getViewData());
+        gameView.requestFocus();
+    }
+
+    private void updateViewAfterHold() {
+        gameView.updateFallingBrick(board.getViewData());
+        gameView.updateHoldPiece(board.getViewData());
+        gameView.updateNextPieces(board.getViewData());
+    }
+
+    private void updateViewAfterLanding() {
+        gameView.refreshBoard(board.getBoardMatrix());
+        gameView.updateFallingBrick(board.getViewData());
+        gameView.updateNextPieces(board.getViewData());
+    }
+
+    private void processBrickLanding() {
+        board.mergeBrickToBackground();
+        ClearRow clearRow = board.clearRows();
+        handleRowClearing(clearRow);
+        boolean gameOver = board.createNewBrick();
+        if (gameOver) {
+            handleGameOver();
+        } else {
+            updateViewAfterLanding();
+        }
+
+    }
+
+    private void handleRowClearing(ClearRow clearRow) {
+        if (clearRow.getLinesRemoved() > 0) {
+            board.getScore().add(clearRow.getScoreBonus());
+            gameView.showLinesClearedNotification(clearRow.getScoreBonus());
+            lastClearRow = clearRow;
+        } else {
+            lastClearRow = null;
+        }
     }
 
     public void performGameLoopStep() {
         boolean canMove = board.moveBrickDown();
         if (!canMove) {
-            board.mergeBrickToBackground();
-            var clearRow = board.clearRows();
-            // Track row clear event for UI notification (bonus popup)
-            if (clearRow.getLinesRemoved() > 0) {
-                board.getScore().add(clearRow.getScoreBonus());
-                lastClearRow = clearRow;
-            } else {
-                lastClearRow = null;
-            }
-            if (board.createNewBrick()) {
-                handleGameOver();
-            }
-            gameView.refreshGameBackground(board.getBoardMatrix());
+            processBrickLanding();
         }
-        gameView.refreshBrick(board.getViewData());
+        gameView.updateFallingBrick(board.getViewData());
     }
 
     private void handleGameOver() {
         setState(new GameOverState());
-        gameView.gameOver();
+        stopGameLoop();
+        gameView.showGameOver();
         leaderboardService.addScore("Player", board.getScore().scoreProperty().get());
     }
 
+    public static int calculateComboBonus(int linesCleared) {
+        return switch (linesCleared) {
+            case 1 -> 50;
+            case 2 -> 100;
+            case 3 -> 200;
+            case 4 -> 400;
+            default -> 0;
+        };
+    }
     @Override
     public DownData onDownEvent(MoveEvent event) {
         currentState.update(this);
-        // Pass ClearRow information to the view so it can show the +score popup.
         ClearRow clearRowForView = lastClearRow;
-        // Reset after consumption to avoid duplicate notifications
         lastClearRow = null;
         return new DownData(clearRowForView, board.getViewData());
 
@@ -126,24 +194,52 @@ public class GameController implements GameInputHandler {
 
     @Override
     public ViewData onLeftEvent(MoveEvent event) {
-        return null;
+        return board.getViewData();
     }
 
     @Override
     public ViewData onRightEvent(MoveEvent event) {
-        return null;
+        return board.getViewData();
     }
 
     @Override
     public ViewData onRotateEvent(MoveEvent event) {
-        return null;
+        return board.getViewData();
     }
 
 
     @Override
     public void createNewGame() {
         board.newGame();
-        gameView.refreshGameBackground(board.getBoardMatrix());
-        gameView.refreshBrick(board.getViewData());
+        board.createNewBrick();
+        gameView.refreshBoard(board.getBoardMatrix());
+        gameView.updateFallingBrick(board.getViewData());
+        gameView.updateHoldPiece(board.getViewData());
+        gameView.updateNextPieces(board.getViewData());
+
+        setState(new PlayingState());
+        lastClearRow = null;
+        startGameLoop();
+    }
+
+    private void startGameLoop() {
+        if(gameLoop == null) {
+            gameLoop = new Timeline(new KeyFrame(
+                    Duration.millis(GameConstants.GAME_SPEED_MILLIS),
+                    event -> {
+                        if (!(currentState instanceof PausedState) && !(currentState instanceof GameOverState)){
+                            performGameLoopStep();
+                        }
+                    }
+            ));
+            gameLoop.setCycleCount(Timeline.INDEFINITE);
+        }
+        gameLoop.play();
+    }
+
+    private void stopGameLoop() {
+        if (gameLoop != null) {
+            gameLoop.stop();
+        }
     }
 }
