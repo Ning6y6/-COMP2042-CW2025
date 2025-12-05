@@ -16,9 +16,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.Group;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 
@@ -28,6 +32,7 @@ import java.util.ResourceBundle;
 public class GameView implements Initializable {
 
     private static final double STACK_OFFSET = 35 ;
+
 
     @FXML
     private GridPane gamePanel;
@@ -61,13 +66,13 @@ public class GameView implements Initializable {
 
     private Rectangle[][] backgroundGrid;
     private Rectangle[][] fallingBrickGrid;
+    private Rectangle[][] ghostBrickGrid;
 
     private final BooleanProperty isPaused = new SimpleBooleanProperty(false);
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty(false);
 
     private GameInputHandler eventListener;
-
 
     private InputManager inputManager;
 
@@ -122,16 +127,40 @@ public class GameView implements Initializable {
     public void initGameView(int[][] boardMatrix, ViewData initialBrick) {
         validateBoardMatrix(boardMatrix);
 
-        int rows = boardMatrix.length;
-        int col = boardMatrix[0].length;
+        gamePanel.getColumnConstraints().clear();
+        gamePanel.getRowConstraints().clear();
+        brickPanel.getColumnConstraints().clear();
+        brickPanel.getRowConstraints().clear();
 
-        initBackgroundGrid(rows, col);
-        initFallingBrickLayer(rows, col);
+        for (int i = 0; i < GameConstants.BOARD_WIDTH; i++) {
+            ColumnConstraints colConst = new ColumnConstraints(GameConstants.BRICK_SIZE);
+            gamePanel.getColumnConstraints().add(colConst);
+            brickPanel.getColumnConstraints().add(colConst);
+        }
+
+        for (int i = 0; i < GameConstants.VISIBLE_ROWS; i++) {
+            RowConstraints rowConst = new RowConstraints(GameConstants.BRICK_SIZE);
+            gamePanel.getRowConstraints().add(rowConst);
+            brickPanel.getRowConstraints().add(rowConst);
+        }
+
+        double totalWidth = GameConstants.BOARD_WIDTH * GameConstants.BRICK_SIZE + (GameConstants.BOARD_WIDTH - 1); // + gaps
+        double totalHeight = GameConstants.VISIBLE_ROWS * GameConstants.BRICK_SIZE + (GameConstants.VISIBLE_ROWS - 1);
+
+        gamePanel.setPrefSize(totalWidth, totalHeight);
+        gamePanel.setMaxSize(totalWidth, totalHeight);
+        brickPanel.setPrefSize(totalWidth, totalHeight);
+        brickPanel.setMaxSize(totalWidth, totalHeight);
+
+        initBackgroundGrid();
+        initDynamicBrickLayers();
 
         refreshBoard(boardMatrix);
         updateNextPieces(initialBrick);
         updateHoldPiece(initialBrick);
 
+        System.out.printf("GameView Init: Cols=%d, VisibleRows=%d, BrickSize=%d%n",
+                GameConstants.BOARD_WIDTH, GameConstants.VISIBLE_ROWS, GameConstants.BRICK_SIZE);
     }
 
     public void updateFallingBrick(ViewData brickData) {
@@ -139,7 +168,8 @@ public class GameView implements Initializable {
             return;
         }
 
-        clearFallingBrickLayer();
+        clearDynamicLayer();
+        renderGhostBrick(brickData);
         renderFallingBrick(brickData);
         updateNextPieces(brickData);
     }
@@ -159,14 +189,17 @@ public class GameView implements Initializable {
     public void refreshBoard(int[][] boardMatrix) {
         validateBoardMatrix(boardMatrix);
 
-        for (int row = 2; row < boardMatrix.length; row++) {
+        for (int row = GameConstants.HIDDEN_ROWS; row < boardMatrix.length; row++) {
             for (int col = 0; col < boardMatrix[row].length; col++) {
                 int colorId = boardMatrix[row][col];
-                renderCell(backgroundGrid[row][col], colorId);
+                renderCell(backgroundGrid[toUIRow(row)][col], colorId);
             }
         }
     }
 
+    private int toUIRow(int boardY) {
+        return boardY - GameConstants.HIDDEN_ROWS;
+    }
     public void bindScore(IntegerProperty integerProperty) {
         if (scoreLabel != null) {
             scoreLabel.textProperty().bind(integerProperty.asString());
@@ -252,36 +285,48 @@ public class GameView implements Initializable {
                 downData.getClearRow().getLinesRemoved() > 0;
     }
 
-    private void initBackgroundGrid(int rows, int cols) {
+    private void initBackgroundGrid() {
         gamePanel.getChildren().clear();
+        int cols = GameConstants.BOARD_WIDTH;
+        int visibleRows = GameConstants.VISIBLE_ROWS;
+        backgroundGrid = new Rectangle[visibleRows][cols];
 
-        backgroundGrid = new Rectangle[rows][cols];
-
-        for (int row = 0; row < rows; row++) {
+        for (int row = 0; row < visibleRows; row++) {
             for (int col = 0; col < cols; col++) {
                 Rectangle cell = createCell();
                 backgroundGrid[row][col] = cell;
-                if (row >= 2) {
-                    gamePanel.add(cell, col, row - 2);
-                }
+                gamePanel.add(cell, col, row );
+
             }
         }
     }
 
-    private void initFallingBrickLayer(int rows, int cols) {
+    private void initDynamicBrickLayers() {
         brickPanel.getChildren().clear();
+        int cols = GameConstants.BOARD_WIDTH;
+        int visibleRows = GameConstants.VISIBLE_ROWS;
 
-        fallingBrickGrid = new Rectangle[rows][cols];
+        fallingBrickGrid = new Rectangle[visibleRows][cols];
+        ghostBrickGrid = new Rectangle[visibleRows][cols];
 
-        for (int row = 0; row < rows; row++) {
+        for (int row = 0; row < visibleRows; row++) {
             for (int col = 0; col < cols; col++) {
-                Rectangle cell = createCell();
-                cell.setVisible(false);
-                fallingBrickGrid[row][col] = cell;
 
-                if (row >= 2 && brickPanel != null) {
-                    brickPanel.add(cell, col, row - 2);
-                }
+                Rectangle ghostCell = createCell();
+                ghostCell.setVisible(false);
+                ghostCell.setMouseTransparent(true);
+                ghostCell.setStrokeType(StrokeType.INSIDE);
+                ghostBrickGrid[row][col] = ghostCell;
+                
+                Rectangle brickCell = createCell();
+                brickCell.setVisible(false);
+                brickCell.setMouseTransparent(true);
+                brickCell.setStrokeType(StrokeType.INSIDE);
+                fallingBrickGrid[row][col] = brickCell;
+
+                brickPanel.add(ghostCell, col, row );
+                brickPanel.add(brickCell, col, row );
+
             }
         }
     }
@@ -292,12 +337,55 @@ public class GameView implements Initializable {
         return cell;
     }
 
-    private void clearFallingBrickLayer() {
-        for (Rectangle[] row : fallingBrickGrid) {
-            for (Rectangle cell : row) {
-                if (cell != null) cell.setVisible(false);
+    private void clearDynamicLayer() {
+        for (int row = 0; row < fallingBrickGrid.length; row++) {
+            for (int col = 0; col < fallingBrickGrid[row].length; col++) {
+                if (fallingBrickGrid[row][col] != null) fallingBrickGrid[row][col].setVisible(false);
+                if (ghostBrickGrid[row][col] != null) ghostBrickGrid[row][col].setVisible(false);
             }
         }
+    }
+
+    private void renderGhostBrick(ViewData brickData) {
+        if (brickData == null || brickData.getBrickData() == null) {
+            return;
+        }
+        int[][] brickMatrix = brickData.getBrickData();
+        int xPos = brickData.getXPosition();
+        int yPos = brickData.getGhostYPosition();
+
+        for (int row = 0; row < brickMatrix.length; row++) {
+            for (int col = 0; col < brickMatrix[row].length; col++) {
+                int colorId = brickMatrix[row][col];
+                if (colorId != 0) {
+                    renderGhostCell(xPos + col, yPos + row, colorId);
+                }
+            }
+        }
+    }
+
+    private void renderGhostCell(int gridX, int gridY, int colorId) {
+        int uiRow = toUIRow(gridY);
+        if (uiRow < 0 || uiRow >= ghostBrickGrid.length ) return;
+        if (gridX < 0 || gridX >= ghostBrickGrid[0].length) return;
+
+        Rectangle cell = ghostBrickGrid[uiRow][gridX];
+
+        Paint basePaint = BrickType.getColorById(colorId);
+        if (basePaint instanceof Color) {
+            Color c = (Color) basePaint;
+            cell.setFill(Color.rgb((int)(c.getRed()*255), (int)(c.getGreen()*255), (int)(c.getBlue()*255), 0.15));
+            cell.setStroke(c);
+            cell.setStrokeWidth(1.5);
+
+        } else {
+            cell.setFill(Color.TRANSPARENT);
+            cell.setStroke(Color.WHITE);
+        }
+
+        cell.setArcWidth(9);
+        cell.setArcHeight(9);
+        cell.setVisible(true);
     }
 
     private void renderFallingBrick(ViewData brickData) {
@@ -306,8 +394,8 @@ public class GameView implements Initializable {
         }
 
         int[][] brickMatrix = brickData.getBrickData();
-        int xPos = brickData.getxPosition();
-        int yPos = brickData.getyPosition();
+        int xPos = brickData.getXPosition();
+        int yPos = brickData.getYPosition();
 
         for (int row = 0; row < brickMatrix.length; row++) {
             for (int col = 0; col < brickMatrix[row].length; col++) {
@@ -321,9 +409,9 @@ public class GameView implements Initializable {
     }
 
     private void renderBrickCell(int gridX, int gridY, int colorId) {
-        int displayY = gridY - 2;
+        int uiRow = toUIRow(gridY);
 
-        if (displayY < 0 || displayY >= fallingBrickGrid.length - 2) {
+        if (uiRow < 0 || uiRow >= fallingBrickGrid.length) {
             return;
         }
 
@@ -331,8 +419,9 @@ public class GameView implements Initializable {
             return;
         }
 
-        Rectangle cell = fallingBrickGrid[gridY][gridX];
+        Rectangle cell = fallingBrickGrid[uiRow][gridX];
 
+        cell.setStroke(Color.TRANSPARENT);
         renderCell(cell, colorId);
         cell.setVisible(true);
     }

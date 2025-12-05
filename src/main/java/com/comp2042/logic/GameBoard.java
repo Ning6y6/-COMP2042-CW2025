@@ -53,8 +53,7 @@ public class GameBoard implements Board {
     }
 
     private boolean tryMove(int nextX, int nextY) {
-        int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
-        boolean conflict = MatrixOperations.intersect(currentMatrix, brickRotator.getCurrentShape(), nextX, nextY);
+        boolean conflict = MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), nextX, nextY);
         if (conflict) {
             return false;
         } else {
@@ -82,7 +81,6 @@ public class GameBoard implements Board {
             createNewBrick();
         } else {
             Brick brickFromHold = swapResult.get();
-
             brickRotator.setBrick(brickFromHold);
 
             currentX = GameConstants.SPAWN_X;
@@ -96,9 +94,8 @@ public class GameBoard implements Board {
 
     @Override
     public boolean rotateLeftBrick() {
-        int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
         NextShapeInfo nextShape = brickRotator.getNextShape();
-        boolean conflict = MatrixOperations.intersect(currentMatrix, nextShape.getShape(), currentX, currentY);
+        boolean conflict = MatrixOperations.intersect(currentGameMatrix, nextShape.getShape(), currentX, currentY);
         if (conflict) {
             return false;
         } else {
@@ -127,6 +124,17 @@ public class GameBoard implements Board {
         return MatrixOperations.copy(currentGameMatrix);
     }
 
+    private int calculateGhostY() {
+        int ghostY = currentY;
+        int[][] shape = brickRotator.getCurrentShape();
+
+        // Loop downwards until we find a collision
+        while (!MatrixOperations.intersect(currentGameMatrix, shape, currentX, ghostY + 1)) {
+            ghostY++;
+        }
+        return ghostY;
+    }
+
     @Override
     public ViewData getViewData() {
         List<int[][]> nextThreeBricks = extractNextThreeBrickShapes();
@@ -141,6 +149,7 @@ public class GameBoard implements Board {
                 brickRotator.getCurrentShape(),
                 currentX,
                 currentY,
+                calculateGhostY(),
                 nextBrickShape,
                 nextThreeBricks,
                 heldShape,

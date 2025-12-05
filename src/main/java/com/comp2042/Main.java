@@ -23,7 +23,7 @@ public class Main extends Application {
 
         primaryStage.setTitle("TetrisJFX");
 
-        double preferredWidth = Math.max(450, root.prefWidth(-1));
+        double preferredWidth = Math.max(570, root.prefWidth(-1));
         double preferredHeight = Math.max(550, root.prefHeight(-1));
 
         Scene scene = new Scene(root, preferredWidth, preferredHeight);
