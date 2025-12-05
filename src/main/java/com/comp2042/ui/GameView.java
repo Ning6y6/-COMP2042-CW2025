@@ -5,6 +5,7 @@ import com.comp2042.GameController;
 import com.comp2042.event.*;
 import com.comp2042.input.InputManager;
 import com.comp2042.logic.bricks.BrickType;
+import javafx.animation.TranslateTransition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -19,11 +20,14 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class GameView implements Initializable {
+
+    private static final double STACK_OFFSET = 35 ;
 
     @FXML
     private GridPane gamePanel;
@@ -158,8 +162,7 @@ public class GameView implements Initializable {
         for (int row = 2; row < boardMatrix.length; row++) {
             for (int col = 0; col < boardMatrix[row].length; col++) {
                 int colorId = boardMatrix[row][col];
-                Rectangle cell = backgroundGrid[row][col];
-                renderCell(cell, colorId);
+                renderCell(backgroundGrid[row][col], colorId);
             }
         }
     }
@@ -184,13 +187,26 @@ public class GameView implements Initializable {
     }
     
     public void showLinesClearedNotification(int scoreBonus) {
-        if (groupNotification != null) {
-            groupNotification.setVisible(true);
-            groupNotification.toFront();
-        }
+        if (groupNotification == null)return;
+
         NotificationPanel notification = new NotificationPanel("+" + scoreBonus);
+        stackNotifications(notification);
         groupNotification.getChildren().add(notification);
-        notification.showScore(groupNotification.getChildren());
+        groupNotification.setVisible(true);
+        groupNotification.toFront();
+
+    }
+    private void stackNotifications(NotificationPanel newNotification) {
+
+
+        for(var node : groupNotification.getChildren()) {
+            TranslateTransition shift = new TranslateTransition(Duration.millis(250), node);
+            shift.setByY(-STACK_OFFSET);
+            shift.play();
+        }
+
+        newNotification.setTranslateX(0);
+        newNotification.setTranslateY(0);
     }
 
     public void setInputManager(InputManager inputManager) {
@@ -204,8 +220,8 @@ public class GameView implements Initializable {
     }
 
     private void delegateInputToController(KeyEvent keyEvent) {
-        if (inputManager != null && eventListener != null) {
-            inputManager.handleInput(keyEvent.getCode(), (GameController) eventListener);
+        if (inputManager != null && eventListener instanceof GameController controller) {
+            inputManager.handleInput(keyEvent.getCode(),controller);
             keyEvent.consume();
         }
     }
@@ -237,9 +253,8 @@ public class GameView implements Initializable {
     }
 
     private void initBackgroundGrid(int rows, int cols) {
-        if(gamePanel !=null) {
-            gamePanel.getChildren().clear();
-        }
+        gamePanel.getChildren().clear();
+
         backgroundGrid = new Rectangle[rows][cols];
 
         for (int row = 0; row < rows; row++) {
@@ -254,9 +269,8 @@ public class GameView implements Initializable {
     }
 
     private void initFallingBrickLayer(int rows, int cols) {
-        if(brickPanel != null) {
-            brickPanel.getChildren().clear();
-        }
+        brickPanel.getChildren().clear();
+
         fallingBrickGrid = new Rectangle[rows][cols];
 
         for (int row = 0; row < rows; row++) {
@@ -279,13 +293,9 @@ public class GameView implements Initializable {
     }
 
     private void clearFallingBrickLayer() {
-        if (fallingBrickGrid == null) return;
-        for (int row = 0; row < fallingBrickGrid.length; row++) {
-            for (int col = 0; col < fallingBrickGrid[row].length; col++) {
-                Rectangle cell = fallingBrickGrid[row][col];
-                if (cell != null) {
-                    cell.setVisible(false);
-                }
+        for (Rectangle[] row : fallingBrickGrid) {
+            for (Rectangle cell : row) {
+                if (cell != null) cell.setVisible(false);
             }
         }
     }
@@ -300,10 +310,6 @@ public class GameView implements Initializable {
         int yPos = brickData.getyPosition();
 
         for (int row = 0; row < brickMatrix.length; row++) {
-            if (brickMatrix[row] == null) {
-                continue;
-            }
-
             for (int col = 0; col < brickMatrix[row].length; col++) {
                 int colorId = brickMatrix[row][col];
 
@@ -326,7 +332,6 @@ public class GameView implements Initializable {
         }
 
         Rectangle cell = fallingBrickGrid[gridY][gridX];
-        if (cell == null) return;
 
         renderCell(cell, colorId);
         cell.setVisible(true);
@@ -340,8 +345,7 @@ public class GameView implements Initializable {
 
     @FXML
     public void openSettings(ActionEvent event) {
-        if (eventListener instanceof GameController) {
-            GameController controller = (GameController) eventListener;
+        if (eventListener instanceof GameController controller) {
             controller.handlePauseToggle();
         }
         event.consume();
@@ -358,8 +362,8 @@ public class GameView implements Initializable {
 
     public void showPauseMenu() {
         isPaused.set(true);
-        if (activeSettingsView == null && eventListener instanceof GameController) {
-            activeSettingsView = new SettingsView((GameController) eventListener);
+        if (activeSettingsView == null && eventListener instanceof GameController controller) {
+            activeSettingsView = new SettingsView(controller);
             activeSettingsView.show();
         }
     }

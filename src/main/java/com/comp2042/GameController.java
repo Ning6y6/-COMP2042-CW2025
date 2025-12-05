@@ -174,6 +174,15 @@ public class GameController implements GameInputHandler {
         leaderboardService.addScore("Player", board.getScore().scoreProperty().get());
     }
 
+    public static int calculateComboBonus(int linesCleared) {
+        return switch (linesCleared) {
+            case 1 -> 50;
+            case 2 -> 100;
+            case 3 -> 200;
+            case 4 -> 400;
+            default -> 0;
+        };
+    }
     @Override
     public DownData onDownEvent(MoveEvent event) {
         currentState.update(this);
