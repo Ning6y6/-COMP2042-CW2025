@@ -130,14 +130,14 @@ student of University of Nottingham Malaysia.
 
 
 ## Version History
-| Version | Date             | Change                                                                           |
-|---------|------------------|----------------------------------------------------------------------------------|
-| v1.0    | 12 November 2025 | Initial release                                                                  |
-| v1.1    | 18 November 2025 | Fixed Score system, tiles spawn location and matrix operations                   |
-| v1.2    | 25 November 2025 | Added a new feature that shows next three bricks and refactored the needed files |
-| v1.3    | 29 November 2025 | Major refactoring for maintainability, Encapsulation, and SOLID principles.      |
+| Version | Date             | Change                                                                                                        |
+|---------|------------------|---------------------------------------------------------------------------------------------------------------|
+| v1.0    | 12 November 2025 | Initial release                                                                                               |
+| v1.1    | 18 November 2025 | Fixed Score system, tiles spawn location and matrix operations                                                |
+| v1.2    | 25 November 2025 | Added a new feature that shows next three bricks and refactored the needed files                              |
+| v1.3    | 29 November 2025 | Major refactoring for maintainability, Encapsulation, and SOLID principles.                                   |
 | v1.4    | 3 December 2025  | Added Settings button, key binding validation, auto-resume, WASD-only controls, and comprehensive error fixes |
-
+| v1.5    | 5 December 2025  | Added Hold system, Hard Drop mechanic, and Notification Panel UI with animation                               |
 
 ## Key of changes
 ### 1. Score Display and Spawn location
@@ -172,20 +172,22 @@ student of University of Nottingham Malaysia.
 - **Issue**: Hardcoded values (e.g., board size 10/25, brick size 20, color logic switch statements) were scattered throughout the codebase (Magic Number and Duplicated Code smells).
 - **Fix**: Introduced **`GameConstants.java`** to centralize all numeric literals and **`BrickType.java`** (enum) to handle color mapping, eliminating duplicative `switch` statements from UI classes (Replace Type Code with Polymorphism/Enum).
 
-### 7. Introduction of Settings Menu (Resume, Restart, Keybinds, Leaderboard)
+### 7. Introduction of Hold Mechanic
+- **Location**:`HoldView.java` / `GameController.java` / `GameView.java` / `ViewData.java`
+- **Addition**:Implemented a full Tetris-standard hold system, allowing players to store the active tetromino. Hold is limited to once per drop cycle (prevents infinite swapping abuse). Controller fully manages swapping, resetting active piece position, and rotation restoration. HoldView added as a dedicated MVC-compliant UI class.
 
-- **Location**: `SettingsView.java` / `GameView.java`/ `LeaderboardView`/ `KeybindsView` / `GameController.java` and etc
+### 8. Introduction of Hard Drop Mechanic
+- **Location**: `GameController.java` / `InputManager.java` / `commands/HardDropCommand.java`
+- **Addition**:Added a new Hard Drop command (default Space key) using the Command Pattern. Instantly places the active brick at the lowest valid position. Awards bonus points per dropped row. Automatically locks the brick, triggers line clear detection, and proceeds to next piece. Implemented safely in PlayingState only—Paused and GameOver states ignore the input.
 
-- **Addition** 
-  1. SettingsView: Created a setting menu to centralize the access to resume, restart, leaderboard and keybind. 
-  2. Game Controls: Added "Resume" and "Restart" buttons within the settings menu for better game flow control.
-  3. Key binding system: System to allowing user to dynamically remap controls and Input manager to support the flexible ke to command mapping. Collision detection added to prevent two action in one key via `DuplicateKeyBindingException`.
-  4. Leaderboard: Consist of a `LeaderboardEntry`(model) defines the data structure for player score, ensuring immutability and correct date handling .`LeaderboardEntryParser`(parser) extracted parsing logic into a dedicated class to adhere to SRP, ensuring robust string-to-object conversion and fail-fast validation. `FileLeaderboardDao`(persistence) implemented file-based data access. Uses Dependency Injection to utilize the parser, keeping I/O logic separate from business logic. `LeaderboardService`(service) manages business logic such as fetching, sorting (descending order), and limiting score entries. `LeaderboardView` (ui) displays formatted high scores in a dedicated view, integrated into the main Settings menu.
+### 9. NotificationPanel + Animated Score Popups
+- **Location**: `NotificationPanel.java` / `GameView.java`
+- **Addition**: Created a fully animated floating score popup UI using JavaFX transitions. Includes: Fade-in, Pop scale, Upward float and Fade-out. Notifications now stack smoothly without overlapping by offsetting new panels based on current active notifications. Popup creation is decoupled from model logic. Clean-up implemented via onFinished() to auto-remove nodes.
+
+## Design Pattern Overview
+### The project implements multiple design patterns effectively:
 
 
-
-### Design Pattern Overview
-## The project implements multiple design patterns effectively:
 
 - **Factory Method Pattern** (Creational): The `BrickGenerator` interface is implemented by `RandomBrickGenerator.java`. This pattern delegates the logic of creating new concrete Brick objects (like IBrick, JBrick, etc.) to subclasses without the client (`GameBoard`) needing to know the instantiation details.
 
