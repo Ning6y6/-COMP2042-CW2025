@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 public class MatrixOperations {
 
-    private static final int SCORE_BASE_MULTIPLIER = 50;
     private MatrixOperations(){
         throw new AssertionError("MatrixOperations is a utility class and cannot be instantiated");
     }
@@ -121,9 +120,8 @@ public class MatrixOperations {
         }
 
         int[][] tmp = buildNewMatrix(matrix.length, maxRowLength, newRows);
-        int scoreBonus = calculateScoreBonus(clearedRows.size());
         
-        return new ClearRow(clearedRows.size(), tmp, scoreBonus);
+        return new ClearRow(clearedRows.size(), tmp, 0);
     }
 
     private static int findMaxRowLength(int[][] matrix) {
@@ -169,10 +167,6 @@ public class MatrixOperations {
             }
         }
         return tmp;
-    }
-
-    private static int calculateScoreBonus(int clearedRows) {
-        return SCORE_BASE_MULTIPLIER * clearedRows * clearedRows;
     }
 
 
