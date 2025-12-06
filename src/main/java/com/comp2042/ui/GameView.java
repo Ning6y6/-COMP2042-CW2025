@@ -12,18 +12,19 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.Group;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.net.URL;
@@ -33,6 +34,8 @@ public class GameView implements Initializable {
 
     private static final double STACK_OFFSET = 35 ;
 
+    @FXML
+    private StackPane rootStackPane;
 
     @FXML
     private GridPane gamePanel;
@@ -50,7 +53,7 @@ public class GameView implements Initializable {
     private GridPane brickPanel;
 
     @FXML
-    private GameOverPanel gameOverPanel;
+    private Pane gameOverPanel;
 
     @FXML
     private GridPane nextBrickPanel1;
@@ -63,6 +66,9 @@ public class GameView implements Initializable {
 
     @FXML
     private GridPane holdPane;
+
+    @FXML
+    private BorderPane gameBoard;
 
     private Rectangle[][] backgroundGrid;
     private Rectangle[][] fallingBrickGrid;
@@ -152,15 +158,22 @@ public class GameView implements Initializable {
         brickPanel.setPrefSize(totalWidth, totalHeight);
         brickPanel.setMaxSize(totalWidth, totalHeight);
 
+        if (gameBoard != null) {
+            gameBoard.setMaxWidth(Region.USE_PREF_SIZE);
+            gameBoard.setMaxHeight(Region.USE_PREF_SIZE);
+
+            if (gameBoard.getParent() instanceof Region wrapper) {
+                wrapper.setMaxWidth(Region.USE_PREF_SIZE);
+                wrapper.setMaxHeight(Region.USE_PREF_SIZE);
+            }
+
+        }
         initBackgroundGrid();
         initDynamicBrickLayers();
 
         refreshBoard(boardMatrix);
         updateNextPieces(initialBrick);
         updateHoldPiece(initialBrick);
-
-        System.out.printf("GameView Init: Cols=%d, VisibleRows=%d, BrickSize=%d%n",
-                GameConstants.BOARD_WIDTH, GameConstants.VISIBLE_ROWS, GameConstants.BRICK_SIZE);
     }
 
     public void updateFallingBrick(ViewData brickData) {
@@ -220,22 +233,28 @@ public class GameView implements Initializable {
     }
     
     public void showLinesClearedNotification(int scoreBonus) {
-        if (groupNotification == null)return;
-
-        NotificationPanel notification = new NotificationPanel("+" + scoreBonus);
-        stackNotifications(notification);
-        groupNotification.getChildren().add(notification);
-        groupNotification.setVisible(true);
-        groupNotification.toFront();
+        showNotification("+" + scoreBonus);
 
     }
-    private void stackNotifications(NotificationPanel newNotification) {
+
+    private void showNotification(String text) {
+        if (rootStackPane == null) return;
+
+        NotificationPanel notification = new NotificationPanel(text);
+        stackNotifications(notification, rootStackPane);
+        rootStackPane.getChildren().add(notification);
+        notification.toFront();
+    }
+
+    private void stackNotifications(NotificationPanel newNotification, Pane parent) {
 
 
-        for(var node : groupNotification.getChildren()) {
-            TranslateTransition shift = new TranslateTransition(Duration.millis(250), node);
-            shift.setByY(-STACK_OFFSET);
-            shift.play();
+        for(Node node :parent.getChildren()) {
+            if(node instanceof NotificationPanel) {
+                TranslateTransition shift = new TranslateTransition(Duration.millis(250), node);
+                shift.setByY(-STACK_OFFSET);
+                shift.play();
+            }
         }
 
         newNotification.setTranslateX(0);
@@ -253,6 +272,20 @@ public class GameView implements Initializable {
     }
 
     private void delegateInputToController(KeyEvent keyEvent) {
+
+        if (keyEvent.getCode() == KeyCode.F11) {
+            if (gamePanel.getScene() != null && gamePanel.getScene().getWindow() instanceof Stage stage) {
+                stage.setFullScreenExitHint("");
+                boolean isEntering = !stage.isFullScreen();
+                stage.setFullScreen(isEntering);
+                // Show our custom, faster notification
+                if (isEntering) {
+                    showNotification("Press F11 or ESC to exit Full Screen");
+                }
+            }
+            keyEvent.consume();
+            return;
+        }
         if (inputManager != null && eventListener instanceof GameController controller) {
             inputManager.handleInput(keyEvent.getCode(),controller);
             keyEvent.consume();
