@@ -35,13 +35,13 @@ public class Main extends Application {
         Scene scene = new Scene(root, GameConstants.WINDOW_WIDTH, GameConstants.WINDPW_HEIGHT);
 
         root.setFocusTraversable(true);
-        root.setOnMouseClicked(event -> root.requestFocus());
+        root.setOnMouseClicked(event -> gameView.requestFocus());
 
         primaryStage.setTitle("TetrisJFX");
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        root.requestFocus();
+        gameView.requestFocus();
     }
 
 

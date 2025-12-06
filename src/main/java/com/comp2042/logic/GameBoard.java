@@ -132,7 +132,6 @@ public class GameBoard implements Board {
 
     @Override
     public int[][] getBoardMatrix() {
-
         return MatrixOperations.copy(currentGameMatrix);
     }
 
