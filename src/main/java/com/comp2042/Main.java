@@ -1,5 +1,10 @@
 package com.comp2042;
 
+import com.comp2042.input.InputManager;
+import com.comp2042.leaderboard.FileLeaderboardDAO;
+import com.comp2042.leaderboard.LeaderboardService;
+import com.comp2042.logic.Board;
+import com.comp2042.logic.GameBoard;
 import com.comp2042.ui.GameView;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -8,7 +13,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.net.URL;
-import java.util.ResourceBundle;
 
 public class Main extends Application {
 
@@ -16,22 +20,28 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         URL location = getClass().getClassLoader().getResource("gameLayout.fxml");
-        ResourceBundle resources = null;
-        FXMLLoader fxmlLoader = new FXMLLoader(location, resources);
+        FXMLLoader fxmlLoader = new FXMLLoader(location);
         Parent root = fxmlLoader.load();
-        GameView c = fxmlLoader.getController();
+
+        GameView gameView = fxmlLoader.getController();
+
+        Board board = new GameBoard();
+        InputManager inputManager = new InputManager();
+        FileLeaderboardDAO dao = new FileLeaderboardDAO();
+        LeaderboardService leaderboardService = new LeaderboardService(dao);
+
+
+        GameController gameController = new GameController(gameView, board, inputManager, leaderboardService);
+        Scene scene = new Scene(root, GameConstants.WINDOW_WIDTH, GameConstants.WINDPW_HEIGHT);
+
+        root.setFocusTraversable(true);
+        root.setOnMouseClicked(event -> root.requestFocus());
 
         primaryStage.setTitle("TetrisJFX");
-
-        double preferredWidth = Math.max(690, root.prefWidth(-1));
-        double preferredHeight = Math.max(550, root.prefHeight(-1));
-
-        Scene scene = new Scene(root, preferredWidth, preferredHeight);
-        primaryStage.setMinWidth(preferredWidth);
-        primaryStage.setMinHeight(preferredHeight);
         primaryStage.setScene(scene);
         primaryStage.show();
-        new GameController(c);
+
+        root.requestFocus();
     }
 
 

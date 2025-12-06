@@ -16,4 +16,7 @@ public final class GameConstants {
 
     public static final double GAME_SPEED_MILLIS = 400.0;
     public static final int PREVIEW_COUNT = 3;
+
+    public static final int WINDOW_WIDTH = 690;
+    public static final int WINDPW_HEIGHT = 550;
 }

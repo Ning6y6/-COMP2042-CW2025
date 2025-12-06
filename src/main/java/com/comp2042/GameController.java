@@ -4,9 +4,7 @@ import com.comp2042.ui.GameView;
 import com.comp2042.event.*;
 import com.comp2042.input.InputManager;
 import com.comp2042.logic.Board;
-import com.comp2042.logic.GameBoard;
 import com.comp2042.state.*;
-import com.comp2042.leaderboard.FileLeaderboardDAO;
 import com.comp2042.leaderboard.LeaderboardService;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -22,11 +20,12 @@ public class GameController implements GameInputHandler {
     private GameState currentState;
     private ClearRow lastClearRow;
 
-    public GameController(GameView c) {
-        this.gameView = c;
-        this.board = new GameBoard();
-        this.inputManager = new InputManager();
-        this.leaderboardService = new LeaderboardService(new FileLeaderboardDAO());
+    public GameController(GameView view, Board board, InputManager inputManager, LeaderboardService leaderboardService) {
+        this.gameView = view;
+        this.board = board;
+        this.inputManager = inputManager;
+        this.leaderboardService = leaderboardService;
+
         this.currentState = new PlayingState();
         initializeGame();
     }
