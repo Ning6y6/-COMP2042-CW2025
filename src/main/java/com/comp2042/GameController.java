@@ -4,9 +4,7 @@ import com.comp2042.ui.GameView;
 import com.comp2042.event.*;
 import com.comp2042.input.InputManager;
 import com.comp2042.logic.Board;
-import com.comp2042.logic.GameBoard;
 import com.comp2042.state.*;
-import com.comp2042.leaderboard.FileLeaderboardDAO;
 import com.comp2042.leaderboard.LeaderboardService;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -22,11 +20,12 @@ public class GameController implements GameInputHandler {
     private GameState currentState;
     private ClearRow lastClearRow;
 
-    public GameController(GameView c) {
-        this.gameView = c;
-        this.board = new GameBoard();
-        this.inputManager = new InputManager();
-        this.leaderboardService = new LeaderboardService(new FileLeaderboardDAO());
+    public GameController(GameView view, Board board, InputManager inputManager, LeaderboardService leaderboardService) {
+        this.gameView = view;
+        this.board = board;
+        this.inputManager = inputManager;
+        this.leaderboardService = leaderboardService;
+
         this.currentState = new PlayingState();
         initializeGame();
     }
@@ -150,9 +149,15 @@ public class GameController implements GameInputHandler {
     }
 
     private void handleRowClearing(ClearRow clearRow) {
-        if (clearRow.getLinesRemoved() > 0) {
-            board.getScore().add(clearRow.getScoreBonus());
-            gameView.showLinesClearedNotification(clearRow.getScoreBonus());
+        int lines = clearRow.getLinesRemoved();
+        if (lines > 0) {
+            int currentScore = board.getScore().scoreProperty().get();
+            board.getScore().addLinesCleared(lines);
+
+            int newScore = board.getScore().scoreProperty().get();
+            int pointsAdded = newScore - currentScore;
+
+            gameView.showLinesClearedNotification(pointsAdded);
             lastClearRow = clearRow;
         } else {
             lastClearRow = null;
@@ -174,15 +179,6 @@ public class GameController implements GameInputHandler {
         leaderboardService.addScore("Player", board.getScore().scoreProperty().get());
     }
 
-    public static int calculateComboBonus(int linesCleared) {
-        return switch (linesCleared) {
-            case 1 -> 50;
-            case 2 -> 100;
-            case 3 -> 200;
-            case 4 -> 400;
-            default -> 0;
-        };
-    }
     @Override
     public DownData onDownEvent(MoveEvent event) {
         currentState.update(this);

@@ -8,10 +8,15 @@ move sideways, S to accelerate the fall, and W to rotate the piece. The challeng
 prevent the blocks from stacking up to the top of the screen.
 
 **Controls:**
+
+Default keybind
 - **A** / **D**: Move left / right
 - **W**: Rotate piece
 - **S**: Soft drop (accelerate fall)
 - **P**: Pause game
+- **N**: Restart
+- **B**: Hold piece
+- **SpaceBar**: Hard Drop
 - **Settings Button**: Access game settings menu
 
 Checkout [Tetris](https://en.wikipedia.org/wiki/Tetris/) if you want to learn more about the history and impact.
@@ -65,8 +70,9 @@ CW2042-CW2025/
 │       │           │   ├── Board.java                # Board interface
 │       │           │   ├── BrickRotator.java         # Brick rotation logic
 │       │           │   ├── GameBoard.java            # Board implementation
-│       │           │   ├── MatrixOperations.java    # Matrix utility operations
+│       │           │   ├── MatrixOperations.java     # Matrix utility operations
 │       │           │   ├── Score.java                # Score management
+|       |           |   ├── WallKickTable.java        # Wall Kick Offset
 │       │           │   └── bricks/
 │       │           │       ├── Brick.java             # Brick interface
 │       │           │       ├── BrickGenerator.java   # Brick generator interface (Factory Method)
@@ -138,7 +144,7 @@ student of University of Nottingham Malaysia.
 | v1.3    | 29 November 2025 | Major refactoring for maintainability, Encapsulation, and SOLID principles.                                   |
 | v1.4    | 3 December 2025  | Added Settings button, key binding validation, auto-resume, WASD-only controls, and comprehensive error fixes |
 | v1.5    | 5 December 2025  | Added Hold system, Hard Drop mechanic, and Notification Panel UI with animation                               |
-
+|  v1.6   | 6 December 2025  | Added GhostBrick, Wall Kick implmentation and Dynamic Window                                                  |
 ## Key of changes
 ### 1. Score Display and Spawn location
 - **Location**: `GuiController.java` / `gameLayout.fxml`/ `SimpleBoard.java`
@@ -184,9 +190,20 @@ student of University of Nottingham Malaysia.
 - **Location**: `NotificationPanel.java` / `GameView.java`
 - **Addition**: Created a fully animated floating score popup UI using JavaFX transitions. Includes: Fade-in, Pop scale, Upward float and Fade-out. Notifications now stack smoothly without overlapping by offsetting new panels based on current active notifications. Popup creation is decoupled from model logic. Clean-up implemented via onFinished() to auto-remove nodes.
 
+### 10. Ghost Piece Implementation
+- **Location**: `GameBoard.java`/ `ViewData.java`/ `GameView.java`
+- **Addition**: Added `calculateGhostY()` in `GameBoard` to simulate where the brick lands without altering game state. Updated `ViewData` to carry `ghostYPosition`. In `GameView`, added a new rendering layer that displays the projection with a transparent fill and colored outline.
+
+### 11. SRS Wall Kicks
+- **Location**: `GameBoard.java`/ `WallKickTable.java`
+- **Addition**: Introduced `WallKickTable` containing standard offset values (0, ±1, ±2). Modified `rotateLeftBrick` in `GameBoard` to iterate through these offsets. This prevents pieces from getting stuck near walls by automatically shifting them to a valid adjacent position during rotation.
+
+## 12. Dynamic Responsive Layout
+- **Location**: `gameLayout.fxml`/ `GameView.java`
+- **Addition**: Refactored FXML root to a StackPane containing a centered HBox with tight sizing constraints. Added F11 key binding in `GameView` to toggle fullscreen mode. Implemented strict layout locking in `initGameView` to ensure the game board stays perfectly centered and borders do not stretch on window resize.
+
 ## Design Pattern Overview
 ### The project implements multiple design patterns effectively:
-
 
 
 - **Factory Method Pattern** (Creational): The `BrickGenerator` interface is implemented by `RandomBrickGenerator.java`. This pattern delegates the logic of creating new concrete Brick objects (like IBrick, JBrick, etc.) to subclasses without the client (`GameBoard`) needing to know the instantiation details.

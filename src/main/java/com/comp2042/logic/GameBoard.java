@@ -53,8 +53,7 @@ public class GameBoard implements Board {
     }
 
     private boolean tryMove(int nextX, int nextY) {
-        int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
-        boolean conflict = MatrixOperations.intersect(currentMatrix, brickRotator.getCurrentShape(), nextX, nextY);
+        boolean conflict = MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), nextX, nextY);
         if (conflict) {
             return false;
         } else {
@@ -82,7 +81,6 @@ public class GameBoard implements Board {
             createNewBrick();
         } else {
             Brick brickFromHold = swapResult.get();
-
             brickRotator.setBrick(brickFromHold);
 
             currentX = GameConstants.SPAWN_X;
@@ -96,15 +94,26 @@ public class GameBoard implements Board {
 
     @Override
     public boolean rotateLeftBrick() {
-        int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
-        NextShapeInfo nextShape = brickRotator.getNextShape();
-        boolean conflict = MatrixOperations.intersect(currentMatrix, nextShape.getShape(), currentX, currentY);
-        if (conflict) {
-            return false;
-        } else {
-            brickRotator.setCurrentShape(nextShape.getPosition());
-            return true;
+        NextShapeInfo nextShapeInfo = brickRotator.getNextShape();
+        int[][] nextMatrix = nextShapeInfo.getShape();
+        int nextIndex = nextShapeInfo.getPosition();
+
+        for (int[] offset : WallKickTable.OFFSETS) {
+            int kickX = offset[0];
+            int kickY = offset[1];
+
+            int targetX = currentX + kickX;
+            int targetY = currentY + kickY;
+
+            boolean conflict = MatrixOperations.intersect(currentGameMatrix, nextMatrix, targetX, targetY);
+            if (!conflict) {
+                brickRotator.setCurrentShape(nextIndex);
+                currentX = targetX;
+                currentY = targetY;
+                return true;
+            }
         }
+        return false;
     }
 
     @Override
@@ -123,8 +132,18 @@ public class GameBoard implements Board {
 
     @Override
     public int[][] getBoardMatrix() {
-
         return MatrixOperations.copy(currentGameMatrix);
+    }
+
+    private int calculateGhostY() {
+        int ghostY = currentY;
+        int[][] shape = brickRotator.getCurrentShape();
+
+        // Loop downwards until we find a collision
+        while (!MatrixOperations.intersect(currentGameMatrix, shape, currentX, ghostY + 1)) {
+            ghostY++;
+        }
+        return ghostY;
     }
 
     @Override
@@ -141,6 +160,7 @@ public class GameBoard implements Board {
                 brickRotator.getCurrentShape(),
                 currentX,
                 currentY,
+                calculateGhostY(),
                 nextBrickShape,
                 nextThreeBricks,
                 heldShape,
