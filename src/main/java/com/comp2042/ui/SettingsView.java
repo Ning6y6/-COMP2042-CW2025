@@ -47,7 +47,7 @@ public class SettingsView {
             stage.setTitle("Settings");
             
             // Create Scene and set it on Stage first (needed for setStage to work)
-            Scene scene = new Scene(root, 300, 450);
+            Scene scene = new Scene(root, 300, 500);
             stage.setScene(scene);
             
             // Set Stage reference in controller (for window close handling)

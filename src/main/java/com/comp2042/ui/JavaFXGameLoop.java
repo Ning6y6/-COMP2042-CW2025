@@ -54,4 +54,27 @@ public class JavaFXGameLoop implements GameLoop {
     public void setTickAction(Runnable action) {
         this.tickAction = action;
     }
+    
+    @Override
+    public void setSpeed(double millis) {
+        javafx.animation.Timeline.Status previousStatus = timeline.getStatus();
+        
+        timeline.stop();
+        KeyFrame frame = new KeyFrame(
+                Duration.millis(millis),
+                e -> {
+                    if (tickAction != null) {
+                        tickAction.run();
+                    }
+                }
+        );
+        this.timeline.getKeyFrames().setAll(frame);
+        
+        // Restart timeline if it was running or paused
+        // Reset to beginning of cycle to ensure consistent timing
+        if (previousStatus == javafx.animation.Timeline.Status.RUNNING || 
+            previousStatus == javafx.animation.Timeline.Status.PAUSED) {
+            timeline.playFromStart();
+        }
+    }
 }

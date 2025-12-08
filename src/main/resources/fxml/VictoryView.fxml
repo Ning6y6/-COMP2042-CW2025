@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.Insets?>
+
+<VBox alignment="CENTER" spacing="20" styleClass="victory-container" 
+      xmlns="http://javafx.com/javafx/17" 
+      xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="com.comp2042.ui.VictoryFXController">
+   <children>
+      <Label styleClass="victory-message" text="VICTORY!" />
+      <Label fx:id="scoreLabel" styleClass="score-value" text="Score: 0" />
+      <Button fx:id="playAgainButton" onAction="#handlePlayAgain" styleClass="menu-button" text="Play Again" />
+      <Button fx:id="backToMenuButton" onAction="#handleBackToMenu" styleClass="menu-button" text="Back to Menu" />
+   </children>
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+   <stylesheets>
+      <URL value="@../window_style.css"/>
+   </stylesheets>
+</VBox>

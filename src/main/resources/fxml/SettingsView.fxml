@@ -16,6 +16,7 @@
     <Button fx:id="restartButton" text="Restart" styleClass="settings-button" onAction="#handleRestart"/>
     <Button fx:id="keybindsButton" text="Key Bindings" styleClass="settings-button" onAction="#handleKeybinds"/>
     <Button fx:id="leaderboardButton" text="Leaderboard" styleClass="settings-button" onAction="#handleLeaderboard"/>
+    <Button fx:id="backToMenuButton" text="Back to Main Menu" styleClass="settings-button" onAction="#handleBackToMenu"/>
     
     <stylesheets>
         <URL value="@../window_style.css"/>

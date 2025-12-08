@@ -1,69 +1,154 @@
+/* ============================================
+   Dark Gothic Fantasy Theme
+   Inspired by Diablo, Bloodborne, Castlevania, Dark Souls
+   ============================================ */
+
+/* Load Custom Font */
+@font-face {
+    src: url("../assets/font/main.otf");
+    font-family: "Main Font";
+}
+
 /* Define general visual constants/variables */
 .root {
     -brick-size: 30; /* Replaces GameConstants.BRICK_SIZE */
-    -game-bg-color: #2c2c2c;
-    -secondary-bg-color: #2b2b2b;
-    -text-color: #ffffff;
-    -highlight-color: yellow;
-    -grid-line-color: #4a4a4a;
+    /* Dark Cathedral/Dungeon Colors */
+    -game-bg-color: #0d0d0d; /* Deep abyss black */
+    -secondary-bg-color: #1a1a1a; /* Stone dark */
+    -tertiary-bg-color: #2a1f1f; /* Aged stone */
+    /* Text Colors */
+    -text-color: #e0e0e0; /* Pale ethereal */
+    -text-dim: #b0b0b0; /* Weathered */
+    -text-gold: #d4af37; /* Ancient gold */
+    /* Accent Colors */
+    -highlight-color: #9370db; /* Arcane purple */
+    -cursed-energy: #6b1a7f; /* Dark magic */
+    -blood-crimson: #8b0000; /* Cursed blood */
+    -iron-gray: #4a4a4a; /* Weathered iron */
+    -stone-gray: #3a3a3a; /* Heavy stone */
+    -grid-line-color: #2d2d35; /* Shadow lines */
+    -border-arcane: #5a3a6b; /* Magical borders */
+    
+    /* Custom Font - Apply globally */
+    -fx-font-family: "Main Font", "Verdana", "Arial Black", sans-serif;
+}
+
+/* Apply custom font to all labels and buttons */
+.label, .button {
+    -fx-font-family: "Main Font", "Verdana", "Arial Black", sans-serif;
 }
 
 /* Base styles for the game area grid */
 .game-grid {
     -fx-background-color: -game-bg-color;
-    -fx-border-color: -text-color;
-    -fx-border-width: 2px;
+    -fx-background-image: radial-gradient(center 50% 50%, radius 100%, 
+        rgba(107, 26, 127, 0.05) 0%, 
+        -game-bg-color 70%);
+    -fx-border-color: -border-arcane;
+    -fx-border-width: 3px;
+    -fx-effect: dropshadow(gaussian, rgba(107, 26, 127, 0.3), 15, 0.5, 0, 0);
 }
 
 /* Style for individual brick Rectangles/Nodes */
 .brick {
-    -fx-stroke: black;
-    -fx-stroke-width: 1px;
-    -fx-arc-width: 7;
-    -fx-arc-height: 7;
+    -fx-stroke: rgba(0, 0, 0, 0.8);
+    -fx-stroke-width: 1.5px;
+    -fx-arc-width: 5;
+    -fx-arc-height: 5;
+    -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.6), 3, 0.5, 1, 1);
 }
 
-/* Brick Colors mapped via class names from BrickType */
-.i-brick { -fx-fill: aqua; }
-.j-brick { -fx-fill: blueviolet; }
-.l-brick { -fx-fill: darkgreen; }
-.o-brick { -fx-fill: yellow; }
-.s-brick { -fx-fill: red; }
-.t-brick { -fx-fill: beige; }
-.z-brick { -fx-fill: burlywood; }
+/* Gothic Brick Colors - Dark, Muted, Mystical */
+.i-brick { 
+    -fx-fill: linear-gradient(from 0% 0% to 100% 100%, #4a90e2 0%, #2d5a8f 100%);
+    -fx-effect: dropshadow(gaussian, rgba(74, 144, 226, 0.4), 5, 0.7, 0, 0);
+}
+.j-brick { 
+    -fx-fill: linear-gradient(from 0% 0% to 100% 100%, #6b1a7f 0%, #4a0f5a 100%);
+    -fx-effect: dropshadow(gaussian, rgba(107, 26, 127, 0.5), 5, 0.7, 0, 0);
+}
+.l-brick { 
+    -fx-fill: linear-gradient(from 0% 0% to 100% 100%, #2d4a2d 0%, #1a2a1a 100%);
+    -fx-effect: dropshadow(gaussian, rgba(60, 120, 60, 0.3), 5, 0.7, 0, 0);
+}
+.o-brick { 
+    -fx-fill: linear-gradient(from 0% 0% to 100% 100%, #d4af37 0%, #9d7a27 100%);
+    -fx-effect: dropshadow(gaussian, rgba(212, 175, 55, 0.5), 5, 0.7, 0, 0);
+}
+.s-brick { 
+    -fx-fill: linear-gradient(from 0% 0% to 100% 100%, #8b0000 0%, #5a0000 100%);
+    -fx-effect: dropshadow(gaussian, rgba(139, 0, 0, 0.6), 5, 0.7, 0, 0);
+}
+.t-brick { 
+    -fx-fill: linear-gradient(from 0% 0% to 100% 100%, #6b4423 0%, #4a2f18 100%);
+    -fx-effect: dropshadow(gaussian, rgba(107, 68, 35, 0.4), 5, 0.7, 0, 0);
+}
+.z-brick { 
+    -fx-fill: linear-gradient(from 0% 0% to 100% 100%, #9370db 0%, #6a4a9b 100%);
+    -fx-effect: dropshadow(gaussian, rgba(147, 112, 219, 0.5), 5, 0.7, 0, 0);
+}
 .empty { -fx-fill: transparent; } /* Hidden/Empty blocks */
 
 /* ============================================
    Settings View Styles
    ============================================ */
 .settings-container {
-    -fx-background-color: -game-bg-color;
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, 
+        -tertiary-bg-color 0%, 
+        -game-bg-color 100%);
+    -fx-background-image: radial-gradient(center 50% 50%, radius 80%, 
+        rgba(107, 26, 127, 0.1) 0%, 
+        transparent 70%);
     -fx-padding: 20px;
     -fx-spacing: 15px;
+    -fx-border-color: -border-arcane;
+    -fx-border-width: 2px;
 }
 
 .settings-header {
-    -fx-text-fill: -text-color;
-    -fx-font-size: 24px;
+    -fx-text-fill: -text-gold;
+    -fx-font-size: 26px;
     -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(212, 175, 55, 0.6), 8, 0.8, 0, 2);
 }
 
 .settings-button {
     -fx-font-size: 16px;
     -fx-min-width: 150px;
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, 
+        -stone-gray 0%, 
+        -iron-gray 100%);
+    -fx-text-fill: -text-color;
+    -fx-border-color: -border-arcane;
+    -fx-border-width: 1.5px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 5, 0.5, 2, 2);
+}
+
+.settings-button:hover {
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, 
+        -iron-gray 0%, 
+        -stone-gray 100%);
+    -fx-border-color: -highlight-color;
+    -fx-effect: dropshadow(gaussian, rgba(147, 112, 219, 0.6), 8, 0.8, 0, 0);
 }
 
 /* ============================================
    Keybinds View Styles
    ============================================ */
 .keybinds-container {
-    -fx-background-color: -secondary-bg-color;
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, 
+        -tertiary-bg-color 0%, 
+        -secondary-bg-color 100%);
     -fx-padding: 20px;
+    -fx-border-color: -border-arcane;
+    -fx-border-width: 2px;
 }
 
 .keybinds-header {
-    -fx-text-fill: -text-color;
-    -fx-font-size: 18px;
+    -fx-text-fill: -text-gold;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(212, 175, 55, 0.5), 6, 0.7, 0, 2);
 }
 
 .keybind-row {
@@ -73,47 +158,80 @@
 .keybind-label {
     -fx-text-fill: -text-color;
     -fx-min-width: 100px;
+    -fx-font-weight: bold;
 }
 
 .keybind-button {
     -fx-min-width: 100px;
+    -fx-background-color: -stone-gray;
+    -fx-text-fill: -text-color;
+    -fx-border-color: -border-arcane;
+    -fx-border-width: 1px;
+}
+
+.keybind-button:hover {
+    -fx-background-color: -iron-gray;
+    -fx-border-color: -highlight-color;
 }
 
 .keybinds-button {
     -fx-font-size: 14px;
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, 
+        -stone-gray 0%, 
+        -iron-gray 100%);
+    -fx-text-fill: -text-color;
+    -fx-border-color: -border-arcane;
+    -fx-border-width: 1.5px;
 }
 
 /* ============================================
    Leaderboard View Styles
    ============================================ */
 .leaderboard-container {
-    -fx-background-color: -secondary-bg-color;
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, 
+        -tertiary-bg-color 0%, 
+        -secondary-bg-color 100%);
     -fx-padding: 20px;
+    -fx-border-color: -border-arcane;
+    -fx-border-width: 2px;
 }
 
 .leaderboard-header {
-    -fx-text-fill: -highlight-color;
-    -fx-font-size: 24px;
+    -fx-text-fill: -text-gold;
+    -fx-font-size: 26px;
     -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(212, 175, 55, 0.7), 10, 0.8, 0, 2);
 }
 
 .leaderboard-list {
-    -fx-control-inner-background: -secondary-bg-color;
-    -fx-background-color: -secondary-bg-color;
+    -fx-control-inner-background: -game-bg-color;
+    -fx-background-color: -game-bg-color;
+    -fx-border-color: -border-arcane;
+    -fx-border-width: 1px;
 }
 
 .leaderboard-list .list-cell {
-    -fx-background-color: -secondary-bg-color;
+    -fx-background-color: -game-bg-color;
     -fx-text-fill: -text-color;
+    -fx-border-color: transparent;
 }
 
 .leaderboard-list .list-cell:filled:selected {
-    -fx-background-color: #3a3a3a;
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 0%, 
+        rgba(107, 26, 127, 0.3) 0%, 
+        -iron-gray 100%);
+    -fx-text-fill: -text-gold;
 }
 
 .leaderboard-button {
     -fx-font-size: 14px;
     -fx-min-width: 100px;
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, 
+        -stone-gray 0%, 
+        -iron-gray 100%);
+    -fx-text-fill: -text-color;
+    -fx-border-color: -border-arcane;
+    -fx-border-width: 1.5px;
 }
 
 /* ============================================
@@ -124,56 +242,69 @@
 }
 
 .notification-label {
-    -fx-text-fill: -text-color;
-    -fx-font-family: "Verdana";
-    -fx-font-size: 28px;
+    -fx-text-fill: -text-gold;
+    -fx-font-family: "Verdana", "Arial Black", sans-serif;
+    -fx-font-size: 32px;
     -fx-font-weight: bold;
-    -fx-effect: dropshadow(gaussian, black, 6, 0.5, 0, 1);
+    -fx-effect: dropshadow(gaussian, rgba(212, 175, 55, 0.8), 10, 0.9, 0, 2),
+                dropshadow(gaussian, rgba(0, 0, 0, 0.9), 15, 0.8, 0, 0);
 }
 
 /* ============================================
    Game Over Panel Styles
    ============================================ */
 .game-over-panel {
-    -fx-background-color: rgba(0, 0, 0, 0.7);
+    -fx-background-color: rgba(0, 0, 0, 0.85);
+    -fx-background-image: radial-gradient(center 50% 50%, radius 100%, 
+        rgba(139, 0, 0, 0.2) 0%, 
+        rgba(0, 0, 0, 0.85) 70%);
 }
 
 .game-over-label {
-    -fx-text-fill: red;
-    -fx-font-size: 36px;
+    -fx-text-fill: -blood-crimson;
+    -fx-font-size: 42px;
     -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(139, 0, 0, 0.9), 15, 0.9, 0, 2),
+                dropshadow(gaussian, rgba(0, 0, 0, 1.0), 20, 0.8, 0, 0);
 }
 
 /* ============================================
    Overlay Styles
    ============================================ */
 .overlay-pane {
-    -fx-background-color: rgba(0, 0, 0, 0.5);
+    -fx-background-color: rgba(0, 0, 0, 0.75);
+    -fx-background-image: radial-gradient(center 50% 50%, radius 100%, 
+        rgba(107, 26, 127, 0.15) 0%, 
+        rgba(0, 0, 0, 0.75) 70%);
 }
 
 .overlay-text {
-    -fx-text-fill: -text-color;
-    -fx-font-size: 36px;
+    -fx-text-fill: -text-gold;
+    -fx-font-size: 40px;
     -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(212, 175, 55, 0.8), 12, 0.9, 0, 2),
+                dropshadow(gaussian, rgba(0, 0, 0, 1.0), 18, 0.8, 0, 0);
 }
 
 /* ============================================
    Stat Labels and Score Display
    ============================================ */
 .stat-label {
-    -fx-text-fill: -text-color;
+    -fx-text-fill: -text-dim;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 3, 0.7, 1, 1);
 }
 
 .score-value {
-    -fx-text-fill: -highlight-color;
-    -fx-font-size: 20px;
+    -fx-text-fill: -text-gold;
+    -fx-font-size: 22px;
     -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(212, 175, 55, 0.6), 6, 0.8, 0, 1);
 }
 
 /* ============================================
-   Menu Button Styles
+   Menu Button Styles (General)
    ============================================ */
 .menu-button {
     -fx-font-size: 14px;
@@ -184,4 +315,230 @@
    ============================================ */
 .dimmed {
     -fx-opacity: 0.4;
+}
+
+/* ============================================
+   Mode Selection View Styles
+   ============================================ */
+.mode-selection-container {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, 
+        -tertiary-bg-color 0%, 
+        -game-bg-color 100%);
+    -fx-background-image: radial-gradient(center 50% 50%, radius 100%, 
+        rgba(107, 26, 127, 0.15) 0%, 
+        transparent 80%);
+    -fx-padding: 20px;
+    -fx-spacing: 15px;
+    -fx-border-color: -border-arcane;
+    -fx-border-width: 3px;
+}
+
+.mode-selection-title {
+    -fx-text-fill: -text-gold;
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(212, 175, 55, 0.7), 10, 0.8, 0, 2);
+}
+
+.mode-button {
+    -fx-font-size: 18px;
+    -fx-min-width: 200px;
+    -fx-min-height: 50px;
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, 
+        -stone-gray 0%, 
+        -iron-gray 100%);
+    -fx-text-fill: -text-color;
+    -fx-border-color: -border-arcane;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 6, 0.6, 2, 2);
+}
+
+.mode-button:hover {
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, 
+        -iron-gray 0%, 
+        -stone-gray 100%);
+    -fx-border-color: -highlight-color;
+    -fx-effect: dropshadow(gaussian, rgba(147, 112, 219, 0.7), 10, 0.8, 0, 0);
+}
+
+/* ============================================
+   Victory View Styles
+   ============================================ */
+.victory-container {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, 
+        -tertiary-bg-color 0%, 
+        -game-bg-color 100%);
+    -fx-background-image: radial-gradient(center 50% 50%, radius 100%, 
+        rgba(212, 175, 55, 0.15) 0%, 
+        rgba(107, 26, 127, 0.1) 50%,
+        transparent 80%);
+    -fx-padding: 20px;
+    -fx-spacing: 15px;
+    -fx-border-color: -text-gold;
+    -fx-border-width: 3px;
+    -fx-effect: dropshadow(gaussian, rgba(212, 175, 55, 0.5), 20, 0.9, 0, 0);
+}
+
+.victory-message {
+    -fx-text-fill: -text-gold;
+    -fx-font-size: 38px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(212, 175, 55, 0.9), 12, 0.9, 0, 2),
+                dropshadow(gaussian, rgba(0, 0, 0, 1.0), 20, 0.8, 0, 0);
+}
+
+.victory-text {
+    -fx-text-fill: -text-gold;
+    -fx-font-size: 52px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(212, 175, 55, 1.0), 15, 0.95, 0, 2),
+                dropshadow(gaussian, rgba(0, 0, 0, 1.0), 25, 0.9, 0, 0);
+}
+
+/* ============================================
+   Challenge Timer Styles
+   ============================================ */
+.challenge-timer {
+    -fx-text-fill: white;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px;
+    -fx-background-color: rgba(107, 26, 127, 0.2);
+    -fx-border-color: -cursed-energy;
+    -fx-border-width: 2px;
+    /* Text shadow to make it stand out above the purple highlight */
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.9), 10, 0.9, 0, 0),
+                dropshadow(gaussian, rgba(0, 0, 0, 1.0), 8, 0.8, 0, 0),
+                dropshadow(gaussian, rgba(107, 26, 127, 0.8), 8, 0.8, 0, 0),
+                innershadow(gaussian, rgba(107, 26, 127, 0.4), 5, 0.6, 0, 0);
+}
+
+/* ============================================
+   Options View Styles
+   ============================================ */
+.options-container {
+    -fx-background-color: -secondary-bg-color;
+    -fx-padding: 30px;
+    -fx-spacing: 20px;
+    -fx-border-color: -arcane-color;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, black, 15, 0.7, 0, 0);
+}
+
+.options-header {
+    -fx-text-fill: -highlight-color;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, black, 5, 0.5, 0, 1);
+}
+
+.options-label {
+    -fx-text-fill: -text-color;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.volume-label {
+    -fx-text-fill: -text-dim;
+    -fx-font-size: 12px;
+}
+
+.volume-value-label {
+    -fx-text-fill: -highlight-color;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.volume-slider {
+    -fx-pref-width: 200px;
+}
+
+.volume-slider .track {
+    -fx-background-color: -stone-gray;
+    -fx-background-radius: 5px;
+}
+
+.volume-slider .thumb {
+    -fx-background-color: -highlight-color;
+    -fx-background-radius: 8px;
+    -fx-pref-height: 16px;
+    -fx-pref-width: 16px;
+}
+
+.volume-slider .thumb:hover {
+    -fx-background-color: derive(-highlight-color, 20%);
+}
+
+/* ============================================
+   Main Menu Styles
+   ============================================ */
+.main-menu-root {
+    -fx-background-color: -game-bg-color;
+}
+
+.main-menu-root .image-view {
+    -fx-fit-width: 100%;
+    -fx-fit-height: 100%;
+    -fx-opacity: 0.9;
+}
+
+.main-menu-content {
+    -fx-alignment: center;
+    -fx-background-color: transparent;
+}
+
+.main-menu-title {
+    -fx-text-fill: -text-gold;
+    -fx-font-size: 56px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(212, 175, 55, 0.9), 12, 0.9, 0, 2),
+                dropshadow(gaussian, rgba(0, 0, 0, 1.0), 20, 0.8, 0, 0);
+    -fx-padding: 20px;
+    -fx-font-family: "Verdana", "Arial Black", sans-serif;
+}
+
+.menu-button {
+    -fx-font-size: 16px;
+    -fx-min-width: 150px;
+    -fx-min-height: 40px;
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, 
+        rgba(58, 58, 58, 0.9) 0%, 
+        rgba(42, 31, 31, 0.9) 100%);
+    -fx-text-fill: -text-color;
+    -fx-border-color: -border-arcane;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.9), 6, 0.6, 2, 2);
+}
+
+.menu-button:hover {
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, 
+        rgba(74, 74, 74, 0.95) 0%, 
+        rgba(58, 58, 58, 0.95) 100%);
+    -fx-border-color: -highlight-color;
+    -fx-effect: dropshadow(gaussian, rgba(147, 112, 219, 0.7), 10, 0.8, 0, 0);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.quit-button {
+    -fx-font-size: 16px;
+    -fx-min-width: 150px;
+    -fx-min-height: 40px;
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, 
+        rgba(139, 0, 0, 0.9) 0%, 
+        rgba(90, 0, 0, 0.9) 100%);
+    -fx-text-fill: -text-color;
+    -fx-border-color: -blood-crimson;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(139, 0, 0, 0.8), 8, 0.7, 2, 2);
+}
+
+.quit-button:hover {
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, 
+        rgba(160, 0, 0, 0.95) 0%, 
+        rgba(139, 0, 0, 0.95) 100%);
+    -fx-border-color: -text-color;
+    -fx-effect: dropshadow(gaussian, rgba(139, 0, 0, 1.0), 12, 0.9, 0, 0);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
 }

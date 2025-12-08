@@ -23,6 +23,9 @@ public class SettingsFXController {
     
     @FXML
     private Button leaderboardButton;
+    
+    @FXML
+    private Button backToMenuButton;
 
     private GameController gameController;
     private Stage stage;
@@ -44,6 +47,19 @@ public class SettingsFXController {
     public void setGameController(GameController controller) {
         this.gameController = controller;
         setupPauseKeyHandler();
+        updateKeybindsButtonVisibility();
+    }
+    
+    /**
+     * Updates the visibility of the keybinds button based on game mode.
+     * In challenge mode, keybinds button should be hidden.
+     */
+    private void updateKeybindsButtonVisibility() {
+        if (keybindsButton != null && gameController != null) {
+            boolean isChallengeMode = gameController.getGameMode() == com.comp2042.logic.GameMode.CHALLENGE;
+            keybindsButton.setVisible(!isChallengeMode);
+            keybindsButton.setManaged(!isChallengeMode);
+        }
     }
 
     /**
@@ -81,6 +97,8 @@ public class SettingsFXController {
     private void handleResume() {
         if (gameController != null) {
             gameController.resumeGame();
+            // Resume BGM
+            AudioManager.getInstance().resumeBGM();
             if (stage != null) {
                 stage.close();
             }
@@ -91,6 +109,8 @@ public class SettingsFXController {
     private void handleRestart() {
         if (gameController != null) {
             gameController.restartGame();
+            // Resume BGM after restart (game was paused, so BGM was paused)
+            AudioManager.getInstance().resumeBGM();
             if (stage != null) {
                 stage.close();
             }
@@ -108,6 +128,17 @@ public class SettingsFXController {
     private void handleLeaderboard() {
         if (gameController != null) {
             new LeaderboardView(gameController.getLeaderboardService()).show();
+        }
+    }
+    
+    @FXML
+    private void handleBackToMenu() {
+        if (stage != null) {
+            stage.close();
+        }
+        if (gameController != null) {
+            // Call the back to main menu callback if set
+            gameController.navigateToMainMenu();
         }
     }
 }

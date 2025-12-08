@@ -3,9 +3,14 @@ package com.comp2042;
 import com.comp2042.event.*;
 import com.comp2042.input.InputManager;
 import com.comp2042.logic.Board;
+import com.comp2042.logic.ChallengeModeManager;
+import com.comp2042.logic.GameMode;
 import com.comp2042.state.*;
 import com.comp2042.leaderboard.LeaderboardService;
 import com.comp2042.viewmodel.GameViewModel;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 
 public class GameController  {
     private final Board board ;
@@ -14,16 +19,64 @@ public class GameController  {
     private final LeaderboardService leaderboardService;
     private final GameLoop gameLoop;
     private GameState currentState;
+    private final GameMode gameMode;
+    private ChallengeModeManager challengeModeManager;
+    private Timeline challengeTimer;
+    private Runnable onVictoryCallback;
+    private Runnable onBackToMainMenuCallback;
 
-    public GameController( Board board, GameViewModel viewModel, InputManager inputManager, LeaderboardService leaderboardService, GameLoop gameLoop) {
+    public GameController( Board board, GameViewModel viewModel, InputManager inputManager, LeaderboardService leaderboardService, GameLoop gameLoop, GameMode gameMode) {
         this.board = board;
         this.viewModel = viewModel;
         this.inputManager = inputManager;
         this.leaderboardService = leaderboardService;
         this.gameLoop = gameLoop;
+        this.gameMode = gameMode;
 
         this.currentState = new PlayingState();
         this.gameLoop.setTickAction(this::onTimerTick);
+        
+        viewModel.setGameMode(gameMode);
+        
+        if (gameMode == GameMode.CHALLENGE) {
+            this.challengeModeManager = new ChallengeModeManager();
+            setupChallengeModeCallbacks();
+        }
+    }
+    
+    private void setupChallengeModeCallbacks() {
+        challengeModeManager.setOnLevelCompleteCallback(() -> {
+            // Get the new level number BEFORE updating speed
+            int newLevel = challengeModeManager.getCurrentLevel().getLevelNumber();
+            
+            // Update game speed for new level
+            double baseSpeed = GameConstants.GAME_SPEED_MILLIS;
+            double multiplier = challengeModeManager.getSpeedMultiplier();
+            gameLoop.setSpeed(baseSpeed * multiplier);
+            
+            // Update view model with the new level
+            // setChallengeLevel already handles thread safety
+            viewModel.setChallengeLevel(newLevel);
+            viewModel.pushNotification("Level " + newLevel + "!");
+            
+            // Force a game loop step immediately to ensure brick starts moving
+            // This prevents bricks from getting stuck at spawn after level transition
+            if (currentState instanceof PlayingState) {
+                performGameLoopStep();
+            }
+        });
+        
+        challengeModeManager.setOnVictoryCallback(() -> {
+            handleChallengeVictory();
+        });
+        
+        challengeModeManager.setOnGameOverCallback(() -> {
+            handleChallengeGameOver();
+        });
+        
+        challengeModeManager.setOnTimerUpdateCallback(() -> {
+            viewModel.setChallengeTimer(challengeModeManager.timerDisplayProperty().get());
+        });
     }
 
     public void start() {
@@ -31,7 +84,37 @@ public class GameController  {
         board.createNewBrick();
         refreshViewModel();
 
+        // Ensure game mode is set in view model (important for UI visibility bindings)
+        viewModel.setGameMode(gameMode);
+
+        if (gameMode == GameMode.CHALLENGE) {
+            challengeModeManager.startChallenge(board.getScore().getScore());
+            viewModel.setChallengeLevel(1);
+            startChallengeTimer();
+            // Set initial speed
+            double baseSpeed = GameConstants.GAME_SPEED_MILLIS;
+            double multiplier = challengeModeManager.getSpeedMultiplier();
+            gameLoop.setSpeed(baseSpeed * multiplier);
+        } else {
+            // Endless mode uses default speed
+            gameLoop.setSpeed(GameConstants.GAME_SPEED_MILLIS);
+        }
+
         startGameLoop();
+    }
+    
+    private void startChallengeTimer() {
+        if (challengeTimer != null) {
+            challengeTimer.stop();
+        }
+        
+        challengeTimer = new Timeline(new KeyFrame(Duration.millis(100), e -> {
+            if (challengeModeManager != null && challengeModeManager.isActive()) {
+                challengeModeManager.update(System.currentTimeMillis(), board.getScore().getScore());
+            }
+        }));
+        challengeTimer.setCycleCount(Timeline.INDEFINITE);
+        challengeTimer.play();
     }
 
     public LeaderboardService getLeaderboardService() {
@@ -53,18 +136,32 @@ public class GameController  {
     private void onTimerTick() {
         if (currentState instanceof PlayingState) {
             performGameLoopStep();
+            
+            // Update challenge mode timer (also handled by separate timeline, but this ensures sync)
+            if (gameMode == GameMode.CHALLENGE && challengeModeManager != null && challengeModeManager.isActive()) {
+                challengeModeManager.update(System.currentTimeMillis(), board.getScore().getScore());
+            }
         }
     }
 
     public void pauseGame() {
         setState(new PausedState());
         stopGameLoop();
+        if (challengeTimer != null) {
+            challengeTimer.pause();
+        }
+        // Pause BGM
+        com.comp2042.ui.AudioManager.getInstance().pauseBGM();
         viewModel.setPaused(true);
     }
     public void resumeGame() {
-
         setState(new PlayingState());
         gameLoop.start();
+        if (challengeTimer != null) {
+            challengeTimer.play();
+        }
+        // Resume BGM
+        com.comp2042.ui.AudioManager.getInstance().resumeBGM();
         viewModel.setPaused(false);
     }
     public void restartGame() {
@@ -73,18 +170,56 @@ public class GameController  {
         setState(new PlayingState());
         viewModel.setGameOver(false);
         viewModel.setPaused(false);
+        viewModel.setVictory(false);
+        
+        // Ensure game mode is set in view model (important for UI visibility bindings)
+        // This ensures the level display visibility updates correctly
+        viewModel.setGameMode(gameMode);
+        
+        if (gameMode == GameMode.CHALLENGE && challengeModeManager != null) {
+            challengeModeManager.reset();
+            challengeModeManager.startChallenge(board.getScore().getScore());
+            viewModel.setChallengeLevel(1);
+            startChallengeTimer();
+            double baseSpeed = GameConstants.GAME_SPEED_MILLIS;
+            double multiplier = challengeModeManager.getSpeedMultiplier();
+            gameLoop.setSpeed(baseSpeed * multiplier);
+        } else {
+            // Endless mode - no challenge level needed
+            // The visibility binding will hide the level display automatically
+            gameLoop.setSpeed(GameConstants.GAME_SPEED_MILLIS);
+        }
+        
         refreshViewModel();
         startGameLoop();
     }
 
     public void moveLeft() {
         currentState.handleInput(this, () -> {
-            if(board.moveBrickLeft()) refreshViewModel();
+            boolean shouldMoveLeft = true;
+            if (gameMode == GameMode.CHALLENGE && challengeModeManager != null && challengeModeManager.isKeysReversed()) {
+                shouldMoveLeft = false; // Reversed: left command becomes right
+            }
+            
+            if (shouldMoveLeft) {
+                if(board.moveBrickLeft()) refreshViewModel();
+            } else {
+                if(board.moveBrickRight()) refreshViewModel();
+            }
         });
     }
     public void moveRight() {
         currentState.handleInput(this, () -> {
-            if(board.moveBrickRight()) refreshViewModel();
+            boolean shouldMoveRight = true;
+            if (gameMode == GameMode.CHALLENGE && challengeModeManager != null && challengeModeManager.isKeysReversed()) {
+                shouldMoveRight = false; // Reversed: right command becomes left
+            }
+            
+            if (shouldMoveRight) {
+                if(board.moveBrickRight()) refreshViewModel();
+            } else {
+                if(board.moveBrickLeft()) refreshViewModel();
+            }
         });
     }
     public void rotate() {
@@ -139,8 +274,42 @@ public class GameController  {
     }
 
     private void handleGameOver() {
+        // In challenge mode, check if death occurred before time expired
+        if (gameMode == GameMode.CHALLENGE && challengeModeManager != null && challengeModeManager.isActive()) {
+            challengeModeManager.handlePlayerDeath();
+            return; // ChallengeModeManager will trigger appropriate callback
+        }
+        
+        // Standard game over for endless mode or challenge mode after time expired
         setState(new GameOverState());
         stopGameLoop();
+        if (challengeTimer != null) {
+            challengeTimer.stop();
+        }
+        viewModel.setGameOver(true);
+        leaderboardService.addScore("Player", board.getScore().getScore());
+    }
+    
+    private void handleChallengeVictory() {
+        setState(new GameOverState());
+        stopGameLoop();
+        if (challengeTimer != null) {
+            challengeTimer.stop();
+        }
+        viewModel.setVictory(true);
+        leaderboardService.addScore("Player", board.getScore().getScore());
+        
+        if (onVictoryCallback != null) {
+            onVictoryCallback.run();
+        }
+    }
+    
+    private void handleChallengeGameOver() {
+        setState(new GameOverState());
+        stopGameLoop();
+        if (challengeTimer != null) {
+            challengeTimer.stop();
+        }
         viewModel.setGameOver(true);
         leaderboardService.addScore("Player", board.getScore().getScore());
     }
@@ -151,6 +320,35 @@ public class GameController  {
 
     private void stopGameLoop() {
         gameLoop.stop();
+        if (challengeTimer != null) {
+            challengeTimer.pause();
+        }
+    }
+    
+    public GameMode getGameMode() {
+        return gameMode;
+    }
+    
+    public void setOnVictoryCallback(Runnable callback) {
+        this.onVictoryCallback = callback;
+    }
+    
+    public void setOnBackToMainMenuCallback(Runnable callback) {
+        this.onBackToMainMenuCallback = callback;
+    }
+    
+    /**
+     * Navigates back to the main menu.
+     * Stops the game and calls the callback if set.
+     */
+    public void navigateToMainMenu() {
+        stopGameLoop();
+        if (challengeTimer != null) {
+            challengeTimer.stop();
+        }
+        if (onBackToMainMenuCallback != null) {
+            onBackToMainMenuCallback.run();
+        }
     }
     private void refreshViewModel() {
         int[][] staticBoard = board.getBoardMatrix();

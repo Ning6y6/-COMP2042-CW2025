@@ -7,4 +7,10 @@ public interface GameLoop {
     boolean isRunning();
 
     void setTickAction(Runnable action);
+    
+    /**
+     * Sets the game loop speed in milliseconds.
+     * @param millis The duration between ticks in milliseconds.
+     */
+    void setSpeed(double millis);
 }
