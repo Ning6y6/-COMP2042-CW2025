@@ -19,50 +19,38 @@ public class SettingsView {
         this.controller = controller;
     }
 
-    /**
-     * Shows the Settings window as a modal dialog.
-     * Loads FXML, injects dependencies, and sets up window close handler.
-     */
     public void show() {
         try {
-            // Load FXML file
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/SettingsView.fxml"));
             if (loader.getLocation() == null) {
                 throw new IOException("SettingsView.fxml not found at /fxml/SettingsView.fxml");
             }
             Parent root = loader.load();
-            
-            // Get controller from loader
+
             fxController = loader.getController();
             if (fxController == null) {
                 throw new IllegalStateException("SettingsFXController not found in FXML");
             }
-            
-            // Inject GameController dependency
+
             fxController.setGameController(controller);
-            
-            // Create and configure Stage
+
             stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Settings");
-            
-            // Create Scene and set it on Stage first (needed for setStage to work)
+
             Scene scene = new Scene(root, 300, 500);
             stage.setScene(scene);
-            
-            // Set Stage reference in controller (for window close handling)
-            // This must be done after Scene is set
+
             fxController.setStage(stage);
-            
-            // Set up window close handler to automatically resume game
+
             stage.setOnCloseRequest(e -> {
                 controller.resumeGame();
             });
-            
-            // Show the Stage
+
             stage.show();
-            stage.toFront(); // Ensure it's on top
-            
+            stage.toFront();
+
         } catch (IOException e) {
             System.err.println("Failed to load SettingsView.fxml: " + e.getMessage());
             e.printStackTrace();

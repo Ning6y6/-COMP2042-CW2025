@@ -7,7 +7,6 @@ public class LeaderboardService {
     private final LeaderboardDAO dao;
     private static final int MAX_ENTRIES = 10;
 
-    // Dependency Injection via constructor (DIP)
     public LeaderboardService(LeaderboardDAO dao) {
         this.dao = dao;
     }
@@ -19,7 +18,7 @@ public class LeaderboardService {
     public List<LeaderboardEntry> getTopScores() {
         List<LeaderboardEntry> allScores = dao.loadScores();
         Collections.sort(allScores);
-        // Limit to top 10
+
         if (allScores.size() > MAX_ENTRIES) {
             return allScores.subList(0, MAX_ENTRIES);
         }

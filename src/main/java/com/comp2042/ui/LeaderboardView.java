@@ -9,10 +9,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-/**
- * Window manager for LeaderboardView.
- * Handles Stage creation, modal setup, and FXML loading.
- */
 public class LeaderboardView {
 
     private final LeaderboardService leaderboardService;

@@ -3,7 +3,6 @@ package com.comp2042.leaderboard;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-
 public class LeaderboardEntry implements Serializable, Comparable<LeaderboardEntry> {
     private final String name;
     private final int score;
@@ -25,7 +24,7 @@ public class LeaderboardEntry implements Serializable, Comparable<LeaderboardEnt
 
     @Override
     public int compareTo(LeaderboardEntry other) {
-        // Descending order
+
         return Integer.compare(other.score, this.score);
     }
 

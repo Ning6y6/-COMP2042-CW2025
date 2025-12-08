@@ -41,7 +41,6 @@ public class GameBoard implements Board {
         return tryMove(this.currentX, this.currentY + 1);
     }
 
-
     @Override
     public boolean moveBrickLeft() {
         return tryMove(currentX - 1, currentY);
@@ -86,11 +85,8 @@ public class GameBoard implements Board {
             currentX = GameConstants.SPAWN_X;
             currentY = GameConstants.SPAWN_Y;
 
-
         }
     }
-
-
 
     @Override
     public boolean rotateLeftBrick() {
@@ -139,7 +135,6 @@ public class GameBoard implements Board {
         int ghostY = currentY;
         int[][] shape = brickRotator.getCurrentShape();
 
-        // Loop downwards until we find a collision
         while (!MatrixOperations.intersect(currentGameMatrix, shape, currentX, ghostY + 1)) {
             ghostY++;
         }
@@ -155,7 +150,7 @@ public class GameBoard implements Board {
         if (holdManager.getHeldBrick() != null) {
             heldShape = holdManager.getHeldBrick().getShapeMatrix().get(0);
         }
-        
+
         return new ViewData(
                 brickRotator.getCurrentShape(),
                 currentX,
@@ -176,7 +171,6 @@ public class GameBoard implements Board {
         }
         return nextThreeBricks;
     }
-
 
     private int[][] extractNextBrickShape() {
         Brick nextBrick = brickGenerator.getNextBrick();
@@ -211,7 +205,6 @@ public class GameBoard implements Board {
 
         return score;
     }
-
 
     @Override
     public void newGame() {

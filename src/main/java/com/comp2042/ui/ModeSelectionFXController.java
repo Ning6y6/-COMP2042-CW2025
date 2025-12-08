@@ -3,10 +3,6 @@ package com.comp2042.ui;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
-/**
- * FXML Controller for ModeSelectionView.
- * Acts as a mediator between the FXML view and navigation logic.
- */
 public class ModeSelectionFXController {
 
     @FXML
@@ -24,7 +20,7 @@ public class ModeSelectionFXController {
 
     @FXML
     private void initialize() {
-        // Initialization if needed
+
     }
 
     @FXML
@@ -60,4 +56,3 @@ public class ModeSelectionFXController {
         this.onBackCallback = callback;
     }
 }
-

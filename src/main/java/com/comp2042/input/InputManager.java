@@ -16,7 +16,6 @@ public class InputManager {
     }
 
     private void loadDefaultBindings() {
-        // Movement controls - WASD only
         keyBindingMap.put(KeyCode.A, new MoveLeftCommand());
         keyBindingMap.put(KeyCode.D, new MoveRightCommand());
         keyBindingMap.put(KeyCode.W, new RotateCommand());

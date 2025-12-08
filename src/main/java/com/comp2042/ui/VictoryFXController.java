@@ -5,10 +5,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
-/**
- * FXML Controller for VictoryView.
- * Acts as a mediator between the FXML view and navigation logic.
- */
 public class VictoryFXController {
 
     @FXML
@@ -26,7 +22,7 @@ public class VictoryFXController {
 
     @FXML
     private void initialize() {
-        // Initialization if needed
+
     }
 
     @FXML
@@ -67,4 +63,3 @@ public class VictoryFXController {
         this.onBackToMenuCallback = callback;
     }
 }
-

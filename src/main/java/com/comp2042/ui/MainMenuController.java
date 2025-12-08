@@ -5,10 +5,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-/**
- * FXML Controller for MainMenu.
- * Acts as a mediator between the FXML view and navigation logic.
- */
 public class MainMenuController {
 
     @FXML
@@ -25,10 +21,10 @@ public class MainMenuController {
 
     @FXML
     private javafx.scene.control.Button quitButton;
-    
+
     @FXML
     private ImageView backgroundImage;
-    
+
     @FXML
     private StackPane rootStackPane;
 
@@ -41,7 +37,7 @@ public class MainMenuController {
 
     @FXML
     private void initialize() {
-        // Bind background image to fill the StackPane
+
         if (backgroundImage != null && rootStackPane != null) {
             backgroundImage.fitWidthProperty().bind(rootStackPane.widthProperty());
             backgroundImage.fitHeightProperty().bind(rootStackPane.heightProperty());
@@ -107,4 +103,3 @@ public class MainMenuController {
         this.onQuitCallback = callback;
     }
 }
-

@@ -23,7 +23,7 @@ public class RandomBrickGenerator implements BrickGenerator {
         brickList.add(new SBrick());
         brickList.add(new TBrick());
         brickList.add(new ZBrick());
-        
+
         fillQueue();
     }
 
@@ -86,5 +86,3 @@ public class RandomBrickGenerator implements BrickGenerator {
         return result;
     }
 }
-
-

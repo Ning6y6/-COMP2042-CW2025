@@ -13,7 +13,6 @@ public enum BrickType {
     private final int id;
     private final String cssClass;
 
-
     BrickType(int id, String cssClass) {
         this.id = id;
         this.cssClass = cssClass;
@@ -34,6 +33,6 @@ public enum BrickType {
                 return type;
             }
         }
-        return  EMPTY; // Default fallback
+        return  EMPTY;
     }
 }

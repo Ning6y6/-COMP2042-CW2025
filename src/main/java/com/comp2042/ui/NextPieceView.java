@@ -10,7 +10,6 @@ public class NextPieceView {
 
     private GridPane[] panels;
 
-    // Must be called from GameView to initialize the FXML fields
     public void initialize(GridPane panel1, GridPane panel2, GridPane panel3) {
         this.panels = new GridPane[]{panel1, panel2, panel3};
     }
@@ -28,7 +27,7 @@ public class NextPieceView {
         for (int r = 0; r < data.length; r++) {
             for (int c = 0; c < data[0].length; c++) {
                 if (data[r][c] != 0) {
-                    Rectangle rect = new Rectangle(15, 15); // Smaller preview size
+                    Rectangle rect = new Rectangle(15, 15);
                     rect.getStyleClass().addAll("cell", BrickType.getById(data[r][c]).getCssClass());
                     panel.add(rect, c, r);
                 }
@@ -36,4 +35,3 @@ public class NextPieceView {
         }
     }
 }
-

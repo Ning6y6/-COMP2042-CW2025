@@ -6,10 +6,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.stage.Stage;
 
-/**
- * FXML Controller for OptionsView.
- * Handles volume adjustment for background music.
- */
 public class OptionsFXController {
 
     @FXML
@@ -26,14 +22,12 @@ public class OptionsFXController {
     @FXML
     private void initialize() {
         try {
-            // Get current volume from AudioManager
+
             double currentVolume = AudioManager.getInstance().getVolume();
-            
-            // Set initial slider value
+
             volumeSlider.setValue(currentVolume);
             updateVolumeLabel(currentVolume);
-            
-            // Bind volume changes to AudioManager
+
             volumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
                 double volume = newVal.doubleValue();
                 AudioManager.getInstance().setVolume(volume);
@@ -45,17 +39,11 @@ public class OptionsFXController {
         }
     }
 
-    /**
-     * Updates the volume label to show current percentage.
-     */
     private void updateVolumeLabel(double volume) {
         int percentage = (int) Math.round(volume * 100);
         volumeValueLabel.setText(percentage + "%");
     }
 
-    /**
-     * Sets the Stage reference for window close handling.
-     */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
@@ -67,4 +55,3 @@ public class OptionsFXController {
         }
     }
 }
-

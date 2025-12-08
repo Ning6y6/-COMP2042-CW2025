@@ -11,7 +11,7 @@ public class BrickRotator {
     public NextShapeInfo getNextShape() {
         validateBrickInitialized();
         validateShapeMatrixNotEmpty();
-        
+
         int nextShape = currentShape;
         nextShape = (++nextShape) % brick.getShapeMatrix().size();
         return new NextShapeInfo(brick.getShapeMatrix().get(nextShape), nextShape);
@@ -21,7 +21,7 @@ public class BrickRotator {
         validateBrickInitialized();
         validateShapeMatrixNotEmpty();
         validateCurrentShapeIndex();
-        
+
         return brick.getShapeMatrix().get(currentShape);
     }
 
@@ -53,7 +53,6 @@ public class BrickRotator {
             throw new IllegalStateException("Brick must be initialized before rotation operations");
         }
     }
-
 
     private void validateShapeMatrixNotEmpty() {
         if (brick.getShapeMatrix().isEmpty()) {

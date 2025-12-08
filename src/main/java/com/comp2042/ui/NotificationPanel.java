@@ -8,10 +8,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
-/**
- * Animated notification panel for displaying score updates.
- * Uses CSS classes for styling instead of inline styles.
- */
 public class NotificationPanel extends StackPane {
 
     private static final Duration FADE_IN_TIME = Duration.millis(150);

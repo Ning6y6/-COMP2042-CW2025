@@ -36,51 +36,45 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
-        
-        // Load custom font
+
         try {
             Font.loadFont(getClass().getResourceAsStream("/assets/font/main.otf"), 12);
         } catch (Exception e) {
             System.err.println("Failed to load custom font: " + e.getMessage());
-            // Continue without custom font
+
         }
-        
-        // Initialize and start background music
+
         AudioManager audioManager = AudioManager.getInstance();
         audioManager.playBGM();
-        
-        // Initialize shared services
+
         this.inputManager = new InputManager();
         FileLeaderboardDAO dao = new FileLeaderboardDAO();
         this.leaderboardService = new LeaderboardService(dao);
-        
-        // Show main menu first
+
         showMainMenu();
-        
+
         primaryStage.setTitle("Tetris");
         primaryStage.setWidth(GameConstants.WINDOW_WIDTH);
         primaryStage.setHeight(GameConstants.WINDPW_HEIGHT);
         primaryStage.setResizable(false);
         primaryStage.show();
-        
-        // Stop BGM when window is closed
+
         primaryStage.setOnCloseRequest(e -> {
             audioManager.stopBGM();
         });
     }
-    
+
     private void showMainMenu() {
         try {
-            // Ensure BGM is playing when returning to main menu
+
             AudioManager.getInstance().resumeBGM();
-            
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/main_menu.fxml"));
             Parent root = loader.load();
-            
+
             MainMenuController controller = loader.getController();
             controller.setStage(primaryStage);
-            
-            // Set up callbacks
+
             controller.setOnPlayCallback(() -> showModeSelection());
             controller.setOnControlsCallback(() -> {
                 KeybindsView keybindsView = new KeybindsView(inputManager);
@@ -97,7 +91,7 @@ public class Main extends Application {
             controller.setOnQuitCallback(() -> {
                 Platform.exit();
             });
-            
+
             Scene scene = new Scene(root, GameConstants.WINDOW_WIDTH, GameConstants.WINDPW_HEIGHT);
             primaryStage.setScene(scene);
         } catch (Exception e) {
@@ -105,28 +99,27 @@ public class Main extends Application {
             e.printStackTrace();
         }
     }
-    
+
     private void showModeSelection() {
         ModeSelectionView modeSelection = new ModeSelectionView();
-        
+
         modeSelection.setCallbacks(
             () -> startGame(GameMode.ENDLESS),
             () -> startGame(GameMode.CHALLENGE),
             () -> {
-                // Back to menu - show main menu
+
                 showMainMenu();
             }
         );
-        
+
         Scene modeSelectionScene = modeSelection.createScene(primaryStage);
         primaryStage.setScene(modeSelectionScene);
         primaryStage.setTitle("Tetris - Select Game Mode");
     }
-    
+
     private void startGame(GameMode mode) {
         try {
             Board board = new GameBoard();
-            // Use shared inputManager and leaderboardService
 
             GameViewModel viewModel = new GameViewModel();
             GameLoop gameLoop = new JavaFXGameLoop();
@@ -138,17 +131,14 @@ public class Main extends Application {
             GameFXController fxController = loader.getController();
             fxController.initialize(gameController, viewModel);
 
-            // Set up victory callback
             gameController.setOnVictoryCallback(() -> {
                 showVictoryScreen(gameController);
             });
-            
-            // Set up game over callback
+
             gameController.setOnGameOverCallback(() -> {
                 showGameOverScreen(gameController);
             });
-            
-            // Set up back to main menu callback
+
             gameController.setOnBackToMainMenuCallback(() -> {
                 showMainMenu();
             });
@@ -165,46 +155,44 @@ public class Main extends Application {
             e.printStackTrace();
         }
     }
-    
+
     private void showVictoryScreen(GameController gameController) {
         VictoryView victoryView = new VictoryView();
-        
-        // Get current score from the view model
+
         int finalScore = Integer.parseInt(currentViewModel.scoreProperty().get());
-        
+
         victoryView.setCallbacks(
             () -> {
-                // Play Again - restart current game
+
                 gameController.restartGame();
             },
             () -> {
-                // Back to Menu - show main menu
+
                 showMainMenu();
             }
         );
-        
+
         victoryView.show(primaryStage, finalScore);
     }
-    
+
     private void showGameOverScreen(GameController gameController) {
         GameOverView gameOverView = new GameOverView();
-        
-        // Get current score from the view model
+
         int finalScore = Integer.parseInt(currentViewModel.scoreProperty().get());
-        
+
         gameOverView.setCallbacks(
             () -> {
-                // Restart - restart current game
+
                 gameController.restartGame();
-                // Resume BGM after restart
+
                 AudioManager.getInstance().resumeBGM();
             },
             () -> {
-                // Back to Menu - show main menu
+
                 showMainMenu();
             }
         );
-        
+
         gameOverView.show(primaryStage, finalScore);
     }
 

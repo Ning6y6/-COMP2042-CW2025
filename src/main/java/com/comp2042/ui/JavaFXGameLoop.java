@@ -18,7 +18,7 @@ public class JavaFXGameLoop implements GameLoop {
     }
 
     private void configureTimeline() {
-        // We set up the keyframe, but the action runs the stored 'tickAction'
+
         KeyFrame frame = new KeyFrame(
                 Duration.millis(GameConstants.GAME_SPEED_MILLIS),
                 e -> {
@@ -54,11 +54,11 @@ public class JavaFXGameLoop implements GameLoop {
     public void setTickAction(Runnable action) {
         this.tickAction = action;
     }
-    
+
     @Override
     public void setSpeed(double millis) {
         javafx.animation.Timeline.Status previousStatus = timeline.getStatus();
-        
+
         timeline.stop();
         KeyFrame frame = new KeyFrame(
                 Duration.millis(millis),
@@ -69,10 +69,8 @@ public class JavaFXGameLoop implements GameLoop {
                 }
         );
         this.timeline.getKeyFrames().setAll(frame);
-        
-        // Restart timeline if it was running or paused
-        // Reset to beginning of cycle to ensure consistent timing
-        if (previousStatus == javafx.animation.Timeline.Status.RUNNING || 
+
+        if (previousStatus == javafx.animation.Timeline.Status.RUNNING ||
             previousStatus == javafx.animation.Timeline.Status.PAUSED) {
             timeline.playFromStart();
         }

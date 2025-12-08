@@ -8,7 +8,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-
 public class FileLeaderboardDAO implements LeaderboardDAO {
     private static final String FILE_NAME = "leaderboard.txt";
     private static final Logger LOGGER = Logger.getLogger(FileLeaderboardDAO.class.getName());

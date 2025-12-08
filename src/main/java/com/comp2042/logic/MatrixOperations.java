@@ -17,7 +17,7 @@ public class MatrixOperations {
     public static boolean intersect(final int[][] matrix, final int[][] brick, int x, int y) {
         validateMatrix(matrix, "matrix");
         validateMatrix(brick, "brick");
-        
+
         for (int row = 0; row < brick.length; row++) {
             if (brick[row] == null) {
                 continue;
@@ -43,7 +43,6 @@ public class MatrixOperations {
         return true;
     }
 
-
     public static int[][] copy(int[][] original) {
         if (original == null) {
             throw new IllegalArgumentException("Cannot copy null matrix");
@@ -51,7 +50,7 @@ public class MatrixOperations {
         if (original.length == 0) {
             return new int[0][];
         }
-        
+
         int[][] myInt = new int[original.length][];
         for (int i = 0; i < original.length; i++) {
             if (original[i] == null) {
@@ -65,15 +64,14 @@ public class MatrixOperations {
         return myInt;
     }
 
-
     public static int[][] merge(int[][] filledFields, int[][] brick, int x, int y) {
         validateMatrix(filledFields, "filledFields");
         validateMatrix(brick, "brick");
-        
+
         int[][] copy = copy(filledFields);
         for (int row = 0; row < brick.length; row++) {
             if (brick[row] == null) {
-                continue; // Skip null rows
+                continue;
             }
             for (int col = 0; col < brick[row].length; col++) {
                 int targetX = x + col;
@@ -93,13 +91,12 @@ public class MatrixOperations {
         if (matrix.length == 0) {
             return new ClearRow(0, new int[0][], 0);
         }
-        
-        // Validate that matrix has at least one non-empty row
+
         int maxRowLength = findMaxRowLength(matrix);
         if (maxRowLength == 0) {
             return new ClearRow(0, copy(matrix), 0);
         }
-        
+
         Deque<int[]> newRows = new ArrayDeque<>();
         List<Integer> clearedRows = new ArrayList<>();
 
@@ -109,9 +106,9 @@ public class MatrixOperations {
             }
             int[] tmpRow = new int[matrix[i].length];
             boolean rowToClear = isRowComplete(matrix[i]);
-            
+
             System.arraycopy(matrix[i], 0, tmpRow, 0, matrix[i].length);
-            
+
             if (rowToClear) {
                 clearedRows.add(i);
             } else {
@@ -120,7 +117,7 @@ public class MatrixOperations {
         }
 
         int[][] tmp = buildNewMatrix(matrix.length, maxRowLength, newRows);
-        
+
         return new ClearRow(clearedRows.size(), tmp, 0);
     }
 
@@ -134,7 +131,6 @@ public class MatrixOperations {
         return maxLength;
     }
 
-
     private static boolean isRowComplete(int[] row) {
         if (row == null || row.length == 0) {
             return false;
@@ -147,13 +143,12 @@ public class MatrixOperations {
         return true;
     }
 
-
     private static int[][] buildNewMatrix(int originalHeight, int rowLength, Deque<int[]> newRows) {
         int[][] tmp = new int[originalHeight][rowLength];
         for (int i = originalHeight - 1; i >= 0; i--) {
             int[] row = newRows.pollLast();
             if (row != null) {
-                // Ensure row has correct length
+
                 if (row.length != rowLength) {
                     int[] adjustedRow = new int[rowLength];
                     System.arraycopy(row, 0, adjustedRow, 0, Math.min(row.length, rowLength));
@@ -162,20 +157,18 @@ public class MatrixOperations {
                     tmp[i] = row;
                 }
             } else {
-                // Fill remaining rows with zeros
+
                 tmp[i] = new int[rowLength];
             }
         }
         return tmp;
     }
 
-
     private static void validateMatrix(int[][] matrix, String paramName) {
         if (matrix == null) {
             throw new IllegalArgumentException(paramName + " cannot be null");
         }
     }
-
 
     public static List<int[][]> deepCopyList(List<int[][]> list){
         if (list == null) {

@@ -8,10 +8,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-/**
- * Window manager for Options view.
- * Handles Stage creation, modal setup, and FXML loading.
- */
 public class OptionsView {
 
     private Stage stage;
@@ -20,10 +16,6 @@ public class OptionsView {
     public OptionsView() {
     }
 
-    /**
-     * Shows the Options window as a modal dialog.
-     * Loads FXML and sets up the volume slider.
-     */
     public void show(Stage parentStage) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/OptionsView.fxml"));
@@ -50,7 +42,7 @@ public class OptionsView {
             fxController.setStage(stage);
 
             stage.show();
-            stage.toFront(); // Ensure it's on top
+            stage.toFront();
 
         } catch (IOException e) {
             System.err.println("Failed to load OptionsView.fxml: " + e.getMessage());
@@ -67,4 +59,3 @@ public class OptionsView {
         }
     }
 }
-
