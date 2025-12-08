@@ -1,95 +1,82 @@
 package com.comp2042.ui;
 
 import com.comp2042.GameController;
-import com.comp2042.input.commands.PauseCommand;
-import javafx.geometry.Pos;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class SettingsView {
 
     private final GameController controller;
-    private boolean gameResumed = false;
     private Stage stage;
+    private SettingsFXController fxController;
 
     public SettingsView(GameController controller) {
         this.controller = controller;
     }
 
+    /**
+     * Shows the Settings window as a modal dialog.
+     * Loads FXML, injects dependencies, and sets up window close handler.
+     */
     public void show() {
-        stage = new Stage();
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setTitle("Settings");
-
-        stage.setOnCloseRequest(e -> {
-            if (!gameResumed) {
+        try {
+            // Load FXML file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/SettingsView.fxml"));
+            if (loader.getLocation() == null) {
+                throw new IOException("SettingsView.fxml not found at /fxml/SettingsView.fxml");
+            }
+            Parent root = loader.load();
+            
+            // Get controller from loader
+            fxController = loader.getController();
+            if (fxController == null) {
+                throw new IllegalStateException("SettingsFXController not found in FXML");
+            }
+            
+            // Inject GameController dependency
+            fxController.setGameController(controller);
+            
+            // Create and configure Stage
+            stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Settings");
+            
+            // Create Scene and set it on Stage first (needed for setStage to work)
+            Scene scene = new Scene(root, 300, 450);
+            stage.setScene(scene);
+            
+            // Set Stage reference in controller (for window close handling)
+            // This must be done after Scene is set
+            fxController.setStage(stage);
+            
+            // Set up window close handler to automatically resume game
+            stage.setOnCloseRequest(e -> {
                 controller.resumeGame();
-                gameResumed = true;
-            }
-        });
-
-        VBox layout = new VBox(15);
-        layout.setAlignment(Pos.CENTER);
-        layout.setStyle("-fx-background-color: #2b2b2b; -fx-padding: 20;");
-
-        Button resumeBtn = createStyledButton("Resume");
-        resumeBtn.setOnAction(e -> {
-            controller.resumeGame();
-            gameResumed = true;
-        });
-
-        Button restartBtn = createStyledButton("Restart");
-        restartBtn.setOnAction(e -> {
-            controller.restartGame();
-            gameResumed = true;
-        });
-
-        Button keybindsBtn = createStyledButton("Key Bindings");
-        keybindsBtn.setOnAction(e -> {
-            new KeybindsView(controller.getInputManager()).show();
-        });
-
-        Button leaderboardBtn = createStyledButton("Leaderboard");
-        leaderboardBtn.setOnAction(e -> {
-            new LeaderboardView(controller.getLeaderboardService()).show();
-        });
-
-        layout.getChildren().addAll(createHeader("Paused"), resumeBtn, restartBtn, keybindsBtn, leaderboardBtn);
-
-        Scene scene = new Scene(layout, 300, 450);
-        scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            KeyCode pauseKey = controller.getInputManager().getKeyForCommand(PauseCommand.class);
-            if (event.getCode() == pauseKey) {
-                controller.handlePauseToggle();
-                event.consume();
-            }
-        });
-        stage.setScene(scene);
-        stage.show();
-
+            });
+            
+            // Show the Stage
+            stage.show();
+            stage.toFront(); // Ensure it's on top
+            
+        } catch (IOException e) {
+            System.err.println("Failed to load SettingsView.fxml: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Failed to load SettingsView.fxml", e);
+        } catch (Exception e) {
+            System.err.println("Error showing Settings window: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Failed to show Settings window", e);
+        }
     }
 
     public void close() {
         if (stage != null) {
-            gameResumed = true;
             stage.close();
         }
-    }
-    private Button createStyledButton(String text) {
-        Button btn = new Button(text);
-        btn.setStyle("-fx-font-size: 16px; -fx-min-width: 150px;");
-        return btn;
-    }
-
-    private Label createHeader(String text) {
-        Label lbl = new Label(text);
-        lbl.setStyle("-fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: bold;");
-        return lbl;
     }
 }

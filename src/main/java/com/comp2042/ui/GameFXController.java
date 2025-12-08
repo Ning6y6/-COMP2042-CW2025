@@ -2,6 +2,7 @@ package com.comp2042.ui;
 
 import com.comp2042.GameConstants;
 import com.comp2042.GameController;
+import com.comp2042.input.commands.PauseCommand;
 import com.comp2042.logic.bricks.BrickType;
 import com.comp2042.viewmodel.GameViewModel;
 import javafx.application.Platform;
@@ -9,6 +10,7 @@ import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -130,8 +132,23 @@ public class GameFXController {
     }
 
     private void handleInput(KeyEvent event) {
+        // Check if this is the pause key
+        boolean wasPaused = viewModel.isPausedProperty().get();
+        KeyCode pauseKey = controller.getInputManager().getKeyForCommand(PauseCommand.class);
+        boolean isPauseKey = event.getCode() == pauseKey;
+        
         // Delegate pure input to InputManager via Controller
         controller.getInputManager().handleInput(event.getCode(), controller);
+        
+        // If pause key was pressed and game is now paused, show Settings window
+        if (isPauseKey && !wasPaused) {
+            Platform.runLater(() -> {
+                if (viewModel.isPausedProperty().get()) {
+                    showSettingsWindow();
+                }
+            });
+        }
+        
         event.consume();
     }
 
@@ -143,6 +160,31 @@ public class GameFXController {
 
     @FXML
     public void openSettings() {
-        controller.handlePauseToggle();
+        // Pause the game first if not already paused
+        boolean wasPaused = viewModel.isPausedProperty().get();
+        
+        if (!wasPaused) {
+            // Pause the game first
+            controller.handlePauseToggle();
+            // Use Platform.runLater to ensure pause state is updated, then show settings
+            Platform.runLater(() -> {
+                if (viewModel.isPausedProperty().get()) {
+                    showSettingsWindow();
+                }
+            });
+        } else {
+            // If already paused, just show settings immediately
+            showSettingsWindow();
+        }
+    }
+    
+    private void showSettingsWindow() {
+        try {
+            SettingsView settingsView = new SettingsView(controller);
+            settingsView.show();
+        } catch (Exception e) {
+            System.err.println("ERROR showing Settings window: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

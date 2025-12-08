@@ -30,3 +30,21 @@
 .t-brick { -fx-fill: beige; }
 .z-brick { -fx-fill: burlywood; }
 .empty { -fx-fill: transparent; } /* Hidden/Empty blocks */
+
+/* Settings View Styles */
+.settings-container {
+    -fx-background-color: -game-bg-color;
+    -fx-padding: 20px;
+    -fx-spacing: 15px;
+}
+
+.settings-header {
+    -fx-text-fill: -text-color;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+.settings-button {
+    -fx-font-size: 16px;
+    -fx-min-width: 150px;
+}
