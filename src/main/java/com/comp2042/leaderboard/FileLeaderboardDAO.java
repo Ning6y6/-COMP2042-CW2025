@@ -8,6 +8,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+/**
+ * FileLeaderboardDAO provides data access operations for storing and loading game data.
+ */
 public class FileLeaderboardDAO implements LeaderboardDAO {
     private static final String FILE_NAME = "leaderboard.txt";
     private static final Logger LOGGER = Logger.getLogger(FileLeaderboardDAO.class.getName());
@@ -19,6 +22,11 @@ public class FileLeaderboardDAO implements LeaderboardDAO {
     }
 
     @Override
+    /**
+     * Performs the save score operation.
+     *
+     * @param entry the entry
+     */
     public void saveScore(LeaderboardEntry entry) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
             writer.write(entry.toString());
@@ -29,6 +37,11 @@ public class FileLeaderboardDAO implements LeaderboardDAO {
     }
 
     @Override
+    /**
+     * Performs the load scores operation.
+     *
+     * @return the result of the operation
+     */
     public List<LeaderboardEntry> loadScores() {
         List<LeaderboardEntry> scores = new ArrayList<>();
         File file = new File(FILE_NAME);

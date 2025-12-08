@@ -8,6 +8,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * GameOverView builds and displays the JavaFX view for the corresponding game screen.
+ */
 public class GameOverView {
 
     private Stage stage;
@@ -18,11 +21,23 @@ public class GameOverView {
     public GameOverView() {
     }
 
+    /**
+     * Sets the callbacks.
+     *
+     * @param onRestart the onRestart
+     * @param onBackToMenu the onBackToMenu
+     */
     public void setCallbacks(Runnable onRestart, Runnable onBackToMenu) {
         this.onRestartCallback = onRestart;
         this.onBackToMenuCallback = onBackToMenu;
     }
 
+    /**
+     * Performs the show operation.
+     *
+     * @param parentStage the parentStage
+     * @param finalScore the finalScore
+     */
     public void show(Stage parentStage, int finalScore) {
         try {
 
@@ -66,6 +81,9 @@ public class GameOverView {
         }
     }
 
+    /**
+     * Performs the close operation.
+     */
     public void close() {
         if (stage != null) {
             stage.close();

@@ -12,10 +12,20 @@ public final class NextShapeInfo {
         this.position = position;
     }
 
+    /**
+     * Returns the shape.
+     *
+     * @return the result of the operation
+     */
     public int[][] getShape() {
         return MatrixOperations.copy(shape);
     }
 
+    /**
+     * Returns the position.
+     *
+     * @return the result of the operation
+     */
     public int getPosition() {
         return position;
     }

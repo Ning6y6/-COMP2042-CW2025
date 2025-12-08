@@ -19,6 +19,11 @@ final class OBrick implements Brick {
     }
 
     @Override
+    /**
+     * Returns the shape matrix.
+     *
+     * @return the result of the operation
+     */
     public List<int[][]> getShapeMatrix() {
         return MatrixOperations.deepCopyList(brickMatrix);
     }

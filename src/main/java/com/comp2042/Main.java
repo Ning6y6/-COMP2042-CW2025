@@ -25,6 +25,9 @@ import javafx.scene.Scene;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+/**
+ * Main is part of the comp2042 package and encapsulates behaviour related to main.
+ */
 public class Main extends Application {
 
     private Stage primaryStage;
@@ -34,6 +37,11 @@ public class Main extends Application {
     private LeaderboardService leaderboardService;
 
     @Override
+    /**
+     * Performs the start operation.
+     *
+     * @param primaryStage the primaryStage
+     */
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
 
@@ -64,6 +72,9 @@ public class Main extends Application {
         });
     }
 
+    /**
+     * Performs the show main menu operation.
+     */
     private void showMainMenu() {
         try {
 
@@ -100,16 +111,19 @@ public class Main extends Application {
         }
     }
 
+    /**
+     * Performs the show mode selection operation.
+     */
     private void showModeSelection() {
         ModeSelectionView modeSelection = new ModeSelectionView();
 
         modeSelection.setCallbacks(
-            () -> startGame(GameMode.ENDLESS),
-            () -> startGame(GameMode.CHALLENGE),
-            () -> {
+                () -> startGame(GameMode.ENDLESS),
+                () -> startGame(GameMode.CHALLENGE),
+                () -> {
 
-                showMainMenu();
-            }
+                    showMainMenu();
+                }
         );
 
         Scene modeSelectionScene = modeSelection.createScene(primaryStage);
@@ -117,6 +131,11 @@ public class Main extends Application {
         primaryStage.setTitle("Tetris - Select Game Mode");
     }
 
+    /**
+     * Performs the start game operation.
+     *
+     * @param mode the mode
+     */
     private void startGame(GameMode mode) {
         try {
             Board board = new GameBoard();
@@ -156,46 +175,61 @@ public class Main extends Application {
         }
     }
 
+    /**
+     * Performs the show victory screen operation.
+     *
+     * @param gameController the gameController
+     */
     private void showVictoryScreen(GameController gameController) {
         VictoryView victoryView = new VictoryView();
 
         int finalScore = Integer.parseInt(currentViewModel.scoreProperty().get());
 
         victoryView.setCallbacks(
-            () -> {
+                () -> {
 
-                gameController.restartGame();
-            },
-            () -> {
+                    gameController.restartGame();
+                },
+                () -> {
 
-                showMainMenu();
-            }
+                    showMainMenu();
+                }
         );
 
         victoryView.show(primaryStage, finalScore);
     }
 
+    /**
+     * Performs the show game over screen operation.
+     *
+     * @param gameController the gameController
+     */
     private void showGameOverScreen(GameController gameController) {
         GameOverView gameOverView = new GameOverView();
 
         int finalScore = Integer.parseInt(currentViewModel.scoreProperty().get());
 
         gameOverView.setCallbacks(
-            () -> {
+                () -> {
 
-                gameController.restartGame();
+                    gameController.restartGame();
 
-                AudioManager.getInstance().resumeBGM();
-            },
-            () -> {
+                    AudioManager.getInstance().resumeBGM();
+                },
+                () -> {
 
-                showMainMenu();
-            }
+                    showMainMenu();
+                }
         );
 
         gameOverView.show(primaryStage, finalScore);
     }
 
+    /**
+     * Performs the main operation.
+     *
+     * @param args the args
+     */
     public static void main(String[] args) {
         launch(args);
     }

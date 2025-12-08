@@ -6,6 +6,9 @@ import javafx.scene.input.KeyCode;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * InputManager manages and coordinates input behaviour.
+ */
 public class InputManager {
 
     private final Map<KeyCode, GameCommand> keyBindingMap;
@@ -15,6 +18,9 @@ public class InputManager {
         loadDefaultBindings();
     }
 
+    /**
+     * Performs the load default bindings operation.
+     */
     private void loadDefaultBindings() {
         keyBindingMap.put(KeyCode.A, new MoveLeftCommand());
         keyBindingMap.put(KeyCode.D, new MoveRightCommand());
@@ -26,6 +32,12 @@ public class InputManager {
         keyBindingMap.put(KeyCode.SPACE, new HardDropCommand());
     }
 
+    /**
+     * Performs the rebind key operation.
+     *
+     * @param newKey the newKey
+     * @param command the command
+     */
     public void rebindKey(KeyCode newKey, GameCommand command) throws DuplicateKeyBindingException {
         GameCommand existingCommand = keyBindingMap.get(newKey);
         if (existingCommand != null && !existingCommand.getClass().equals(command.getClass())) {
@@ -41,21 +53,45 @@ public class InputManager {
         keyBindingMap.put(newKey, command);
     }
 
+    /**
+     * Returns whether the key bound is true.
+     *
+     * @param keyCode the keyCode
+     * @return the result of the operation
+     */
     public boolean isKeyBound(KeyCode keyCode) {
         return keyBindingMap.containsKey(keyCode);
     }
 
+    /**
+     * Returns the command name for key.
+     *
+     * @param keyCode the keyCode
+     * @return the result of the operation
+     */
     public String getCommandNameForKey(KeyCode keyCode) {
         GameCommand command = keyBindingMap.get(keyCode);
         return command != null ? command.getName() : null;
     }
 
+    /**
+     * Handles the input.
+     *
+     * @param key the key
+     * @param controller the controller
+     */
     public void handleInput(KeyCode key, GameController controller) {
         if (keyBindingMap.containsKey(key)) {
             keyBindingMap.get(key).execute(controller);
         }
     }
 
+    /**
+     * Returns the key for command.
+     *
+     * @param commandClass the commandClass
+     * @return the result of the operation
+     */
     public KeyCode getKeyForCommand(Class<? extends GameCommand> commandClass) {
         for (Map.Entry<KeyCode, GameCommand> entry : keyBindingMap.entrySet()) {
             if (commandClass.isInstance(entry.getValue())) {

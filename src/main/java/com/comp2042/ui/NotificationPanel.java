@@ -8,6 +8,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
+/**
+ * NotificationPanel is part of the ui package and encapsulates behaviour related to notification panel.
+ */
 public class NotificationPanel extends StackPane {
 
     private static final Duration FADE_IN_TIME = Duration.millis(150);
@@ -30,6 +33,9 @@ public class NotificationPanel extends StackPane {
         setScaleY(0.6);
     }
 
+    /**
+     * Performs the play animation operation.
+     */
     public void playAnimation() {
         FadeTransition fadeIn = new FadeTransition(FADE_IN_TIME, this);
         fadeIn.setToValue(1.0);
@@ -57,6 +63,9 @@ public class NotificationPanel extends StackPane {
         sequence.play();
     }
 
+    /**
+     * Performs the remove from parent operation.
+     */
     private void removeFromParent() {
         Parent parent = getParent();
         if (parent instanceof Pane pane) {

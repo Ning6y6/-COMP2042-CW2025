@@ -22,6 +22,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * KeybindsFXController acts as a controller, coordinating between the game model and the view.
+ */
 public class KeybindsFXController {
 
     @FXML
@@ -46,15 +49,28 @@ public class KeybindsFXController {
         configurableCommands.put("Hard Drop", HardDropCommand.class);
     }
 
+    /**
+     * Sets the input manager.
+     *
+     * @param inputManager the inputManager
+     */
     public void setInputManager(InputManager inputManager) {
         this.inputManager = inputManager;
         populateBindings();
     }
 
+    /**
+     * Sets the stage.
+     *
+     * @param stage the stage
+     */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
+    /**
+     * Performs the populate bindings operation.
+     */
     private void populateBindings() {
         bindingsContainer.getChildren().clear();
         for (Map.Entry<String, Class<? extends GameCommand>> entry : configurableCommands.entrySet()) {
@@ -62,6 +78,13 @@ public class KeybindsFXController {
         }
     }
 
+    /**
+     * Performs the create bind row operation.
+     *
+     * @param labelText the labelText
+     * @param commandClass the commandClass
+     * @return the result of the operation
+     */
     private HBox createBindRow(String labelText, Class<? extends GameCommand> commandClass) {
         HBox row = new HBox();
         row.getStyleClass().add("keybind-row");
@@ -80,6 +103,12 @@ public class KeybindsFXController {
         return row;
     }
 
+    /**
+     * Performs the start key capture operation.
+     *
+     * @param keyBtn the keyBtn
+     * @param commandClass the commandClass
+     */
     private void startKeyCapture(Button keyBtn, Class<? extends GameCommand> commandClass) {
         String originalText = keyBtn.getText();
         keyBtn.setText("Press any key...");
@@ -124,6 +153,12 @@ public class KeybindsFXController {
         }
     }
 
+    /**
+     * Performs the format key code operation.
+     *
+     * @param keyCode the keyCode
+     * @return the result of the operation
+     */
     private String formatKeyCode(KeyCode keyCode) {
         if (keyCode == KeyCode.UNDEFINED) {
             return "Not Set";
@@ -137,29 +172,45 @@ public class KeybindsFXController {
         };
     }
 
+    /**
+     * Returns whether the valid binding key is true.
+     *
+     * @param keyCode the keyCode
+     * @return the result of the operation
+     */
     private boolean isValidBindingKey(KeyCode keyCode) {
         if (keyCode == KeyCode.UNDEFINED) {
             return false;
         }
         return keyCode != KeyCode.SHIFT &&
-               keyCode != KeyCode.CONTROL &&
-               keyCode != KeyCode.ALT &&
-               keyCode != KeyCode.META &&
-               keyCode != KeyCode.WINDOWS;
+                keyCode != KeyCode.CONTROL &&
+                keyCode != KeyCode.ALT &&
+                keyCode != KeyCode.META &&
+                keyCode != KeyCode.WINDOWS;
     }
 
+    /**
+     * Performs the show duplicate key error operation.
+     *
+     * @param ex the ex
+     */
     private void showDuplicateKeyError(DuplicateKeyBindingException ex) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Duplicate Key Binding");
         alert.setHeaderText("Key Already Bound");
         alert.setContentText(String.format(
-            "The key '%s' is already bound to '%s'.\n\n" +
-            "Please choose a different key or unbind the existing command first.",
-            ex.getKeyCode(), ex.getExistingCommand()
+                "The key '%s' is already bound to '%s'.\n\n" +
+                        "Please choose a different key or unbind the existing command first.",
+                ex.getKeyCode(), ex.getExistingCommand()
         ));
         alert.showAndWait();
     }
 
+    /**
+     * Performs the show generic error operation.
+     *
+     * @param message the message
+     */
     private void showGenericError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
@@ -169,6 +220,9 @@ public class KeybindsFXController {
     }
 
     @FXML
+    /**
+     * Handles the close.
+     */
     private void handleClose() {
         if (stage != null) {
             stage.close();

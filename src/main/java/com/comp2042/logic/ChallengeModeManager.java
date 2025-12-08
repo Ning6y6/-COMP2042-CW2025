@@ -6,8 +6,14 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.property.SimpleStringProperty;
 
+/**
+ * ChallengeModeManager manages and coordinates challenge mode behaviour.
+ */
 public class ChallengeModeManager {
 
+    /**
+     * ChallengeLevel is part of the logic package and encapsulates behaviour related to challenge level.
+     */
     public enum ChallengeLevel {
         LEVEL_1(1, 30_000, false, 1.0),
         LEVEL_2(2, 30_000, false, 0.75),
@@ -26,9 +32,29 @@ public class ChallengeModeManager {
             this.speedMultiplier = speedMultiplier;
         }
 
+        /**
+         * Returns the level number.
+         *
+         * @return the result of the operation
+         */
         public int getLevelNumber() { return levelNumber; }
+        /**
+         * Returns the duration millis.
+         *
+         * @return the result of the operation
+         */
         public long getDurationMillis() { return durationMillis; }
+        /**
+         * Returns whether the keys reversed is true.
+         *
+         * @return the result of the operation
+         */
         public boolean isKeysReversed() { return keysReversed; }
+        /**
+         * Returns the speed multiplier.
+         *
+         * @return the result of the operation
+         */
         public double getSpeedMultiplier() { return speedMultiplier; }
     }
 
@@ -49,6 +75,11 @@ public class ChallengeModeManager {
         this.isActive = false;
     }
 
+    /**
+     * Performs the start challenge operation.
+     *
+     * @param initialScore the initialScore
+     */
     public void startChallenge(int initialScore) {
         this.isActive = true;
         this.currentLevel = ChallengeLevel.LEVEL_1;
@@ -58,6 +89,12 @@ public class ChallengeModeManager {
         updateTimerDisplay();
     }
 
+    /**
+     * Updates the state.
+     *
+     * @param currentTimeMillis the currentTimeMillis
+     * @param currentScore the currentScore
+     */
     public void update(long currentTimeMillis, int currentScore) {
         if (!isActive) return;
 
@@ -80,6 +117,11 @@ public class ChallengeModeManager {
         }
     }
 
+    /**
+     * Performs the advance to next level operation.
+     *
+     * @param currentScore the currentScore
+     */
     public void advanceToNextLevel(int currentScore) {
         if (!isActive) return;
 
@@ -108,6 +150,11 @@ public class ChallengeModeManager {
         }
     }
 
+    /**
+     * Handles the time expired.
+     *
+     * @param currentScore the currentScore
+     */
     private void handleTimeExpired(int currentScore) {
         if (currentLevel == ChallengeLevel.LEVEL_4) {
 
@@ -121,6 +168,9 @@ public class ChallengeModeManager {
         }
     }
 
+    /**
+     * Handles the victory.
+     */
     private void handleVictory() {
         isActive = false;
         if (onVictoryCallback != null) {
@@ -128,6 +178,9 @@ public class ChallengeModeManager {
         }
     }
 
+    /**
+     * Handles the player death.
+     */
     public void handlePlayerDeath() {
         if (!isActive) return;
 
@@ -137,10 +190,18 @@ public class ChallengeModeManager {
         }
     }
 
+    /**
+     * Updates the timer display.
+     */
     private void updateTimerDisplay() {
         updateTimerDisplay(currentLevel.getDurationMillis());
     }
 
+    /**
+     * Updates the timer display.
+     *
+     * @param remainingMillis the remainingMillis
+     */
     private void updateTimerDisplay(long remainingMillis) {
         long totalSeconds = remainingMillis / 1000;
         long minutes = totalSeconds / 60;
@@ -154,46 +215,99 @@ public class ChallengeModeManager {
         }
     }
 
+    /**
+     * Returns the current level.
+     *
+     * @return the result of the operation
+     */
     public ChallengeLevel getCurrentLevel() {
         return currentLevel;
     }
 
+    /**
+     * Returns whether the keys reversed is true.
+     *
+     * @return the result of the operation
+     */
     public boolean isKeysReversed() {
         return currentLevel != null && currentLevel.isKeysReversed();
     }
 
+    /**
+     * Returns the speed multiplier.
+     *
+     * @return the result of the operation
+     */
     public double getSpeedMultiplier() {
         return currentLevel != null ? currentLevel.getSpeedMultiplier() : 1.0;
     }
 
+    /**
+     * Returns whether the active is true.
+     *
+     * @return the result of the operation
+     */
     public boolean isActive() {
         return isActive;
     }
 
+    /**
+     * Performs the current level property operation.
+     *
+     * @return the result of the operation
+     */
     public IntegerProperty currentLevelProperty() {
         return currentLevelProperty;
     }
 
+    /**
+     * Performs the timer display property operation.
+     *
+     * @return the result of the operation
+     */
     public StringProperty timerDisplayProperty() {
         return timerDisplayProperty;
     }
 
+    /**
+     * Sets the on level complete callback.
+     *
+     * @param callback the callback
+     */
     public void setOnLevelCompleteCallback(Runnable callback) {
         this.onLevelCompleteCallback = callback;
     }
 
+    /**
+     * Sets the on victory callback.
+     *
+     * @param callback the callback
+     */
     public void setOnVictoryCallback(Runnable callback) {
         this.onVictoryCallback = callback;
     }
 
+    /**
+     * Sets the on game over callback.
+     *
+     * @param callback the callback
+     */
     public void setOnGameOverCallback(Runnable callback) {
         this.onGameOverCallback = callback;
     }
 
+    /**
+     * Sets the on timer update callback.
+     *
+     * @param callback the callback
+     */
     public void setOnTimerUpdateCallback(Runnable callback) {
         this.onTimerUpdateCallback = callback;
     }
 
+    /**
+     * Performs the reset operation.
+     */
     public void reset() {
         this.isActive = false;
         this.currentLevel = null;

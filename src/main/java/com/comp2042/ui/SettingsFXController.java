@@ -9,6 +9,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
+/**
+ * SettingsFXController acts as a controller, coordinating between the game model and the view.
+ */
 public class SettingsFXController {
 
     @FXML
@@ -31,16 +34,27 @@ public class SettingsFXController {
     private boolean pauseKeyHandlerSetup = false;
 
     @FXML
+    /**
+     * Performs the initialize operation.
+     */
     private void initialize() {
 
     }
 
+    /**
+     * Sets the game controller.
+     *
+     * @param controller the controller
+     */
     public void setGameController(GameController controller) {
         this.gameController = controller;
         setupPauseKeyHandler();
         updateKeybindsButtonVisibility();
     }
 
+    /**
+     * Updates the keybinds button visibility.
+     */
     private void updateKeybindsButtonVisibility() {
         if (keybindsButton != null && gameController != null) {
             boolean isChallengeMode = gameController.getGameMode() == com.comp2042.logic.GameMode.CHALLENGE;
@@ -49,11 +63,19 @@ public class SettingsFXController {
         }
     }
 
+    /**
+     * Sets the stage.
+     *
+     * @param stage the stage
+     */
     public void setStage(Stage stage) {
         this.stage = stage;
         setupPauseKeyHandler();
     }
 
+    /**
+     * Sets the pause key handler.
+     */
     private void setupPauseKeyHandler() {
         if (pauseKeyHandlerSetup || stage == null || stage.getScene() == null || gameController == null) {
             return;
@@ -72,6 +94,9 @@ public class SettingsFXController {
     }
 
     @FXML
+    /**
+     * Handles the resume.
+     */
     private void handleResume() {
         if (gameController != null) {
             gameController.resumeGame();
@@ -84,6 +109,9 @@ public class SettingsFXController {
     }
 
     @FXML
+    /**
+     * Handles the restart.
+     */
     private void handleRestart() {
         if (gameController != null) {
             gameController.restartGame();
@@ -96,6 +124,9 @@ public class SettingsFXController {
     }
 
     @FXML
+    /**
+     * Handles the keybinds.
+     */
     private void handleKeybinds() {
         if (gameController != null) {
             new KeybindsView(gameController.getInputManager()).show();
@@ -103,6 +134,9 @@ public class SettingsFXController {
     }
 
     @FXML
+    /**
+     * Handles the leaderboard.
+     */
     private void handleLeaderboard() {
         if (gameController != null) {
             new LeaderboardView(gameController.getLeaderboardService()).show();
@@ -110,6 +144,9 @@ public class SettingsFXController {
     }
 
     @FXML
+    /**
+     * Handles the back to menu.
+     */
     private void handleBackToMenu() {
         if (stage != null) {
             stage.close();

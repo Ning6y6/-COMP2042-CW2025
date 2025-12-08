@@ -6,6 +6,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.stage.Stage;
 
+/**
+ * OptionsFXController acts as a controller, coordinating between the game model and the view.
+ */
 public class OptionsFXController {
 
     @FXML
@@ -20,6 +23,9 @@ public class OptionsFXController {
     private Stage stage;
 
     @FXML
+    /**
+     * Performs the initialize operation.
+     */
     private void initialize() {
         try {
 
@@ -39,16 +45,29 @@ public class OptionsFXController {
         }
     }
 
+    /**
+     * Updates the volume label.
+     *
+     * @param volume the volume
+     */
     private void updateVolumeLabel(double volume) {
         int percentage = (int) Math.round(volume * 100);
         volumeValueLabel.setText(percentage + "%");
     }
 
+    /**
+     * Sets the stage.
+     *
+     * @param stage the stage
+     */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
     @FXML
+    /**
+     * Handles the close.
+     */
     private void handleClose() {
         if (stage != null) {
             stage.close();

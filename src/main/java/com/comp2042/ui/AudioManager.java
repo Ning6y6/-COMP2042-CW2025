@@ -3,6 +3,9 @@ package com.comp2042.ui;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
+/**
+ * AudioManager manages and coordinates audio behaviour.
+ */
 public class AudioManager {
 
     private MediaPlayer bgmPlayer;
@@ -13,6 +16,11 @@ public class AudioManager {
 
     }
 
+    /**
+     * Returns the instance.
+     *
+     * @return the result of the operation
+     */
     public static AudioManager getInstance() {
         if (instance == null) {
             instance = new AudioManager();
@@ -20,6 +28,9 @@ public class AudioManager {
         return instance;
     }
 
+    /**
+     * Performs the play bgm operation.
+     */
     public void playBGM() {
         try {
 
@@ -37,6 +48,9 @@ public class AudioManager {
         }
     }
 
+    /**
+     * Performs the stop bgm operation.
+     */
     public void stopBGM() {
         if (bgmPlayer != null) {
             bgmPlayer.stop();
@@ -45,12 +59,18 @@ public class AudioManager {
         }
     }
 
+    /**
+     * Performs the pause bgm operation.
+     */
     public void pauseBGM() {
         if (bgmPlayer != null && bgmPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
             bgmPlayer.pause();
         }
     }
 
+    /**
+     * Performs the resume bgm operation.
+     */
     public void resumeBGM() {
         if (bgmPlayer == null) {
 
@@ -66,6 +86,11 @@ public class AudioManager {
         }
     }
 
+    /**
+     * Sets the volume.
+     *
+     * @param volume the volume
+     */
     public void setVolume(double volume) {
         currentVolume = Math.max(0.0, Math.min(1.0, volume));
         if (bgmPlayer != null) {
@@ -73,6 +98,11 @@ public class AudioManager {
         }
     }
 
+    /**
+     * Returns the volume.
+     *
+     * @return the result of the operation
+     */
     public double getVolume() {
         return currentVolume;
     }

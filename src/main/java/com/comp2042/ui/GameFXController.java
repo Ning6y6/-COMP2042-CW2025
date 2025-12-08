@@ -22,6 +22,9 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import java.util.List;
 
+/**
+ * GameFXController acts as a controller, coordinating between the game model and the view.
+ */
 public class GameFXController {
 
     @FXML private StackPane rootStackPane;
@@ -53,6 +56,12 @@ public class GameFXController {
 
     private Rectangle[][] displayGridNodes;
 
+    /**
+     * Performs the initialize operation.
+     *
+     * @param controller the controller
+     * @param viewModel the viewModel
+     */
     public void initialize(GameController controller, GameViewModel viewModel) {
         this.controller = controller;
         this.viewModel = viewModel;
@@ -76,11 +85,11 @@ public class GameFXController {
         if (levelHeaderLabel != null && levelLabel != null) {
 
             javafx.beans.binding.BooleanBinding isChallengeMode = Bindings.createBooleanBinding(
-                () -> {
-                    GameMode mode = viewModel.gameModeProperty().get();
-                    return mode != null && mode == GameMode.CHALLENGE;
-                },
-                viewModel.gameModeProperty()
+                    () -> {
+                        GameMode mode = viewModel.gameModeProperty().get();
+                        return mode != null && mode == GameMode.CHALLENGE;
+                    },
+                    viewModel.gameModeProperty()
             );
 
             levelHeaderLabel.visibleProperty().bind(isChallengeMode);
@@ -90,28 +99,28 @@ public class GameFXController {
             levelLabel.managedProperty().bind(levelLabel.visibleProperty());
 
             levelLabel.textProperty().bind(
-                Bindings.createStringBinding(
-                    () -> {
-                        GameMode mode = viewModel.gameModeProperty().get();
-                        if (mode != null && mode == GameMode.CHALLENGE) {
-                            int level = viewModel.challengeLevelProperty().get();
-                            return String.valueOf(level);
-                        }
-                        return "";
-                    },
-                    viewModel.gameModeProperty(),
-                    viewModel.challengeLevelProperty()
-                )
+                    Bindings.createStringBinding(
+                            () -> {
+                                GameMode mode = viewModel.gameModeProperty().get();
+                                if (mode != null && mode == GameMode.CHALLENGE) {
+                                    int level = viewModel.challengeLevelProperty().get();
+                                    return String.valueOf(level);
+                                }
+                                return "";
+                            },
+                            viewModel.gameModeProperty(),
+                            viewModel.challengeLevelProperty()
+                    )
             );
         }
 
         if (challengeTimerLabel != null) {
             challengeTimerLabel.textProperty().bind(viewModel.challengeTimerProperty());
             challengeTimerLabel.visibleProperty().bind(
-                Bindings.createBooleanBinding(
-                    () -> viewModel.gameModeProperty().get() == GameMode.CHALLENGE,
-                    viewModel.gameModeProperty()
-                )
+                    Bindings.createBooleanBinding(
+                            () -> viewModel.gameModeProperty().get() == GameMode.CHALLENGE,
+                            viewModel.gameModeProperty()
+                    )
             );
             challengeTimerLabel.managedProperty().bind(challengeTimerLabel.visibleProperty());
         }
@@ -144,7 +153,7 @@ public class GameFXController {
 
         if (victoryPane != null) {
             victoryPane.visibleProperty().bind(
-                Bindings.and(viewModel.isGameOverProperty(), viewModel.isVictoryProperty())
+                    Bindings.and(viewModel.isGameOverProperty(), viewModel.isVictoryProperty())
             );
         }
 
@@ -166,6 +175,9 @@ public class GameFXController {
         Platform.runLater(() ->rootStackPane.requestFocus());
     }
 
+    /**
+     * Performs the init grid nodes operation.
+     */
     private void initGridNodes() {
         mainBoardGrid.getChildren().clear();
         displayGridNodes = new Rectangle[GameConstants.VISIBLE_ROWS][GameConstants.BOARD_WIDTH];
@@ -180,6 +192,11 @@ public class GameFXController {
         }
     }
 
+    /**
+     * Renders the board.
+     *
+     * @param gridData the gridData
+     */
     private void renderBoard(int[][] gridData) {
         if (gridData == null) return;
 
@@ -218,6 +235,13 @@ public class GameFXController {
         }
     }
 
+    /**
+     * Returns the ghost cell info.
+     *
+     * @param boardRow the boardRow
+     * @param boardCol the boardCol
+     * @return the result of the operation
+     */
     private GhostCellInfo getGhostCellInfo(int boardRow, int boardCol) {
         if (currentViewData == null) {
             return new GhostCellInfo(false, 0);
@@ -258,6 +282,13 @@ public class GameFXController {
         return new GhostCellInfo(false, 0);
     }
 
+    /**
+     * Updates the cell.
+     *
+     * @param rect the rect
+     * @param typeId the typeId
+     * @param isGhost the isGhost
+     */
     private void updateCell(Rectangle rect, int typeId, boolean isGhost) {
         rect.getStyleClass().clear();
         rect.getStyleClass().add("cell");
@@ -270,6 +301,11 @@ public class GameFXController {
         }
     }
 
+    /**
+     * Handles the input.
+     *
+     * @param event the event
+     */
     private void handleInput(KeyEvent event) {
 
         boolean wasPaused = viewModel.isPausedProperty().get();
@@ -289,6 +325,11 @@ public class GameFXController {
         event.consume();
     }
 
+    /**
+     * Performs the show notification operation.
+     *
+     * @param message the message
+     */
     private void showNotification(String message) {
         NotificationPanel panel = new NotificationPanel(message);
         rootStackPane.getChildren().add(panel);
@@ -296,6 +337,9 @@ public class GameFXController {
     }
 
     @FXML
+    /**
+     * Performs the open settings operation.
+     */
     public void openSettings() {
 
         boolean wasPaused = viewModel.isPausedProperty().get();
@@ -315,6 +359,9 @@ public class GameFXController {
         }
     }
 
+    /**
+     * Performs the show settings window operation.
+     */
     private void showSettingsWindow() {
         try {
             SettingsView settingsView = new SettingsView(controller);
@@ -325,6 +372,9 @@ public class GameFXController {
         }
     }
 
+    /**
+     * Performs the initialize background images operation.
+     */
     private void initializeBackgroundImages() {
         if (backgroundImageLevel123 != null && rootStackPane != null) {
             backgroundImageLevel123.fitWidthProperty().bind(rootStackPane.widthProperty());
@@ -339,6 +389,9 @@ public class GameFXController {
         }
     }
 
+    /**
+     * Updates the background for mode.
+     */
     private void updateBackgroundForMode() {
         GameMode mode = viewModel.gameModeProperty().get();
         if (mode == GameMode.ENDLESS) {
@@ -355,6 +408,12 @@ public class GameFXController {
         }
     }
 
+    /**
+     * Handles the challenge level change.
+     *
+     * @param oldLevel the oldLevel
+     * @param newLevel the newLevel
+     */
     private void handleChallengeLevelChange(int oldLevel, int newLevel) {
         previousChallengeLevel = oldLevel;
 
@@ -366,6 +425,9 @@ public class GameFXController {
         }
     }
 
+    /**
+     * Performs the show level123 background operation.
+     */
     private void showLevel123Background() {
         if (backgroundImageLevel123 != null && backgroundImageLevel4 != null) {
             backgroundImageLevel123.setOpacity(1.0);
@@ -373,6 +435,9 @@ public class GameFXController {
         }
     }
 
+    /**
+     * Performs the show level4 background operation.
+     */
     private void showLevel4Background() {
         if (backgroundImageLevel123 != null && backgroundImageLevel4 != null) {
             backgroundImageLevel123.setOpacity(0.0);
@@ -380,6 +445,9 @@ public class GameFXController {
         }
     }
 
+    /**
+     * Performs the transition to level4 background operation.
+     */
     private void transitionToLevel4Background() {
         if (backgroundImageLevel123 == null || backgroundImageLevel4 == null) {
             return;
@@ -397,6 +465,9 @@ public class GameFXController {
         fadeIn.play();
     }
 
+    /**
+     * Performs the transition to level123 background operation.
+     */
     private void transitionToLevel123Background() {
         if (backgroundImageLevel123 == null || backgroundImageLevel4 == null) {
             return;

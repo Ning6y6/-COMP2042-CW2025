@@ -7,6 +7,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * ModeSelectionView builds and displays the JavaFX view for the corresponding game screen.
+ */
 public class ModeSelectionView {
 
     private ModeSelectionFXController fxController;
@@ -17,12 +20,25 @@ public class ModeSelectionView {
     public ModeSelectionView() {
     }
 
+    /**
+     * Sets the callbacks.
+     *
+     * @param onEndlessMode the onEndlessMode
+     * @param onChallengeMode the onChallengeMode
+     * @param onBack the onBack
+     */
     public void setCallbacks(Runnable onEndlessMode, Runnable onChallengeMode, Runnable onBack) {
         this.onEndlessModeCallback = onEndlessMode;
         this.onChallengeModeCallback = onChallengeMode;
         this.onBackCallback = onBack;
     }
 
+    /**
+     * Performs the create scene operation.
+     *
+     * @param primaryStage the primaryStage
+     * @return the result of the operation
+     */
     public Scene createScene(Stage primaryStage) {
         try {
 

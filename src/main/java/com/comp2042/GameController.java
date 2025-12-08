@@ -12,6 +12,9 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
 
+/**
+ * GameController acts as a controller, coordinating between the game model and the view.
+ */
 public class GameController  {
     private final Board board ;
     private final GameViewModel viewModel;
@@ -45,6 +48,9 @@ public class GameController  {
         }
     }
 
+    /**
+     * Sets the challenge mode callbacks.
+     */
     private void setupChallengeModeCallbacks() {
         challengeModeManager.setOnLevelCompleteCallback(() -> {
 
@@ -75,6 +81,9 @@ public class GameController  {
         });
     }
 
+    /**
+     * Performs the start operation.
+     */
     public void start() {
         board.newGame();
         board.createNewBrick();
@@ -98,6 +107,9 @@ public class GameController  {
         startGameLoop();
     }
 
+    /**
+     * Performs the start challenge timer operation.
+     */
     private void startChallengeTimer() {
         if (challengeTimer != null) {
             challengeTimer.stop();
@@ -112,22 +124,43 @@ public class GameController  {
         challengeTimer.play();
     }
 
+    /**
+     * Returns the leaderboard service.
+     *
+     * @return the result of the operation
+     */
     public LeaderboardService getLeaderboardService() {
         return leaderboardService;
     }
 
+    /**
+     * Returns the input manager.
+     *
+     * @return the result of the operation
+     */
     public InputManager getInputManager() {
         return inputManager;
     }
 
+    /**
+     * Sets the state.
+     *
+     * @param state the state
+     */
     public void setState(GameState state) {
         this.currentState = state;
     }
 
+    /**
+     * Handles the pause toggle.
+     */
     public void handlePauseToggle() {
         currentState.handleTogglePause(this);
     }
 
+    /**
+     * Callback invoked when  timer tick occurs.
+     */
     private void onTimerTick() {
         if (currentState instanceof PlayingState) {
             performGameLoopStep();
@@ -138,6 +171,9 @@ public class GameController  {
         }
     }
 
+    /**
+     * Performs the pause game operation.
+     */
     public void pauseGame() {
         setState(new PausedState());
         stopGameLoop();
@@ -148,6 +184,9 @@ public class GameController  {
         com.comp2042.ui.AudioManager.getInstance().pauseBGM();
         viewModel.setPaused(true);
     }
+    /**
+     * Performs the resume game operation.
+     */
     public void resumeGame() {
         setState(new PlayingState());
         gameLoop.start();
@@ -158,6 +197,9 @@ public class GameController  {
         com.comp2042.ui.AudioManager.getInstance().resumeBGM();
         viewModel.setPaused(false);
     }
+    /**
+     * Performs the restart game operation.
+     */
     public void restartGame() {
         board.newGame();
         board.createNewBrick();
@@ -185,6 +227,9 @@ public class GameController  {
         startGameLoop();
     }
 
+    /**
+     * Performs the move left operation.
+     */
     public void moveLeft() {
         currentState.handleInput(this, () -> {
             boolean shouldMoveLeft = true;
@@ -199,6 +244,9 @@ public class GameController  {
             }
         });
     }
+    /**
+     * Performs the move right operation.
+     */
     public void moveRight() {
         currentState.handleInput(this, () -> {
             boolean shouldMoveRight = true;
@@ -213,11 +261,17 @@ public class GameController  {
             }
         });
     }
+    /**
+     * Performs the rotate operation.
+     */
     public void rotate() {
         currentState.handleInput(this, () -> {
             if(board.rotateLeftBrick()) refreshViewModel();
         });
     }
+    /**
+     * Performs the soft drop operation.
+     */
     public void softDrop() {
         currentState.handleInput(this, () -> {
             if(board.moveBrickDown()) {
@@ -227,6 +281,9 @@ public class GameController  {
         });
     }
 
+    /**
+     * Performs the hard drop operation.
+     */
     public void hardDrop() {
         currentState.handleInput(this, () -> {
             board.hardDrop();
@@ -235,6 +292,9 @@ public class GameController  {
         });
     }
 
+    /**
+     * Performs the hold operation.
+     */
     public void hold() {
         currentState.handleInput(this, () -> {
             board.holdBrick();
@@ -242,6 +302,9 @@ public class GameController  {
         });
     }
 
+    /**
+     * Performs the process brick landing operation.
+     */
     private void processBrickLanding() {
         board.mergeBrickToBackground();
         ClearRow result = board.clearRows();
@@ -256,6 +319,9 @@ public class GameController  {
 
     }
 
+    /**
+     * Performs the perform game loop step operation.
+     */
     public void performGameLoopStep() {
         boolean canMove = board.moveBrickDown();
         if (!canMove) {
@@ -264,6 +330,9 @@ public class GameController  {
         refreshViewModel();
     }
 
+    /**
+     * Handles the game over.
+     */
     private void handleGameOver() {
 
         if (gameMode == GameMode.CHALLENGE && challengeModeManager != null && challengeModeManager.isActive()) {
@@ -284,6 +353,9 @@ public class GameController  {
         }
     }
 
+    /**
+     * Handles the challenge victory.
+     */
     private void handleChallengeVictory() {
         setState(new GameOverState());
         stopGameLoop();
@@ -298,6 +370,9 @@ public class GameController  {
         }
     }
 
+    /**
+     * Handles the challenge game over.
+     */
     private void handleChallengeGameOver() {
         setState(new GameOverState());
         stopGameLoop();
@@ -312,10 +387,16 @@ public class GameController  {
         }
     }
 
+    /**
+     * Performs the start game loop operation.
+     */
     private void startGameLoop() {
         gameLoop.start();
     }
 
+    /**
+     * Performs the stop game loop operation.
+     */
     private void stopGameLoop() {
         gameLoop.stop();
         if (challengeTimer != null) {
@@ -323,22 +404,45 @@ public class GameController  {
         }
     }
 
+    /**
+     * Returns the game mode.
+     *
+     * @return the result of the operation
+     */
     public GameMode getGameMode() {
         return gameMode;
     }
 
+    /**
+     * Sets the on victory callback.
+     *
+     * @param callback the callback
+     */
     public void setOnVictoryCallback(Runnable callback) {
         this.onVictoryCallback = callback;
     }
 
+    /**
+     * Sets the on game over callback.
+     *
+     * @param callback the callback
+     */
     public void setOnGameOverCallback(Runnable callback) {
         this.onGameOverCallback = callback;
     }
 
+    /**
+     * Sets the on back to main menu callback.
+     *
+     * @param callback the callback
+     */
     public void setOnBackToMainMenuCallback(Runnable callback) {
         this.onBackToMainMenuCallback = callback;
     }
 
+    /**
+     * Performs the navigate to main menu operation.
+     */
     public void navigateToMainMenu() {
         stopGameLoop();
         if (challengeTimer != null) {
@@ -348,6 +452,9 @@ public class GameController  {
             onBackToMainMenuCallback.run();
         }
     }
+    /**
+     * Performs the refresh view model operation.
+     */
     private void refreshViewModel() {
         int[][] staticBoard = board.getBoardMatrix();
         ViewData viewData = board.getViewData();
@@ -362,6 +469,13 @@ public class GameController  {
         viewModel.updateHoldPiece(viewData.getHeldBrickData(), viewData.isHoldAllowed());
     }
 
+    /**
+     * Performs the merge falling piece to grid operation.
+     *
+     * @param board the board
+     * @param brick the brick
+     * @return the result of the operation
+     */
     private int[][] mergeFallingPieceToGrid(int[][] board, ViewData brick) {
 
         int[][] combined = com.comp2042.logic.MatrixOperations.copy(board);
@@ -373,6 +487,14 @@ public class GameController  {
         return combined;
     }
 
+    /**
+     * Renders the piece on grid.
+     *
+     * @param grid the grid
+     * @param piece the piece
+     * @param x the x
+     * @param y the y
+     */
     private void drawPieceOnGrid(int[][] grid, int[][] piece, int x, int y) {
         for (int r = 0; r < piece.length; r++) {
             for (int c = 0; c < piece[r].length; c++) {

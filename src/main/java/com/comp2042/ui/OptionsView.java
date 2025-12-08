@@ -8,6 +8,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * OptionsView builds and displays the JavaFX view for the corresponding game screen.
+ */
 public class OptionsView {
 
     private Stage stage;
@@ -16,6 +19,11 @@ public class OptionsView {
     public OptionsView() {
     }
 
+    /**
+     * Performs the show operation.
+     *
+     * @param parentStage the parentStage
+     */
     public void show(Stage parentStage) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/OptionsView.fxml"));
@@ -53,6 +61,9 @@ public class OptionsView {
         }
     }
 
+    /**
+     * Performs the close operation.
+     */
     public void close() {
         if (stage != null) {
             stage.close();

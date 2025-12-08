@@ -8,6 +8,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * VictoryView builds and displays the JavaFX view for the corresponding game screen.
+ */
 public class VictoryView {
 
     private Stage stage;
@@ -18,11 +21,23 @@ public class VictoryView {
     public VictoryView() {
     }
 
+    /**
+     * Sets the callbacks.
+     *
+     * @param onPlayAgain the onPlayAgain
+     * @param onBackToMenu the onBackToMenu
+     */
     public void setCallbacks(Runnable onPlayAgain, Runnable onBackToMenu) {
         this.onPlayAgainCallback = onPlayAgain;
         this.onBackToMenuCallback = onBackToMenu;
     }
 
+    /**
+     * Performs the show operation.
+     *
+     * @param parentStage the parentStage
+     * @param finalScore the finalScore
+     */
     public void show(Stage parentStage, int finalScore) {
         try {
 
@@ -66,6 +81,9 @@ public class VictoryView {
         }
     }
 
+    /**
+     * Performs the close operation.
+     */
     public void close() {
         if (stage != null) {
             stage.close();

@@ -8,6 +8,9 @@ import javafx.stage.Stage;
 
 import java.util.List;
 
+/**
+ * LeaderboardFXController acts as a controller, coordinating between the game model and the view.
+ */
 public class LeaderboardFXController {
 
     @FXML
@@ -16,15 +19,28 @@ public class LeaderboardFXController {
     private LeaderboardService leaderboardService;
     private Stage stage;
 
+    /**
+     * Sets the leaderboard service.
+     *
+     * @param leaderboardService the leaderboardService
+     */
     public void setLeaderboardService(LeaderboardService leaderboardService) {
         this.leaderboardService = leaderboardService;
         populateScores();
     }
 
+    /**
+     * Sets the stage.
+     *
+     * @param stage the stage
+     */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
+    /**
+     * Performs the populate scores operation.
+     */
     private void populateScores() {
         scoreListView.getItems().clear();
 
@@ -43,6 +59,9 @@ public class LeaderboardFXController {
     }
 
     @FXML
+    /**
+     * Handles the close.
+     */
     private void handleClose() {
         if (stage != null) {
             stage.close();

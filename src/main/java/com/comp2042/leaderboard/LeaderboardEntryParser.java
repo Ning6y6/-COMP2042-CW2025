@@ -3,11 +3,20 @@ package com.comp2042.leaderboard;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
+/**
+ * LeaderboardEntryParser is part of the leaderboard package and encapsulates behaviour related to leaderboard entry parser.
+ */
 public class LeaderboardEntryParser {
 
     private static final String SEPARATOR = ":";
     private static final int EXPECTED_PARTS = 3;
 
+    /**
+     * Performs the parse operation.
+     *
+     * @param line the line
+     * @return the result of the operation
+     */
     public LeaderboardEntry parse(String line) {
         if (line == null || line.trim().isEmpty()) {
             return null;

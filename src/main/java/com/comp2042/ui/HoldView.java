@@ -6,13 +6,27 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+/**
+ * HoldView builds and displays the JavaFX view for the corresponding game screen.
+ */
 public class HoldView {
     private GridPane holdPane;
 
+    /**
+     * Performs the initialize operation.
+     *
+     * @param holdPane the holdPane
+     */
     public void initialize(GridPane holdPane) {
         this.holdPane = holdPane;
     }
 
+    /**
+     * Updates the hold panel.
+     *
+     * @param brickData the brickData
+     * @param allowed the allowed
+     */
     public void updateHoldPanel(int[][] brickData, boolean allowed) {
         holdPane.getChildren().clear();
         if(brickData == null)return;

@@ -9,6 +9,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * KeybindsView builds and displays the JavaFX view for the corresponding game screen.
+ */
 public class KeybindsView {
 
     private final InputManager inputManager;
@@ -18,6 +21,9 @@ public class KeybindsView {
         this.inputManager = inputManager;
     }
 
+    /**
+     * Performs the show operation.
+     */
     public void show() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/KeybindsView.fxml"));
@@ -45,6 +51,9 @@ public class KeybindsView {
         }
     }
 
+    /**
+     * Performs the close operation.
+     */
     public void close() {
         if (stage != null) {
             stage.close();

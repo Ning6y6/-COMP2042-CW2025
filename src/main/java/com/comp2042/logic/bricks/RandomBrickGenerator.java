@@ -8,6 +8,9 @@ import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * RandomBrickGenerator is part of the bricks package and encapsulates behaviour related to random brick generator.
+ */
 public class RandomBrickGenerator implements BrickGenerator {
 
     private final List<Brick> brickList;
@@ -27,6 +30,9 @@ public class RandomBrickGenerator implements BrickGenerator {
         fillQueue();
     }
 
+    /**
+     * Performs the fill queue operation.
+     */
     private void fillQueue() {
         while (nextBricks.size() < GameConstants.PREVIEW_COUNT){
             nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
@@ -35,6 +41,11 @@ public class RandomBrickGenerator implements BrickGenerator {
     }
 
     @Override
+    /**
+     * Returns the brick.
+     *
+     * @return the result of the operation
+     */
     public Brick getBrick() {
         ensureQueueHasBricks();
         Brick brick = nextBricks.poll();
@@ -48,6 +59,11 @@ public class RandomBrickGenerator implements BrickGenerator {
     }
 
     @Override
+    /**
+     * Returns the next brick.
+     *
+     * @return the result of the operation
+     */
     public Brick getNextBrick() {
         ensureQueueHasBricks();
         Brick nextBrick = nextBricks.peek();
@@ -57,6 +73,9 @@ public class RandomBrickGenerator implements BrickGenerator {
         return nextBrick;
     }
 
+    /**
+     * Performs the ensure queue has bricks operation.
+     */
     private void ensureQueueHasBricks() {
         if (nextBricks.isEmpty()) {
             fillQueue();
@@ -64,6 +83,11 @@ public class RandomBrickGenerator implements BrickGenerator {
     }
 
     @Override
+    /**
+     * Returns the next three bricks.
+     *
+     * @return the result of the operation
+     */
     public List<Brick> getNextThreeBricks() {
         ensureQueueHasBricks();
         List<Brick> result = new ArrayList<>();

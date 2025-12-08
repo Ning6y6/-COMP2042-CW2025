@@ -9,6 +9,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * LeaderboardView builds and displays the JavaFX view for the corresponding game screen.
+ */
 public class LeaderboardView {
 
     private final LeaderboardService leaderboardService;
@@ -18,6 +21,9 @@ public class LeaderboardView {
         this.leaderboardService = leaderboardService;
     }
 
+    /**
+     * Performs the show operation.
+     */
     public void show() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/LeaderboardView.fxml"));
@@ -43,6 +49,9 @@ public class LeaderboardView {
         }
     }
 
+    /**
+     * Performs the close operation.
+     */
     public void close() {
         if (stage != null) {
             stage.close();

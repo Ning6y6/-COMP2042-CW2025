@@ -14,14 +14,29 @@ public final class ClearRow {
         this.scoreBonus = scoreBonus;
     }
 
+    /**
+     * Returns the lines removed.
+     *
+     * @return the result of the operation
+     */
     public int getLinesRemoved() {
         return linesRemoved;
     }
 
+    /**
+     * Returns the new matrix.
+     *
+     * @return the result of the operation
+     */
     public int[][] getNewMatrix() {
         return MatrixOperations.copy(newMatrix);
     }
 
+    /**
+     * Returns the score bonus.
+     *
+     * @return the result of the operation
+     */
     public int getScoreBonus() {
         return scoreBonus;
     }

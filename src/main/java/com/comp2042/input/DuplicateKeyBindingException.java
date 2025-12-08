@@ -2,6 +2,9 @@ package com.comp2042.input;
 
 import javafx.scene.input.KeyCode;
 
+/**
+ * DuplicateKeyBindingException represents an application-specific exception type used in the game.
+ */
 public class DuplicateKeyBindingException extends Exception {
 
     private final KeyCode keyCode;
@@ -13,10 +16,20 @@ public class DuplicateKeyBindingException extends Exception {
         this.existingCommand = existingCommand;
     }
 
+    /**
+     * Returns the key code.
+     *
+     * @return the result of the operation
+     */
     public KeyCode getKeyCode() {
         return keyCode;
     }
 
+    /**
+     * Returns the existing command.
+     *
+     * @return the result of the operation
+     */
     public String getExistingCommand() {
         return existingCommand;
     }

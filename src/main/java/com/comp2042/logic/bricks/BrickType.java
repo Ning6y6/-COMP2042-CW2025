@@ -1,5 +1,8 @@
 package com.comp2042.logic.bricks;
 
+/**
+ * BrickType is part of the bricks package and encapsulates behaviour related to brick type.
+ */
 public enum BrickType {
     EMPTY(0, "empty"),
     I(1, "i-brick"),
@@ -19,14 +22,30 @@ public enum BrickType {
 
     }
 
+    /**
+     * Returns the id.
+     *
+     * @return the result of the operation
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * Returns the css class.
+     *
+     * @return the result of the operation
+     */
     public String getCssClass() {
         return cssClass;
     }
 
+    /**
+     * Returns the by id.
+     *
+     * @param id the id
+     * @return the result of the operation
+     */
     public static BrickType getById(int id) {
         for (BrickType type : values()) {
             if (type.id == id) {

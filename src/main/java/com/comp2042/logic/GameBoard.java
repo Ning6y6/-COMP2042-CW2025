@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * GameBoard is part of the logic package and encapsulates behaviour related to game board.
+ */
 public class GameBoard implements Board {
 
     private final BrickGenerator brickGenerator;
@@ -37,20 +40,42 @@ public class GameBoard implements Board {
     }
 
     @Override
+    /**
+     * Performs the move brick down operation.
+     *
+     * @return the result of the operation
+     */
     public boolean moveBrickDown() {
         return tryMove(this.currentX, this.currentY + 1);
     }
 
     @Override
+    /**
+     * Performs the move brick left operation.
+     *
+     * @return the result of the operation
+     */
     public boolean moveBrickLeft() {
         return tryMove(currentX - 1, currentY);
     }
 
     @Override
+    /**
+     * Performs the move brick right operation.
+     *
+     * @return the result of the operation
+     */
     public boolean moveBrickRight() {
         return tryMove(currentX + 1, currentY);
     }
 
+    /**
+     * Performs the try move operation.
+     *
+     * @param nextX the nextX
+     * @param nextY the nextY
+     * @return the result of the operation
+     */
     private boolean tryMove(int nextX, int nextY) {
         boolean conflict = MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), nextX, nextY);
         if (conflict) {
@@ -62,6 +87,9 @@ public class GameBoard implements Board {
         }
     }
     @Override
+    /**
+     * Performs the hard drop operation.
+     */
     public void hardDrop() {
         while (moveBrickDown()) {
             score.add(1);
@@ -69,6 +97,9 @@ public class GameBoard implements Board {
     }
 
     @Override
+    /**
+     * Performs the hold brick operation.
+     */
     public void holdBrick() {
         Brick currentBrick = brickRotator.getBrick();
 
@@ -89,6 +120,11 @@ public class GameBoard implements Board {
     }
 
     @Override
+    /**
+     * Performs the rotate left brick operation.
+     *
+     * @return the result of the operation
+     */
     public boolean rotateLeftBrick() {
         NextShapeInfo nextShapeInfo = brickRotator.getNextShape();
         int[][] nextMatrix = nextShapeInfo.getShape();
@@ -113,11 +149,22 @@ public class GameBoard implements Board {
     }
 
     @Override
+    /**
+     * Performs the create new brick operation.
+     *
+     * @return the result of the operation
+     */
     public boolean createNewBrick() {
         Brick nextBrick = brickGenerator.getBrick();
         return spawnBrick(nextBrick);
     }
 
+    /**
+     * Performs the spawn brick operation.
+     *
+     * @param brick the brick
+     * @return the result of the operation
+     */
     private boolean spawnBrick(Brick brick) {
         brickRotator.setBrick(brick);
         currentX = GameConstants.SPAWN_X;
@@ -127,10 +174,20 @@ public class GameBoard implements Board {
     }
 
     @Override
+    /**
+     * Returns the board matrix.
+     *
+     * @return the result of the operation
+     */
     public int[][] getBoardMatrix() {
         return MatrixOperations.copy(currentGameMatrix);
     }
 
+    /**
+     * Performs the calculate ghost y operation.
+     *
+     * @return the result of the operation
+     */
     private int calculateGhostY() {
         int ghostY = currentY;
         int[][] shape = brickRotator.getCurrentShape();
@@ -142,6 +199,11 @@ public class GameBoard implements Board {
     }
 
     @Override
+    /**
+     * Returns the view data.
+     *
+     * @return the result of the operation
+     */
     public ViewData getViewData() {
         List<int[][]> nextThreeBricks = extractNextThreeBrickShapes();
         int[][] nextBrickShape = extractNextBrickShape();
@@ -163,6 +225,11 @@ public class GameBoard implements Board {
         );
     }
 
+    /**
+     * Performs the extract next three brick shapes operation.
+     *
+     * @return the result of the operation
+     */
     private List<int[][]> extractNextThreeBrickShapes() {
         List<int[][]> nextThreeBricks = new ArrayList<>();
         for (Brick brick : brickGenerator.getNextThreeBricks()) {
@@ -172,12 +239,22 @@ public class GameBoard implements Board {
         return nextThreeBricks;
     }
 
+    /**
+     * Performs the extract next brick shape operation.
+     *
+     * @return the result of the operation
+     */
     private int[][] extractNextBrickShape() {
         Brick nextBrick = brickGenerator.getNextBrick();
         validateBrickShapeMatrix(nextBrick);
         return nextBrick.getShapeMatrix().getFirst();
     }
 
+    /**
+     * Performs the validate brick shape matrix operation.
+     *
+     * @param brick the brick
+     */
     private void validateBrickShapeMatrix(Brick brick) {
         if (brick == null) {
             throw new IllegalStateException("Brick cannot be null");
@@ -188,11 +265,19 @@ public class GameBoard implements Board {
     }
 
     @Override
+    /**
+     * Performs the merge brick to background operation.
+     */
     public void mergeBrickToBackground() {
         currentGameMatrix = MatrixOperations.merge(currentGameMatrix, brickRotator.getCurrentShape(), currentX, currentY);
     }
 
     @Override
+    /**
+     * Performs the clear rows operation.
+     *
+     * @return the result of the operation
+     */
     public ClearRow clearRows() {
         ClearRow clearRow = MatrixOperations.checkRemoving(currentGameMatrix);
         currentGameMatrix = clearRow.getNewMatrix();
@@ -201,12 +286,20 @@ public class GameBoard implements Board {
     }
 
     @Override
+    /**
+     * Returns the score.
+     *
+     * @return the result of the operation
+     */
     public Score getScore() {
 
         return score;
     }
 
     @Override
+    /**
+     * Performs the new game operation.
+     */
     public void newGame() {
         currentGameMatrix = new int[GameConstants.BOARD_HEIGHT][GameConstants.BOARD_WIDTH];
         score.reset();

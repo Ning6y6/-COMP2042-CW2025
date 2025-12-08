@@ -5,6 +5,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
+/**
+ * VictoryFXController acts as a controller, coordinating between the game model and the view.
+ */
 public class VictoryFXController {
 
     @FXML
@@ -21,11 +24,17 @@ public class VictoryFXController {
     private Runnable onBackToMenuCallback;
 
     @FXML
+    /**
+     * Performs the initialize operation.
+     */
     private void initialize() {
 
     }
 
     @FXML
+    /**
+     * Handles the play again.
+     */
     private void handlePlayAgain() {
         if (onPlayAgainCallback != null) {
             onPlayAgainCallback.run();
@@ -36,6 +45,9 @@ public class VictoryFXController {
     }
 
     @FXML
+    /**
+     * Handles the back to menu.
+     */
     private void handleBackToMenu() {
         if (onBackToMenuCallback != null) {
             onBackToMenuCallback.run();
@@ -45,20 +57,40 @@ public class VictoryFXController {
         }
     }
 
+    /**
+     * Sets the stage.
+     *
+     * @param stage the stage
+     */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
+    /**
+     * Sets the score.
+     *
+     * @param score the score
+     */
     public void setScore(int score) {
         if (scoreLabel != null) {
             scoreLabel.setText("Score: " + score);
         }
     }
 
+    /**
+     * Sets the on play again callback.
+     *
+     * @param callback the callback
+     */
     public void setOnPlayAgainCallback(Runnable callback) {
         this.onPlayAgainCallback = callback;
     }
 
+    /**
+     * Sets the on back to menu callback.
+     *
+     * @param callback the callback
+     */
     public void setOnBackToMenuCallback(Runnable callback) {
         this.onBackToMenuCallback = callback;
     }

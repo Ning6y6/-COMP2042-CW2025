@@ -9,6 +9,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * SettingsView builds and displays the JavaFX view for the corresponding game screen.
+ */
 public class SettingsView {
 
     private final GameController controller;
@@ -19,6 +22,9 @@ public class SettingsView {
         this.controller = controller;
     }
 
+    /**
+     * Performs the show operation.
+     */
     public void show() {
         try {
 
@@ -62,6 +68,9 @@ public class SettingsView {
         }
     }
 
+    /**
+     * Performs the close operation.
+     */
     public void close() {
         if (stage != null) {
             stage.close();
