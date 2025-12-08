@@ -1,15 +1,17 @@
 package com.comp2042.ui;
-import com.comp2042.GameController;
+
 import javafx.animation.*;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.util.Duration;
 
+/**
+ * Animated notification panel for displaying score updates.
+ * Uses CSS classes for styling instead of inline styles.
+ */
 public class NotificationPanel extends StackPane {
 
     private static final Duration FADE_IN_TIME = Duration.millis(150);
@@ -19,25 +21,20 @@ public class NotificationPanel extends StackPane {
     private static final double FLOAT_DISTANCE = 40;
 
     public NotificationPanel(String text) {
+        getStyleClass().add("notification-panel");
         setPickOnBounds(false);
         setAlignment(Pos.CENTER);
 
         Label scoreLabel = new Label(text);
-        scoreLabel.setTextFill(Color.WHITE);
-        scoreLabel.setFont(Font.font("Verdana", 28));
-        scoreLabel.setStyle("-fx-font-weight: bold; "
-                + "-fx-effect: dropshadow(gaussian, black, 6, 0.5, 0, 1);");
+        scoreLabel.getStyleClass().add("notification-label");
 
         getChildren().add(scoreLabel);
         setOpacity(1);
         setScaleX(0.6);
         setScaleY(0.6);
-        playAnimation();
-
     }
 
     public void playAnimation() {
-
         FadeTransition fadeIn = new FadeTransition(FADE_IN_TIME, this);
         fadeIn.setToValue(1.0);
 
@@ -54,9 +51,6 @@ public class NotificationPanel extends StackPane {
         ScaleTransition shrinkOut = new ScaleTransition(FADE_OUT_TIME, this);
         shrinkOut.setToX(0.8);
         shrinkOut.setToY(0.8);
-
-        ParallelTransition appear = new ParallelTransition(fadeIn, popIn);
-        ParallelTransition disappear = new ParallelTransition(fadeOut, shrinkOut);
 
         SequentialTransition sequence = new SequentialTransition(
                 new ParallelTransition(fadeIn, popIn),

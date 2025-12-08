@@ -31,6 +31,7 @@ public class GameFXController {
     @FXML private GridPane nextBrickPanel2;
     @FXML private GridPane nextBrickPanel3;
     @FXML private StackPane overlayPane;
+    @FXML private Label overlayLabel;
 
     private GameController controller;
     private GameViewModel viewModel;
@@ -76,6 +77,18 @@ public class GameFXController {
         overlayPane.visibleProperty().bind(
                 Bindings.or(viewModel.isPausedProperty(), viewModel.isGameOverProperty())
         );
+
+        // Update overlay text based on game state
+        viewModel.isGameOverProperty().addListener((obs, wasGameOver, isGameOver) -> {
+            if (isGameOver) {
+                overlayLabel.setText("GAME OVER");
+            }
+        });
+        viewModel.isPausedProperty().addListener((obs, wasPaused, isPaused) -> {
+            if (isPaused && !viewModel.isGameOverProperty().get()) {
+                overlayLabel.setText("PAUSED");
+            }
+        });
 
         // 5. Notifications
         viewModel.notificationMessageProperty().addListener((obs, oldVal, newVal) -> {

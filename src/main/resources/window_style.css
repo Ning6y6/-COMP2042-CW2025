@@ -2,7 +2,9 @@
 .root {
     -brick-size: 30; /* Replaces GameConstants.BRICK_SIZE */
     -game-bg-color: #2c2c2c;
+    -secondary-bg-color: #2b2b2b;
     -text-color: #ffffff;
+    -highlight-color: yellow;
     -grid-line-color: #4a4a4a;
 }
 
@@ -31,7 +33,9 @@
 .z-brick { -fx-fill: burlywood; }
 .empty { -fx-fill: transparent; } /* Hidden/Empty blocks */
 
-/* Settings View Styles */
+/* ============================================
+   Settings View Styles
+   ============================================ */
 .settings-container {
     -fx-background-color: -game-bg-color;
     -fx-padding: 20px;
@@ -47,4 +51,137 @@
 .settings-button {
     -fx-font-size: 16px;
     -fx-min-width: 150px;
+}
+
+/* ============================================
+   Keybinds View Styles
+   ============================================ */
+.keybinds-container {
+    -fx-background-color: -secondary-bg-color;
+    -fx-padding: 20px;
+}
+
+.keybinds-header {
+    -fx-text-fill: -text-color;
+    -fx-font-size: 18px;
+}
+
+.keybind-row {
+    -fx-spacing: 15px;
+}
+
+.keybind-label {
+    -fx-text-fill: -text-color;
+    -fx-min-width: 100px;
+}
+
+.keybind-button {
+    -fx-min-width: 100px;
+}
+
+.keybinds-button {
+    -fx-font-size: 14px;
+}
+
+/* ============================================
+   Leaderboard View Styles
+   ============================================ */
+.leaderboard-container {
+    -fx-background-color: -secondary-bg-color;
+    -fx-padding: 20px;
+}
+
+.leaderboard-header {
+    -fx-text-fill: -highlight-color;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+.leaderboard-list {
+    -fx-control-inner-background: -secondary-bg-color;
+    -fx-background-color: -secondary-bg-color;
+}
+
+.leaderboard-list .list-cell {
+    -fx-background-color: -secondary-bg-color;
+    -fx-text-fill: -text-color;
+}
+
+.leaderboard-list .list-cell:filled:selected {
+    -fx-background-color: #3a3a3a;
+}
+
+.leaderboard-button {
+    -fx-font-size: 14px;
+    -fx-min-width: 100px;
+}
+
+/* ============================================
+   Notification Panel Styles
+   ============================================ */
+.notification-panel {
+    -fx-alignment: center;
+}
+
+.notification-label {
+    -fx-text-fill: -text-color;
+    -fx-font-family: "Verdana";
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, black, 6, 0.5, 0, 1);
+}
+
+/* ============================================
+   Game Over Panel Styles
+   ============================================ */
+.game-over-panel {
+    -fx-background-color: rgba(0, 0, 0, 0.7);
+}
+
+.game-over-label {
+    -fx-text-fill: red;
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+}
+
+/* ============================================
+   Overlay Styles
+   ============================================ */
+.overlay-pane {
+    -fx-background-color: rgba(0, 0, 0, 0.5);
+}
+
+.overlay-text {
+    -fx-text-fill: -text-color;
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+}
+
+/* ============================================
+   Stat Labels and Score Display
+   ============================================ */
+.stat-label {
+    -fx-text-fill: -text-color;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.score-value {
+    -fx-text-fill: -highlight-color;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+/* ============================================
+   Menu Button Styles
+   ============================================ */
+.menu-button {
+    -fx-font-size: 14px;
+}
+
+/* ============================================
+   Hold Piece Dimmed State
+   ============================================ */
+.dimmed {
+    -fx-opacity: 0.4;
 }

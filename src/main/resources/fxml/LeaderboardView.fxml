@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="rootContainer" styleClass="leaderboard-container" alignment="CENTER" spacing="15"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.comp2042.ui.LeaderboardFXController">
+
+    <Label text="TOP 10 SCORES" styleClass="leaderboard-header"/>
+
+    <ListView fx:id="scoreListView" styleClass="leaderboard-list" prefHeight="250"/>
+
+    <Button text="Close" styleClass="leaderboard-button" onAction="#handleClose"/>
+
+    <stylesheets>
+        <URL value="@../window_style.css"/>
+    </stylesheets>
+</VBox>

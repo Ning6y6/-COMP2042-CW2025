@@ -1,64 +1,55 @@
 package com.comp2042.ui;
 
-import com.comp2042.leaderboard.LeaderboardEntry;
 import com.comp2042.leaderboard.LeaderboardService;
-import javafx.geometry.Pos;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.util.List;
+import java.io.IOException;
 
+/**
+ * Window manager for LeaderboardView.
+ * Handles Stage creation, modal setup, and FXML loading.
+ */
 public class LeaderboardView {
 
     private final LeaderboardService leaderboardService;
+    private Stage stage;
 
     public LeaderboardView(LeaderboardService leaderboardService) {
         this.leaderboardService = leaderboardService;
     }
 
     public void show() {
-        Stage stage = new Stage();
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setTitle("High Scores");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/LeaderboardView.fxml"));
+            Parent root = loader.load();
 
-        VBox layout = new VBox(15);
-        layout.setAlignment(Pos.CENTER);
-        layout.setStyle("-fx-background-color: #2b2b2b; -fx-padding: 20;");
+            LeaderboardFXController controller = loader.getController();
 
-        Label header = new Label("TOP 10 SCORES");
-        header.setStyle("-fx-text-fill: yellow; -fx-font-size: 24px; -fx-font-weight: bold;");
+            stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("High Scores");
 
-        ListView<String> scoreList = new ListView<>();
-        scoreList.setStyle("-fx-control-inner-background: #2b2b2b; -fx-background-color: #2b2b2b;");
+            Scene scene = new Scene(root, 350, 450);
+            stage.setScene(scene);
 
-        List<LeaderboardEntry> topScores = leaderboardService.getTopScores();
+            controller.setLeaderboardService(leaderboardService);
+            controller.setStage(stage);
 
-        if (topScores.isEmpty()) {
-            scoreList.getItems().add("No scores yet!");
-        } else {
-            int rank = 1;
-            for (LeaderboardEntry entry : topScores) {
-                String displayText = String.format("%d. %s - %d pts (%s)",
-                        rank++, entry.getName(), entry.getScore(), entry.getDate());
-                scoreList.getItems().add(displayText);
-            }
+            stage.showAndWait();
+
+        } catch (IOException e) {
+            System.err.println("Failed to load LeaderboardView.fxml: " + e.getMessage());
+            e.printStackTrace();
         }
+    }
 
-        scoreList.setPrefHeight(250);
-
-        Button closeBtn = new Button("Close");
-        closeBtn.setStyle("-fx-font-size: 14px; -fx-min-width: 100px;");
-        closeBtn.setOnAction(e -> stage.close());
-
-        layout.getChildren().addAll(header, scoreList, closeBtn);
-
-        Scene scene = new Scene(layout, 350, 450);
-        stage.setScene(scene);
-        stage.showAndWait();
+    public void close() {
+        if (stage != null) {
+            stage.close();
+        }
     }
 }

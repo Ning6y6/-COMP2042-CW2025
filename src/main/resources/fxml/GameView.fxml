@@ -44,8 +44,8 @@
         </VBox>
     </HBox>
 
-    <StackPane fx:id="overlayPane" visible="false" style="-fx-background-color: rgba(0,0,0,0.5);">
-        <Label text="PAUSED" styleClass="overlay-text"/>
+    <StackPane fx:id="overlayPane" visible="false" styleClass="overlay-pane">
+        <Label fx:id="overlayLabel" text="PAUSED" styleClass="overlay-text"/>
     </StackPane>
 
     <stylesheets>
