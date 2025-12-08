@@ -83,11 +83,51 @@
     -fx-fill: linear-gradient(from 0% 0% to 100% 100%, #6b4423 0%, #4a2f18 100%);
     -fx-effect: dropshadow(gaussian, rgba(107, 68, 35, 0.4), 5, 0.7, 0, 0);
 }
-.z-brick { 
+.z-brick {
     -fx-fill: linear-gradient(from 0% 0% to 100% 100%, #9370db 0%, #6a4a9b 100%);
     -fx-effect: dropshadow(gaussian, rgba(147, 112, 219, 0.5), 5, 0.7, 0, 0);
 }
 .empty { -fx-fill: transparent; } /* Hidden/Empty blocks */
+
+/* ============================================
+   Ghost Piece Styles (Lighter/Transparent)
+   ============================================ */
+/* Ghost pieces with semi-transparent fill and colored outline for better visibility */
+.ghost.i-brick {
+    -fx-fill: rgba(74, 144, 226, 0.25);
+    -fx-stroke: rgba(74, 144, 226, 0.6);
+    -fx-stroke-width: 2px;
+}
+.ghost.j-brick {
+    -fx-fill: rgba(107, 26, 127, 0.25);
+    -fx-stroke: rgba(107, 26, 127, 0.6);
+    -fx-stroke-width: 2px;
+}
+.ghost.l-brick {
+    -fx-fill: rgba(45, 74, 45, 0.25);
+    -fx-stroke: rgba(60, 120, 60, 0.6);
+    -fx-stroke-width: 2px;
+}
+.ghost.o-brick {
+    -fx-fill: rgba(212, 175, 55, 0.25);
+    -fx-stroke: rgba(212, 175, 55, 0.6);
+    -fx-stroke-width: 2px;
+}
+.ghost.s-brick {
+    -fx-fill: rgba(139, 0, 0, 0.25);
+    -fx-stroke: rgba(139, 0, 0, 0.6);
+    -fx-stroke-width: 2px;
+}
+.ghost.t-brick {
+    -fx-fill: rgba(107, 68, 35, 0.25);
+    -fx-stroke: rgba(107, 68, 35, 0.6);
+    -fx-stroke-width: 2px;
+}
+.ghost.z-brick {
+    -fx-fill: rgba(147, 112, 219, 0.25);
+    -fx-stroke: rgba(147, 112, 219, 0.6);
+    -fx-stroke-width: 2px;
+}
 
 /* ============================================
    Settings View Styles
@@ -384,6 +424,32 @@
     -fx-font-size: 38px;
     -fx-font-weight: bold;
     -fx-effect: dropshadow(gaussian, rgba(212, 175, 55, 0.9), 12, 0.9, 0, 2),
+                dropshadow(gaussian, rgba(0, 0, 0, 1.0), 20, 0.8, 0, 0);
+}
+
+/* ============================================
+   Game Over View Styles
+   ============================================ */
+.game-over-container {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, 
+        -tertiary-bg-color 0%, 
+        -game-bg-color 100%);
+    -fx-background-image: radial-gradient(center 50% 50%, radius 100%, 
+        rgba(139, 0, 0, 0.15) 0%, 
+        rgba(107, 26, 127, 0.1) 50%,
+        transparent 80%);
+    -fx-padding: 20px;
+    -fx-spacing: 15px;
+    -fx-border-color: -blood-crimson;
+    -fx-border-width: 3px;
+    -fx-effect: dropshadow(gaussian, rgba(139, 0, 0, 0.5), 20, 0.8, 0, 0);
+}
+
+.game-over-message {
+    -fx-text-fill: -blood-crimson;
+    -fx-font-size: 38px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(139, 0, 0, 0.9), 12, 0.9, 0, 2),
                 dropshadow(gaussian, rgba(0, 0, 0, 1.0), 20, 0.8, 0, 0);
 }
 

@@ -23,6 +23,7 @@ public class GameController  {
     private ChallengeModeManager challengeModeManager;
     private Timeline challengeTimer;
     private Runnable onVictoryCallback;
+    private Runnable onGameOverCallback;
     private Runnable onBackToMainMenuCallback;
 
     public GameController( Board board, GameViewModel viewModel, InputManager inputManager, LeaderboardService leaderboardService, GameLoop gameLoop, GameMode gameMode) {
@@ -288,6 +289,10 @@ public class GameController  {
         }
         viewModel.setGameOver(true);
         leaderboardService.addScore("Player", board.getScore().getScore());
+        
+        if (onGameOverCallback != null) {
+            onGameOverCallback.run();
+        }
     }
     
     private void handleChallengeVictory() {
@@ -312,6 +317,10 @@ public class GameController  {
         }
         viewModel.setGameOver(true);
         leaderboardService.addScore("Player", board.getScore().getScore());
+        
+        if (onGameOverCallback != null) {
+            onGameOverCallback.run();
+        }
     }
 
     private void startGameLoop() {
@@ -331,6 +340,10 @@ public class GameController  {
     
     public void setOnVictoryCallback(Runnable callback) {
         this.onVictoryCallback = callback;
+    }
+    
+    public void setOnGameOverCallback(Runnable callback) {
+        this.onGameOverCallback = callback;
     }
     
     public void setOnBackToMainMenuCallback(Runnable callback) {
@@ -370,11 +383,12 @@ public class GameController  {
         // Copy static board
         for(int i=0; i<board.length; i++) System.arraycopy(board[i], 0, combined[i], 0, board[i].length);
 
-        // Draw Ghost Piece (Negative IDs for ghost styling)
         if (brick.getBrickData() != null) {
-            drawPieceOnGrid(combined, brick.getBrickData(), brick.getXPosition(), brick.getGhostYPosition(), true);
-            // Draw Active Piece
+            // Draw Active Piece FIRST (so it's on top)
             drawPieceOnGrid(combined, brick.getBrickData(), brick.getXPosition(), brick.getYPosition(), false);
+            
+            // Then draw Ghost Piece (only in empty cells, not overlapping with active piece)
+            drawGhostPieceOnGrid(combined, brick.getBrickData(), brick.getXPosition(), brick.getYPosition(), brick.getGhostYPosition());
         }
         return combined;
     }
@@ -386,16 +400,58 @@ public class GameController  {
                     int targetY = y + r;
                     int targetX = x + c;
                     if (targetY >= 0 && targetY < grid.length && targetX >= 0 && targetX < grid[0].length) {
-                        // If ghost, we might use a special ID or handle in View.
-                        // For simplicity, we assume View handles IDs.
-                        // Let's use negative ID for ghost if logic allows, or just standard ID.
-                        // Here we just write the ID.
+                        // Active piece always overwrites (it's drawn on top)
                         grid[targetY][targetX] = piece[r][c];
                     }
                 }
             }
         }
-
-
+    }
+    
+    /**
+     * Draws the ghost piece, ensuring it doesn't overlap with the active piece or landed pieces.
+     * The active piece is already drawn, so we only draw ghost in cells that are still empty (0).
+     */
+    private void drawGhostPieceOnGrid(int[][] grid, int[][] piece, int activeX, int activeY, int ghostY) {
+        // Only draw ghost if it's in a different position than the active piece
+        if (ghostY == activeY) {
+            return; // Ghost and active piece are at the same position, don't draw ghost
+        }
+        
+        for (int r = 0; r < piece.length; r++) {
+            for (int c = 0; c < piece[r].length; c++) {
+                if (piece[r][c] != 0) {
+                    int ghostTargetY = ghostY + r;
+                    int ghostTargetX = activeX + c;
+                    
+                    // Check if this ghost cell overlaps with any active piece cell
+                    boolean overlapsWithActive = false;
+                    for (int ar = 0; ar < piece.length; ar++) {
+                        for (int ac = 0; ac < piece[ar].length; ac++) {
+                            if (piece[ar][ac] != 0) {
+                                int activeTargetY = activeY + ar;
+                                int activeTargetX = activeX + ac;
+                                if (ghostTargetY == activeTargetY && ghostTargetX == activeTargetX) {
+                                    overlapsWithActive = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (overlapsWithActive) break;
+                    }
+                    
+                    if (!overlapsWithActive && ghostTargetY >= 0 && ghostTargetY < grid.length && 
+                        ghostTargetX >= 0 && ghostTargetX < grid[0].length) {
+                        // Only draw ghost piece if:
+                        // 1. The cell doesn't overlap with active piece
+                        // 2. The cell is empty (0) - not a landed piece
+                        if (grid[ghostTargetY][ghostTargetX] == 0) {
+                            // Use negative ID for ghost pieces so the view can style them differently
+                            grid[ghostTargetY][ghostTargetX] = -piece[r][c];
+                        }
+                    }
+                }
+            }
+        }
     }
 }

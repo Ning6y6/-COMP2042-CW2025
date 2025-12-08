@@ -13,6 +13,7 @@ import com.comp2042.ui.KeybindsView;
 import com.comp2042.ui.LeaderboardView;
 import com.comp2042.ui.MainMenuController;
 import com.comp2042.ui.ModeSelectionView;
+import com.comp2042.ui.GameOverView;
 import com.comp2042.ui.OptionsView;
 import com.comp2042.ui.VictoryView;
 import com.comp2042.viewmodel.GameViewModel;
@@ -142,6 +143,11 @@ public class Main extends Application {
                 showVictoryScreen(gameController);
             });
             
+            // Set up game over callback
+            gameController.setOnGameOverCallback(() -> {
+                showGameOverScreen(gameController);
+            });
+            
             // Set up back to main menu callback
             gameController.setOnBackToMainMenuCallback(() -> {
                 showMainMenu();
@@ -178,6 +184,28 @@ public class Main extends Application {
         );
         
         victoryView.show(primaryStage, finalScore);
+    }
+    
+    private void showGameOverScreen(GameController gameController) {
+        GameOverView gameOverView = new GameOverView();
+        
+        // Get current score from the view model
+        int finalScore = Integer.parseInt(currentViewModel.scoreProperty().get());
+        
+        gameOverView.setCallbacks(
+            () -> {
+                // Restart - restart current game
+                gameController.restartGame();
+                // Resume BGM after restart
+                AudioManager.getInstance().resumeBGM();
+            },
+            () -> {
+                // Back to Menu - show main menu
+                showMainMenu();
+            }
+        );
+        
+        gameOverView.show(primaryStage, finalScore);
     }
 
     public static void main(String[] args) {

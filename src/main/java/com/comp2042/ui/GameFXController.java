@@ -145,11 +145,8 @@ public class GameFXController {
         );
 
         // 4. Bind Overlays / Pause / Victory
-        overlayPane.visibleProperty().bind(
-                Bindings.or(viewModel.isPausedProperty(), 
-                    Bindings.and(viewModel.isGameOverProperty(), 
-                        viewModel.isVictoryProperty().not()))
-        );
+        // Only show overlay for pause, not game over (we have a modal window for that)
+        overlayPane.visibleProperty().bind(viewModel.isPausedProperty());
         
         // Victory overlay
         if (victoryPane != null) {
@@ -158,14 +155,9 @@ public class GameFXController {
             );
         }
 
-        // Update overlay text based on game state
-        viewModel.isGameOverProperty().addListener((obs, wasGameOver, isGameOver) -> {
-            if (isGameOver) {
-                overlayLabel.setText("GAME OVER");
-            }
-        });
+        // Update overlay text for pause
         viewModel.isPausedProperty().addListener((obs, wasPaused, isPaused) -> {
-            if (isPaused && !viewModel.isGameOverProperty().get()) {
+            if (isPaused) {
                 overlayLabel.setText("PAUSED");
             }
         });
@@ -226,9 +218,18 @@ public class GameFXController {
         rect.getStyleClass().clear();
         rect.getStyleClass().add("cell");
 
+        // Check if this is a ghost piece (negative ID)
+        boolean isGhost = typeId < 0;
+        int absoluteId = Math.abs(typeId);
+        
         // Map ID to CSS Class
-        BrickType type = BrickType.getById(typeId);
+        BrickType type = BrickType.getById(absoluteId);
         rect.getStyleClass().add(type.getCssClass());
+        
+        // Add ghost modifier class for lighter styling
+        if (isGhost) {
+            rect.getStyleClass().add("ghost");
+        }
     }
 
     private void handleInput(KeyEvent event) {
