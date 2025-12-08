@@ -1,46 +1,33 @@
 package com.comp2042.ui;
 
 import com.comp2042.GameConstants;
-import com.comp2042.event.ViewData;
 import com.comp2042.logic.bricks.BrickType;
-import javafx.fxml.FXML;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class HoldView {
-
-    @FXML
     private GridPane holdPane;
-
-    private Rectangle[][] holdRectangles;
 
     public void initialize(GridPane holdPane) {
         this.holdPane = holdPane;
     }
 
-    public void updateHoldPanel(ViewData data) {
+    public void updateHoldPanel(int[][] brickData, boolean allowed) {
         holdPane.getChildren().clear();
+        if(brickData == null)return;
 
-        int[][] brickData = data.getHeldBrickData();
-        if (brickData == null) return;
+        for (int r = 0; r < brickData.length; r++) {
+            for (int c = 0; c < brickData[r].length; c++) {
+                if (brickData[r][c] != 0) {
+                    Rectangle rect = new Rectangle(15, 15);
+                    String cssClass = BrickType.getById(brickData[r][c]).getCssClass();
+                    rect.getStyleClass().addAll("cell", cssClass);
 
-        holdRectangles = new Rectangle[brickData.length][brickData[0].length];
-
-        for (int i = 0; i < brickData.length; i++) {
-            for (int j = 0; j < brickData[i].length; j++) {
-                if (brickData[i][j] != 0) {
-                    Rectangle rect = new Rectangle(GameConstants.BRICK_SIZE - 2, GameConstants.BRICK_SIZE - 2);
-
-                    Color baseColor = (Color) BrickType.getColorById(brickData[i][j]);
-                    if (!data.isHoldAllowed()) {
-                        baseColor = baseColor.darker().darker();
+                    if (!allowed) {
+                        rect.getStyleClass().add("dimmed");
                     }
-
-                    rect.setFill(baseColor);
-                    rect.setArcHeight(7);
-                    rect.setArcWidth(7);
-                    holdPane.add(rect, j, i);
+                    holdPane.add(rect, c, r);
                 }
             }
         }

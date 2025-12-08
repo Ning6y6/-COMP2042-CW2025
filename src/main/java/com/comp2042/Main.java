@@ -5,43 +5,41 @@ import com.comp2042.leaderboard.FileLeaderboardDAO;
 import com.comp2042.leaderboard.LeaderboardService;
 import com.comp2042.logic.Board;
 import com.comp2042.logic.GameBoard;
-import com.comp2042.ui.GameView;
+import com.comp2042.ui.GameFXController;
+import com.comp2042.ui.JavaFXGameLoop;
+import com.comp2042.viewmodel.GameViewModel;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.net.URL;
-
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-
-        URL location = getClass().getClassLoader().getResource("gameLayout.fxml");
-        FXMLLoader fxmlLoader = new FXMLLoader(location);
-        Parent root = fxmlLoader.load();
-
-        GameView gameView = fxmlLoader.getController();
 
         Board board = new GameBoard();
         InputManager inputManager = new InputManager();
         FileLeaderboardDAO dao = new FileLeaderboardDAO();
         LeaderboardService leaderboardService = new LeaderboardService(dao);
 
+        GameViewModel viewModel = new GameViewModel();
+        GameLoop gameLoop = new JavaFXGameLoop();
+        GameController gameController = new GameController(board, viewModel, inputManager, leaderboardService, gameLoop);
 
-        GameController gameController = new GameController(gameView, board, inputManager, leaderboardService);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/GameView.fxml"));
+        Parent root = loader.load();
+
+        GameFXController fxController = loader.getController();
+        fxController.initialize(gameController, viewModel);
+
         Scene scene = new Scene(root, GameConstants.WINDOW_WIDTH, GameConstants.WINDPW_HEIGHT);
-
-        root.setFocusTraversable(true);
-        root.setOnMouseClicked(event -> gameView.requestFocus());
-
-        primaryStage.setTitle("TetrisJFX");
+        primaryStage.setTitle("Tetris");
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        gameView.requestFocus();
+        gameController.start();
     }
 
 

@@ -1,29 +1,27 @@
 package com.comp2042.logic;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-
 public final class Score {
 
     private static final int BASE_MULTIPLIER = 50;
-    private final IntegerProperty score = new SimpleIntegerProperty(0);
+    private int score = 0;
 
-    public IntegerProperty scoreProperty() {
+    public int getScore() {
         return score;
     }
-
     public void add(int value){
-        score.set(score.get() + value);
+        this.score += value;
     }
 
-    public void addLinesCleared(int lines) {
+    public int addLinesCleared(int lines) {
         if (lines > 0) {
             int points = BASE_MULTIPLIER * lines * lines;
             add(points);
+            return points;
         }
+        return 0;
     }
 
     public void reset() {
-        score.setValue(0);
+        this.score = 0;
     }
 }
