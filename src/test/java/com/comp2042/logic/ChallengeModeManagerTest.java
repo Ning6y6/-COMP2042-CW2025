@@ -197,3 +197,4 @@ class ChallengeModeManagerTest extends JavaFXTestBase {
     }
 }
 
+

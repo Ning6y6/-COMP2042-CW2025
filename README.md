@@ -25,7 +25,7 @@ github link :https://github.com/Ning6y6/-COMP2042-CW2025
 ## Project Structure
 
 ```
-CW2042-CW2025/
+COMP2042-CW2025/
 ├── pom.xml                          # Maven configuration file
 ├── mvnw / mvnw.cmd                 # Maven wrapper scripts
 ├── .gitignore                      # Git ignore rules
@@ -40,31 +40,29 @@ CW2042-CW2025/
 │       │           ├── Main.java                    # Application entry point
 │       │           ├── GameController.java          # Game logic controller
 │       │           ├── GameConstants.java           # Game constants and configuration
+│       │           ├── GameLoop.java                # Game loop interface
 │       │           ├── event/
-│       │           │   ├── ClearRow.java            # Row clearing logic
-│       │           │   ├── DownData.java            # Down movement data
-│       │           │   ├── EventSource.java         # Event source enum
-│       │           │   ├── EventType.java           # Event type enum
-│       │           │   ├── GameInputHandler.java    # Input event handler interface
-│       │           │   ├── MoveEvent.java           # Move event model
-│       │           │   ├── NextShapeInfo.java       # Next shape information
-│       │           │   └── ViewData.java            # View data model
+│       │           │   ├── ClearRow.java            # Row clearing event data
+│       │           │   ├── NextShapeInfo.java       # Next shape rotation information
+│       │           │   └── ViewData.java           # View data model for UI rendering
 │       │           ├── input/
 │       │           │   ├── GameCommand.java         # Command interface (Command Pattern)
 │       │           │   ├── InputManager.java         # Input key binding manager
 │       │           │   ├── DuplicateKeyBindingException.java  # Custom exception for duplicate bindings
 │       │           │   └── commands/
+│       │           │       ├── HardDropCommand.java    # Hard drop command
+│       │           │       ├── HoldCommand.java         # Hold piece command
 │       │           │       ├── MoveLeftCommand.java    # Move left command
 │       │           │       ├── MoveRightCommand.java   # Move right command
-│       │           │       ├── RotateCommand.java      # Rotate command
-│       │           │       ├── SoftDropCommand.java    # Soft drop command
+│       │           │       ├── PauseCommand.java       # Pause command
 │       │           │       ├── RestartGameCommand.java # Restart command
-│       │           │       └── PauseCommand.java       # Pause command
+│       │           │       ├── RotateCommand.java      # Rotate command
+│       │           │       └── SoftDropCommand.java   # Soft drop command
 │       │           ├── leaderboard/
 │       │           │   ├── LeaderboardDAO.java         # Data access object interface
 │       │           │   ├── FileLeaderboardDAO.java     # File-based DAO implementation
 │       │           │   ├── LeaderboardEntry.java       # Leaderboard entry model
-|       |           |   ├── LeaderboardEntryParser.java # Parser for txt file data
+│       │           │   ├── LeaderboardEntryParser.java # Parser for txt file data
 │       │           │   └── LeaderboardService.java     # Leaderboard business logic
 │       │           ├── logic/
 │       │           │   ├── Board.java                # Board interface
@@ -72,7 +70,10 @@ CW2042-CW2025/
 │       │           │   ├── GameBoard.java            # Board implementation
 │       │           │   ├── MatrixOperations.java     # Matrix utility operations
 │       │           │   ├── Score.java                # Score management
-|       |           |   ├── WallKickTable.java        # Wall Kick Offset
+│       │           │   ├── ChallengeModeManager.java # Challenge mode game logic
+│       │           │   ├── GameMode.java              # Game mode enum (ENDLESS, CHALLENGE)
+│       │           │   ├── HoldManager.java           # Hold piece management
+│       │           │   ├── WallKickTable.java          # Wall kick offset table
 │       │           │   └── bricks/
 │       │           │       ├── Brick.java             # Brick interface
 │       │           │       ├── BrickGenerator.java   # Brick generator interface (Factory Method)
@@ -90,20 +91,89 @@ CW2042-CW2025/
 │       │           │   ├── PlayingState.java         # Playing state implementation
 │       │           │   ├── PausedState.java          # Paused state implementation
 │       │           │   └── GameOverState.java        # Game over state implementation
-│       │           └── ui/
-│       │               ├── GameOverPanel.java        # Game over UI panel
-│       │               ├── GameView.java              # Main game view UI
-│       │               ├── NextPieceView.java        # Next piece preview UI
-│       │               ├── NotificationPanel.java    # Notification UI panel
-│       │               ├── SettingsView.java         # Settings menu UI (Facade Pattern)
-│       │               ├── KeybindsView.java          # Key binding configuration UI
-│       │               └── LeaderboardView.java       # Leaderboard display UI
+│       │           ├── ui/
+│       │           │   ├── AudioManager.java          # Audio management (Singleton)
+│       │           │   ├── GameFXController.java      # Main game view controller
+│       │           │   ├── GameOverFXController.java  # Game over screen controller
+│       │           │   ├── GameOverView.java          # Game over screen view
+│       │           │   ├── HoldView.java              # Hold piece preview UI
+│       │           │   ├── JavaFXGameLoop.java        # JavaFX game loop implementation
+│       │           │   ├── KeybindsFXController.java  # Key bindings controller
+│       │           │   ├── KeybindsView.java          # Key binding configuration UI
+│       │           │   ├── LeaderboardFXController.java # Leaderboard controller
+│       │           │   ├── LeaderboardView.java       # Leaderboard display UI
+│       │           │   ├── MainMenuController.java    # Main menu controller
+│       │           │   ├── ModeSelectionFXController.java # Mode selection controller
+│       │           │   ├── ModeSelectionView.java     # Mode selection view
+│       │           │   ├── NextPieceView.java        # Next piece preview UI
+│       │           │   ├── NotificationPanel.java    # Notification UI panel
+│       │           │   ├── OptionsFXController.java  # Options menu controller
+│       │           │   ├── OptionsView.java          # Options menu view
+│       │           │   ├── SettingsFXController.java # Settings menu controller
+│       │           │   ├── SettingsView.java         # Settings menu UI (Facade Pattern)
+│       │           │   ├── VictoryFXController.java    # Victory screen controller
+│       │           │   └── VictoryView.java           # Victory screen view
+│       │           └── viewmodel/
+│       │               └── GameViewModel.java         # ViewModel for data binding (MVVM)
 │       └── resources/
-│           ├── gameLayout.fxml      # FXML UI layout
-│           ├── window_style.css     # CSS styling
-│           ├── background_image.png # Background image
-│           └── digital.ttf          # Custom font
-└── target/                         # Compiled classes (generated)
+│           ├── fxml/
+│           │   ├── GameOverView.fxml      # Game over screen FXML
+│           │   ├── GameView.fxml          # Main game view FXML
+│           │   ├── KeybindsView.fxml      # Key bindings FXML
+│           │   ├── LeaderboardView.fxml   # Leaderboard FXML
+│           │   ├── main_menu.fxml         # Main menu FXML
+│           │   ├── ModeSelectionView.fxml # Mode selection FXML
+│           │   ├── OptionsView.fxml      # Options menu FXML
+│           │   ├── SettingsView.fxml      # Settings menu FXML
+│           │   └── VictoryView.fxml       # Victory screen FXML
+│           ├── assets/
+│           │   ├── audio/
+│           │   │   └── bgm.mp3            # Background music
+│           │   ├── font/
+│           │   │   └── main.otf           # Custom font (not yet implement)
+│           │   └── images/
+│           │       ├── level123.jpg      # Background image for levels 1-3
+│           │       ├── level4.jpg        # Background image for level 4
+│           │       └── MainMenu.png      # Main menu background
+│           └── window_style.css         # CSS styling
+│   └── test/
+│       └── java/
+│           └── com/
+│               └── comp2042/
+│                   ├── GameControllerTest.java
+│                   ├── JavaFXTestBase.java
+│                   ├── event/
+│                   │   ├── ClearRowTest.java
+│                   │   └── ViewDataTest.java
+│                   ├── input/
+│                   │   └── InputManagerTest.java
+│                   ├── leaderboard/
+│                   │   ├── LeaderboardEntryParserTest.java
+│                   │   ├── LeaderboardEntryTest.java
+│                   │   └── LeaderboardServiceTest.java
+│                   ├── logic/
+│                   │   ├── BrickRotatorTest.java
+│                   │   ├── ChallengeModeManagerTest.java
+│                   │   ├── GameBoardTest.java
+│                   │   ├── HoldManagerTest.java
+│                   │   ├── MatrixOperationsTest.java
+│                   │   ├── ScoreTest.java
+│                   │   ├── WallKickTableTest.java
+│                   │   └── bricks/
+│                   │       ├── IBrickTest.java
+│                   │       ├── JBrickTest.java
+│                   │       ├── LBrickTest.java
+│                   │       ├── RandomBrickGeneratorTest.java
+│                   │       ├── SBrickTest.java
+│                   │       ├── TBrickTest.java
+│                   │       └── ZBrickTest.java
+│                   ├── state/
+│                   │   ├── GameOverStateTest.java
+│                   │   ├── PausedStateTest.java
+│                   │   └── PlayingStateTest.java
+│                   └── ui/
+│                       └── JavaFXGameLoopTest.java
+└── target/                            # Compiled classes (generated)
 ```
 
 ## Technology used
@@ -112,8 +182,16 @@ CW2042-CW2025/
 - IDE: IntelliJ IDEA
 
 
-### Build Commands
+## Compilation  Instructions
 
+### Prerequisites
+- Java 17 or later
+
+- Maven (recommended)
+
+- JavaFX SDK (only required if not using Maven JavaFX plugin)
+
+### How to Compile and Run
 ```bash
 # Clean and compile
 mvn clean compile
@@ -135,16 +213,256 @@ Cui Yi Ning
 student of University of Nottingham Malaysia.
 
 
+## Implemented and Working Properly
+
+### Below are the features that are fully implemented and function correctly:
+
+#### Complete MVC + ViewModel Architecture
+- Logic (GameBoard, Brick, MatrixOperations) separated from UI.
+- Controller mediates between logic and view.
+- ViewModel passes clean state to JavaFX.
+
+#### Ghost Piece
+- Highlights the landing position.
+- Fully independent from actual board matrix.
+- No longer interferes with collision or line clearing.
+
+#### Hold System
+- Player can store a piece.
+- Swapping allowed once per drop cycle.
+- Matches modern Tetris rules.
+
+#### Hard Drop
+- Instantly locks the piece at ghost position.
+- Smooth, no lag, and no double-locking.
+
+#### Wall-Kick for Custom Tail Bricks
+- Allows rotation even next to walls.
+- Works with non-standard shapes.
+
+#### Game Over Screen
+- Proper state detection and UI display.
+- Fully responsive.
+
+#### Victory Screen
+- Proper state detection and UI display.
+- Fully responsive.
+
+#### Key Rebinding System (Achievement #1)
+- All actions (movement, rotation, soft drop, hard drop, hold) can be modified.
+- Clean decoupling between logic and input system.
+- Fully functional UI for remapping keys.
+
+#### Challenge Mode (Achievement #2)
+- Increased fall speed.
+- Time pressure gameplay.
+- Revert movement keys
+- Clean mode-handling logic inside controller.
+
+## Implemented but Not Working Properly
+
+### Below are the features that are implemented but not working properly:
+#### Dynamic Window Resizing
+- It is working properly but turn it off.
+- Game board centers automatically.
+- UI elements reposition correctly.
+- Sacrifice for the main menu and in-game background to avoid the image being stretch and affect the aesthetic looks of the game.
+
+## Features Not Implemented
+### Below are the features that are not implemented:
+#### Custom font for the game
+- included in the game file
+- not implemented due to time constraints.
+
+## New Java Classes Introduced
+
+### These files are the new java classes that implement in my code:
+
+#### 1. GameConstants.java
+- Location: src/main/java/com/comp2042/
+- Defines game-wide constants such as speeds, board size, timing, colors, or feature flags.
+
+#### 2. GameController.java
+- Location: src/main/java/com/comp2042/
+- Handles the new MVC-style controller logic introduced in my refactoring (Lecture 12–13).
+- Manages interaction between model, view, and user inputs.
+
+#### 3. GameLoop.java
+- Location: src/main/java/com/comp2042/
+- Implements the game’s main loop with consistent timing, frame refresh, and update logic.
+
+#### 4. Main.java
+- Location: src/main/java/com/comp2042/
+New application entry point. Replaces the old launcher structure.
+
+### Event System — New Classes
+- Location: src/main/java/com/comp2042/event
+- I introduced a new event-driven architecture:
+
+#### 5. ClearRow.java
+- Signals when rows are cleared.
+
+#### 6. NextShapeInfo.java
+- Encapsulates next-shape preview information.
+
+#### 7. ViewData.java
+- Passes rendering data to the UI without exposing internal logic.
+
+### Input System — New Classes
+- Location:src/main/java/com/comp2042/input
+- I added a complete keybinding + command architecture.
+
+#### 8. DuplicateKeyBindingException.java
+- Custom exception for conflicting key bindings.
+
+#### 9. GameCommand.java
+Base interface for all input commands.
+
+#### 10. InputManager.java
+Handles dynamic keybinding, key-mapping, and command dispatch.
+
+#### Commands Classes (input/commands/)
+11. HardDropCommand.java
+12. HoldCommand.java 
+13. MoveLeftCommand.java 
+14. MoveRightCommand.java 
+15. PauseCommand.java 
+16. RestartGameCommand.java 
+17. RotateCommand.java 
+18. SoftDropCommand.java
+
+### Leaderboard System - New Classes
+- location: src/main/java/com/comp2042/leaderboard
+- I introduced a new leaderboard system:
+
+#### 19. FileLeaderboardDAO.java     
+- File-based DAO implementation
+
+#### 20. LeaderboardEntry.java       
+- Leaderboard entry model
+
+#### 21. LeaderboardEntryParser.java 
+- Parser for txt file data 
+
+#### 22. LeaderboardService.java    
+- Leaderboard business logic
+
+### UI - New Classes
+- location: src/main/java/com/comp2042/ui
+- I Introduce a new classes for ui:
+
+#### 23. AudioManager.java
+- Audio management (Singleton)
+#### 24. GameFXController.java 
+- Main game view controller
+#### 25. GameOverFXController.java  
+- Game over screen controller
+#### 26. GameOverView.java       
+- Game over screen view
+#### 27. HoldView.java              
+- Hold piece preview UI
+#### 28. JavaFXGameLoop.java 
+- JavaFX game loop implementation
+#### 29. KeybindsFXController.java  
+- Key bindings controller
+#### 30. KeybindsView.java          
+Key binding configuration UI
+#### 31. LeaderboardFXController.java 
+- Leaderboard controller
+#### 32. LeaderboardView.java       
+Leaderboard display UI
+#### 33. MainMenuController.java    
+- Main menu controller
+#### 34. ModeSelectionFXController.java 
+- Mode selection controller
+#### 35. ModeSelectionView.java     
+- Mode selection view
+#### 36. NextPieceView.java        
+- Next piece preview UI
+#### 37. NotificationPanel.java    
+- Notification UI panel
+#### 38. OptionsFXController.java  
+- Options menu controller
+#### 39. OptionsView.java          
+- Options menu view
+#### 40. SettingsFXController.java 
+- Settings menu controller
+#### 41. SettingsView.java         
+Settings menu UI (Facade Pattern)
+#### 42. VictoryFXController.java    
+Victory screen controller
+#### 43. VictoryView.java      
+- Victory screen view
+
+### View Model - New Classes
+- location: src/main/java/com/comp2042/ViewModel
+- I Introduced a new View Model Classes
+
+#### 44. GameViewModel.java
+- ViewModel for data binding (MVVM)
+
+## Modified Java Classes
+
+### 1. Brick & Shape Logic
+- location: src/main/java/com/comp2042/logic
+#### Adjusted to support:
+- Ghost brick projection
+- Hard drop calculations
+- Hold mechanic
+- Challenge mode behavior
+
+### 2. Board / Collision Logic
+- location: src/main/java/com/comp2042/logic
+#### Adjusted to support:
+- Separated into cleaner model classes
+- Improved update flow via controller
+- Added snapshot logic for ghost brick (partial)
+
+### 3. UI Rendering
+- location: src/main/java/com/comp2042/ui
+#### Adjusted to support:
+- Rebuilt around ViewData
+- Separated view from model 
+
+### 4. Input Handling
+- location: src/main/java/com/comp2042/input
+#### Adjusted to support:
+- Original key listeners replaced by command pattern
+- Supports dynamic rebinding and robust key mapping
+
+## Unexpected Problems
+### 1. Ghost Brick Interference
+- Calculations reused the same board reference, causing interference with real landed pieces.
+##### Solution (partial):
+- Began shifting ghost computations into independent board snapshots.
+
+
+### 2. Complexity from Refactoring
+#### Migrating from a simple monolithic structure to MVC introduced:
+- Multiple dependencies 
+- Need for careful state synchronization
+- Event-driven rendering changes
+- Resolved through incremental restructuring and testing.
+
+### 3. Layout Drift During Dynamic Resizing
+- UI scaling with image background ruining the looks of the game
+#### Addressed by:
+- Breaking UI into smaller view components
+- Static size of window
+
+
+
 ## Version History
-| Version | Date             | Change                                                                                                        |
-|---------|------------------|---------------------------------------------------------------------------------------------------------------|
-| v1.0    | 12 November 2025 | Initial release                                                                                               |
-| v1.1    | 18 November 2025 | Fixed Score system, tiles spawn location and matrix operations                                                |
-| v1.2    | 25 November 2025 | Added a new feature that shows next three bricks and refactored the needed files                              |
-| v1.3    | 29 November 2025 | Major refactoring for maintainability, Encapsulation, and SOLID principles.                                   |
+| Version | Date             | Change                                                                                                       |
+|---------|------------------|--------------------------------------------------------------------------------------------------------------|
+| v1.0    | 12 November 2025 | Initial release                                                                                              |
+| v1.1    | 18 November 2025 | Fixed Score system, tiles spawn location and matrix operations                                               |
+| v1.2    | 25 November 2025 | Added a new feature that shows next three bricks and refactored the needed files                             |
+| v1.3    | 29 November 2025 | Major refactoring for maintainability, Encapsulation, and SOLID principles                                   |
 | v1.4    | 3 December 2025  | Added Settings button, key binding validation, auto-resume, WASD-only controls, and comprehensive error fixes |
-| v1.5    | 5 December 2025  | Added Hold system, Hard Drop mechanic, and Notification Panel UI with animation                               |
-|  v1.6   | 6 December 2025  | Added GhostBrick, Wall Kick implmentation and Dynamic Window                                                  |
+| v1.5    | 5 December 2025  | Added Hold system, Hard Drop mechanic, and Notification Panel UI with animation                              |
+|  v1.6   | 6 December 2025  | Added GhostBrick, Wall Kick implmentation and Dynamic Window                                                 |
+ | v1.7  | 8 December 2025   | Added Challenge Mode and updated the game UI to BLACK GOTHIC FANTASY STYLE                                   |
 ## Key of changes
 ### 1. Score Display and Spawn location
 - **Location**: `GuiController.java` / `gameLayout.fxml`/ `SimpleBoard.java`
@@ -197,10 +515,6 @@ student of University of Nottingham Malaysia.
 ### 11. SRS Wall Kicks
 - **Location**: `GameBoard.java`/ `WallKickTable.java`
 - **Addition**: Introduced `WallKickTable` containing standard offset values (0, ±1, ±2). Modified `rotateLeftBrick` in `GameBoard` to iterate through these offsets. This prevents pieces from getting stuck near walls by automatically shifting them to a valid adjacent position during rotation.
-
-## 12. Dynamic Responsive Layout
-- **Location**: `gameLayout.fxml`/ `GameView.java`
-- **Addition**: Refactored FXML root to a StackPane containing a centered HBox with tight sizing constraints. Added F11 key binding in `GameView` to toggle fullscreen mode. Implemented strict layout locking in `initGameView` to ensure the game board stays perfectly centered and borders do not stretch on window resize.
 
 ## Design Pattern Overview
 ### The project implements multiple design patterns effectively:
